@@ -37,13 +37,13 @@ export default async function OrdersPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 pb-20">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
-          Your Orders
+          Comenzile tale
         </h1>
         <p className="mt-2 text-zinc-500 dark:text-zinc-400">
-          Track and manage your orders
+          Urmărește și gestionează comenzile
         </p>
       </div>
 
@@ -75,7 +75,7 @@ export default async function OrdersPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="font-semibold text-zinc-900 dark:text-zinc-100">
-                        Order #{formatOrderNumber(order.orderNumber)}
+                        Comanda nr. {formatOrderNumber(order.orderNumber)}
                       </p>
                       <p className="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">
                         {formatDate(order.createdAt)}
@@ -93,7 +93,7 @@ export default async function OrdersPage() {
                   <div className="mt-2 flex items-end justify-between">
                     <p className="text-sm text-zinc-500 dark:text-zinc-400">
                       {order.itemCount}{" "}
-                      {order.itemCount === 1 ? "item" : "items"}
+                      {order.itemCount === 1 ? "produs" : "produse"}
                     </p>
                     <p className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
                       {formatPrice(order.total)}
@@ -109,7 +109,7 @@ export default async function OrdersPage() {
                   {(order.itemNames?.length ?? 0) > 2 && "..."}
                 </p>
                 <span className="flex shrink-0 items-center gap-1 text-sm font-medium text-zinc-500 transition-colors group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-zinc-100">
-                  View order
+                  Vezi detalii comandă
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </span>
               </div>

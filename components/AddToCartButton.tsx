@@ -1,6 +1,6 @@
 "use client";
 
-import { Minus, Plus, ShoppingBag } from "lucide-react";
+import { Minus, Plus, ShoppingBag, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useCartActions, useCartItem } from "../lib/store/cart-store-provider";
@@ -51,7 +51,7 @@ export function AddToCartButton({
         variant="secondary"
         className={cn("h-11 w-full", className)}
       >
-        Out of Stock
+        Stoc epuizat
       </Button>
     );
   }
@@ -60,8 +60,10 @@ export function AddToCartButton({
   if (quantityInCart === 0) {
     return (
       <Button onClick={handleAdd} className={cn("h-11 w-full", className)}>
-        <ShoppingBag className="mr-2 h-4 w-4" />
-        Add to Basket
+        <div className="">
+          <ShoppingCart className="mr-0.5 h-4 -mt-1" />
+        </div>
+        Adaugă în coș
       </Button>
     );
   }

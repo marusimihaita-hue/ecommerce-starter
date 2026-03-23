@@ -45,15 +45,15 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
           className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Orders
+          Înapoi la comenzi
         </Link>
         <div className="mt-4 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-              Order {order.orderNumber}
+              Comanda {order.orderNumber}
             </h1>
             <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-              Placed on {formatDate(order.createdAt, "datetime")}
+              Plasată pe {formatDate(order.createdAt, "datetime")}
             </p>
           </div>
           <Badge className={`${status.color} flex items-center gap-1.5`}>
@@ -69,7 +69,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
           <div className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
             <div className="border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
               <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
-                Items ({order.items?.length ?? 0})
+                Produse ({order.items?.length ?? 0})
               </h2>
             </div>
             <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
@@ -87,7 +87,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center text-xs text-zinc-400">
-                        No image
+                        Fără imagine
                       </div>
                     )}
                   </div>
@@ -99,10 +99,10 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
                         href={`/products/${item.product?.slug}`}
                         className="font-medium text-zinc-900 hover:text-zinc-600 dark:text-zinc-100 dark:hover:text-zinc-300"
                       >
-                        {item.product?.name ?? "Unknown Product"}
+                        {item.product?.name ?? "Produs necunoscut"}
                       </Link>
                       <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                        Qty: {item.quantity}
+                        Cantitate: {item.quantity}
                       </p>
                     </div>
                   </div>
@@ -116,7 +116,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
                     </p>
                     {(item.quantity ?? 1) > 1 && (
                       <p className="text-sm text-zinc-500">
-                        {formatPrice(item.priceAtPurchase)} each
+                        {formatPrice(item.priceAtPurchase)} bucata
                       </p>
                     )}
                   </div>
@@ -131,7 +131,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
           {/* Summary */}
           <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
             <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
-              Order Summary
+              Sumar comandă
             </h2>
             <div className="mt-4 space-y-3">
               <div className="flex justify-between text-sm">
@@ -161,7 +161,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
               <div className="flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-zinc-400" />
                 <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
-                  Shipping Address
+                  Adresă de livrare
                 </h2>
               </div>
               <div className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
@@ -183,12 +183,12 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
             <div className="flex items-center gap-2">
               <CreditCard className="h-5 w-5 text-zinc-400" />
               <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
-                Payment
+                Plată
               </h2>
             </div>
             <div className="mt-4 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-light tracking-wide">Status</span>
+                <span className="text-xs font-light tracking-wide">Stare</span>
                 <span className="text-sm font-medium capitalize text-green-600">
                   {order.status}
                 </span>

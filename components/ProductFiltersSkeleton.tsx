@@ -18,15 +18,15 @@ export function ProductFiltersSkeleton() {
         <Skeleton className="h-10 w-full" />
       </div>
 
-      {/* Color */}
+      {/* Scent Family */}
       <div>
-        <Skeleton className="mb-2 h-4 w-12" />
+        <Skeleton className="mb-2 h-4 w-24" />
         <Skeleton className="h-10 w-full" />
       </div>
 
-      {/* Material */}
+      {/* Concentration */}
       <div>
-        <Skeleton className="mb-2 h-4 w-16" />
+        <Skeleton className="mb-2 h-4 w-24" />
         <Skeleton className="h-10 w-full" />
       </div>
 

@@ -21,29 +21,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CONCENTRATIONS, SCENT_FAMILIES } from "@/lib/constants/filters";
 import {
   PublishButton,
   RevertButton,
   ImageUploader,
   DeleteButton,
 } from "@/components/admin";
-
-const MATERIALS = [
-  { value: "wood", label: "Wood" },
-  { value: "metal", label: "Metal" },
-  { value: "fabric", label: "Fabric" },
-  { value: "leather", label: "Leather" },
-  { value: "glass", label: "Glass" },
-];
-
-const COLORS = [
-  { value: "black", label: "Black" },
-  { value: "white", label: "White" },
-  { value: "oak", label: "Oak" },
-  { value: "walnut", label: "Walnut" },
-  { value: "grey", label: "Grey" },
-  { value: "natural", label: "Natural" },
-];
 
 // Field editor components
 function NameEditor(handle: DocumentHandle) {
@@ -120,61 +104,117 @@ function StockEditor(handle: DocumentHandle) {
   );
 }
 
-function MaterialEditor(handle: DocumentHandle) {
-  const { data: material } = useDocument({ ...handle, path: "material" });
-  const editMaterial = useEditDocument({ ...handle, path: "material" });
-
-  return (
-    <Select
-      value={(material as string) ?? ""}
-      onValueChange={(value) => editMaterial(value)}
-    >
-      <SelectTrigger>
-        <SelectValue placeholder="Select material" />
-      </SelectTrigger>
-      <SelectContent>
-        {MATERIALS.map((m) => (
-          <SelectItem key={m.value} value={m.value}>
-            {m.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
-
-function ColorEditor(handle: DocumentHandle) {
-  const { data: color } = useDocument({ ...handle, path: "color" });
-  const editColor = useEditDocument({ ...handle, path: "color" });
-
-  return (
-    <Select
-      value={(color as string) ?? ""}
-      onValueChange={(value) => editColor(value)}
-    >
-      <SelectTrigger>
-        <SelectValue placeholder="Select color" />
-      </SelectTrigger>
-      <SelectContent>
-        {COLORS.map((c) => (
-          <SelectItem key={c.value} value={c.value}>
-            {c.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
-
-function DimensionsEditor(handle: DocumentHandle) {
-  const { data: dimensions } = useDocument({ ...handle, path: "dimensions" });
-  const editDimensions = useEditDocument({ ...handle, path: "dimensions" });
+function VolumeEditor(handle: DocumentHandle) {
+  const { data: volumeMl } = useDocument({ ...handle, path: "volumeMl" });
+  const editVolumeMl = useEditDocument({ ...handle, path: "volumeMl" });
 
   return (
     <Input
-      value={(dimensions as string) ?? ""}
-      onChange={(e) => editDimensions(e.target.value)}
-      placeholder='e.g., "120cm x 80cm x 75cm"'
+      type="number"
+      min="0"
+      value={(volumeMl as number) ?? ""}
+      onChange={(e) => editVolumeMl(parseInt(e.target.value) || 0)}
+      placeholder="e.g., 50"
+    />
+  );
+}
+
+function ConcentrationEditor(handle: DocumentHandle) {
+  const { data: concentration } = useDocument({
+    ...handle,
+    path: "concentration",
+  });
+  const editConcentration = useEditDocument({
+    ...handle,
+    path: "concentration",
+  });
+
+  return (
+    <Select
+      value={(concentration as string) ?? ""}
+      onValueChange={(value) => editConcentration(value)}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Select concentration" />
+      </SelectTrigger>
+      <SelectContent>
+        {CONCENTRATIONS.map((item) => (
+          <SelectItem key={item.value} value={item.value}>
+            {item.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function ScentFamilyEditor(handle: DocumentHandle) {
+  const { data: scentFamily } = useDocument({ ...handle, path: "scentFamily" });
+  const editScentFamily = useEditDocument({
+    ...handle,
+    path: "scentFamily",
+  });
+
+  return (
+    <Select
+      value={(scentFamily as string) ?? ""}
+      onValueChange={(value) => editScentFamily(value)}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Select scent family" />
+      </SelectTrigger>
+      <SelectContent>
+        {SCENT_FAMILIES.map((item) => (
+          <SelectItem key={item.value} value={item.value}>
+            {item.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function TopNotesEditor(handle: DocumentHandle) {
+  const { data: topNotes } = useDocument({ ...handle, path: "topNotes" });
+  const editTopNotes = useEditDocument({ ...handle, path: "topNotes" });
+
+  return (
+    <Textarea
+      value={(topNotes as string) ?? ""}
+      onChange={(e) => editTopNotes(e.target.value)}
+      placeholder="e.g., Bergamot, Lemon, Pink Pepper"
+      rows={2}
+    />
+  );
+}
+
+function MiddleNotesEditor(handle: DocumentHandle) {
+  const { data: middleNotes } = useDocument({
+    ...handle,
+    path: "middleNotes",
+  });
+  const editMiddleNotes = useEditDocument({ ...handle, path: "middleNotes" });
+
+  return (
+    <Textarea
+      value={(middleNotes as string) ?? ""}
+      onChange={(e) => editMiddleNotes(e.target.value)}
+      placeholder="e.g., Rose, Jasmine, Lavender"
+      rows={2}
+    />
+  );
+}
+
+function BaseNotesEditor(handle: DocumentHandle) {
+  const { data: baseNotes } = useDocument({ ...handle, path: "baseNotes" });
+  const editBaseNotes = useEditDocument({ ...handle, path: "baseNotes" });
+
+  return (
+    <Textarea
+      value={(baseNotes as string) ?? ""}
+      onChange={(e) => editBaseNotes(e.target.value)}
+      placeholder="e.g., Vanilla, Musk, Sandalwood"
+      rows={2}
     />
   );
 }
@@ -187,24 +227,6 @@ function FeaturedEditor(handle: DocumentHandle) {
     <Switch
       checked={(featured as boolean) ?? false}
       onCheckedChange={(checked: boolean) => editFeatured(checked)}
-    />
-  );
-}
-
-function AssemblyEditor(handle: DocumentHandle) {
-  const { data: assemblyRequired } = useDocument({
-    ...handle,
-    path: "assemblyRequired",
-  });
-  const editAssembly = useEditDocument({
-    ...handle,
-    path: "assemblyRequired",
-  });
-
-  return (
-    <Switch
-      checked={(assemblyRequired as boolean) ?? false}
-      onCheckedChange={(checked: boolean) => editAssembly(checked)}
     />
   );
 }
@@ -321,21 +343,39 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Material</Label>
+                <Label>Volume (ml)</Label>
                 <Suspense fallback={<Skeleton className="h-10" />}>
-                  <MaterialEditor {...handle} />
+                  <VolumeEditor {...handle} />
                 </Suspense>
               </div>
               <div className="space-y-2">
-                <Label>Color</Label>
+                <Label>Concentration</Label>
                 <Suspense fallback={<Skeleton className="h-10" />}>
-                  <ColorEditor {...handle} />
+                  <ConcentrationEditor {...handle} />
+                </Suspense>
+              </div>
+              <div className="space-y-2">
+                <Label>Scent Family</Label>
+                <Suspense fallback={<Skeleton className="h-10" />}>
+                  <ScentFamilyEditor {...handle} />
                 </Suspense>
               </div>
               <div className="space-y-2 sm:col-span-2">
-                <Label>Dimensions</Label>
-                <Suspense fallback={<Skeleton className="h-10" />}>
-                  <DimensionsEditor {...handle} />
+                <Label>Top Notes</Label>
+                <Suspense fallback={<Skeleton className="h-16" />}>
+                  <TopNotesEditor {...handle} />
+                </Suspense>
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Middle Notes</Label>
+                <Suspense fallback={<Skeleton className="h-16" />}>
+                  <MiddleNotesEditor {...handle} />
+                </Suspense>
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Base Notes</Label>
+                <Suspense fallback={<Skeleton className="h-16" />}>
+                  <BaseNotesEditor {...handle} />
                 </Suspense>
               </div>
             </div>
@@ -358,19 +398,6 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
                 </div>
                 <Suspense fallback={<Skeleton className="h-6 w-11" />}>
                   <FeaturedEditor {...handle} />
-                </Suspense>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                    Assembly Required
-                  </p>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                    Customer will need to assemble
-                  </p>
-                </div>
-                <Suspense fallback={<Skeleton className="h-6 w-11" />}>
-                  <AssemblyEditor {...handle} />
                 </Suspense>
               </div>
             </div>

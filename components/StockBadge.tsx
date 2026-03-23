@@ -24,7 +24,7 @@ export function StockBadge({ productId, stock, className }: StockBadgeProps) {
         variant="secondary"
         className={cn("w-fit bg-blue-100 text-blue-800", className)}
       >
-        Max in cart
+        Limită atinsă
       </Badge>
     );
   }
@@ -35,7 +35,7 @@ export function StockBadge({ productId, stock, className }: StockBadgeProps) {
         variant="secondary"
         className={cn("w-fit bg-amber-100 text-amber-800", className)}
       >
-        Only {stock} left in stock
+        Doar {stock} rămase în stoc
       </Badge>
     );
   }

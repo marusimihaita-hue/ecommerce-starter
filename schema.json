@@ -301,17 +301,17 @@
         },
         "optional": true
       },
-      "description": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
       "price": {
         "type": "objectAttribute",
         "value": {
           "type": "number"
+        },
+        "optional": true
+      },
+      "description": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
         },
         "optional": true
       },
@@ -345,69 +345,94 @@
         },
         "optional": true
       },
-      "material": {
+      "volumeMl": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
+      },
+      "concentration": {
         "type": "objectAttribute",
         "value": {
           "type": "union",
           "of": [
             {
               "type": "string",
-              "value": "wood"
+              "value": "eau-de-cologne"
             },
             {
               "type": "string",
-              "value": "metal"
+              "value": "eau-de-toilette"
             },
             {
               "type": "string",
-              "value": "fabric"
+              "value": "eau-de-parfum"
             },
             {
               "type": "string",
-              "value": "leather"
+              "value": "parfum"
             },
             {
               "type": "string",
-              "value": "glass"
+              "value": "elixir"
             }
           ]
         },
         "optional": true
       },
-      "color": {
+      "scentFamily": {
         "type": "objectAttribute",
         "value": {
           "type": "union",
           "of": [
             {
               "type": "string",
-              "value": "black"
+              "value": "floral"
             },
             {
               "type": "string",
-              "value": "white"
+              "value": "woody"
             },
             {
               "type": "string",
-              "value": "oak"
+              "value": "oriental"
             },
             {
               "type": "string",
-              "value": "walnut"
+              "value": "fresh"
             },
             {
               "type": "string",
-              "value": "grey"
+              "value": "citrus"
             },
             {
               "type": "string",
-              "value": "natural"
+              "value": "amber"
+            },
+            {
+              "type": "string",
+              "value": "aromatic"
             }
           ]
         },
         "optional": true
       },
-      "dimensions": {
+      "topNotes": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "middleNotes": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "baseNotes": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -505,13 +530,6 @@
         "optional": true
       },
       "featured": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "boolean"
-        },
-        "optional": true
-      },
-      "assemblyRequired": {
         "type": "objectAttribute",
         "value": {
           "type": "boolean"

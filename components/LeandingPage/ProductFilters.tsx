@@ -1,8 +1,11 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState, useEffect } from "react";
 import { X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -10,54 +13,92 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
-import { COLORS, MATERIALS, SORT_OPTIONS } from "@/lib/constants/filters";
+import {
+  CONCENTRATIONS,
+  SCENT_FAMILIES,
+  SORT_OPTIONS,
+} from "@/lib/constants/filters";
 import type { ALL_CATEGORIES_QUERYResult } from "@/sanity.types";
 
 interface ProductFiltersProps {
   categories: ALL_CATEGORIES_QUERYResult;
+  initialFilters: {
+    q: string;
+    category: string;
+    scentFamily: string;
+    concentration: string;
+    sort: string;
+    minPrice: number;
+    maxPrice: number;
+    inStock: boolean;
+  };
 }
 
-export function ProductFilters({ categories }: ProductFiltersProps) {
+export function ProductFilters({
+  categories,
+  initialFilters,
+}: ProductFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const currentSearch = searchParams.get("q") ?? "";
-  const currentCategory = searchParams.get("category") ?? "";
-  const currentColor = searchParams.get("color") ?? "";
-  const currentMaterial = searchParams.get("material") ?? "";
-  const currentSort = searchParams.get("sort") ?? "name";
-  const urlMinPrice = Number(searchParams.get("minPrice")) || 0;
-  const urlMaxPrice = Number(searchParams.get("maxPrice")) || 5000;
-  const currentInStock = searchParams.get("inStock") === "true";
+  // Important: first client render must match SSR to avoid Radix hydration mismatch.
+  // So we render based on `initialFilters` (from server), and only sync after mount.
+  const [filters, setFilters] = useState(() => ({
+    q: initialFilters.q,
+    category: initialFilters.category,
+    scentFamily: initialFilters.scentFamily,
+    concentration: initialFilters.concentration,
+    sort: initialFilters.sort,
+    minPrice: initialFilters.minPrice,
+    maxPrice: initialFilters.maxPrice,
+    inStock: initialFilters.inStock,
+  }));
+
+  useEffect(() => {
+    setFilters({
+      q: searchParams.get("q") ?? "",
+      category: searchParams.get("category") ?? "",
+      scentFamily: searchParams.get("scentFamily") ?? "",
+      concentration: searchParams.get("concentration") ?? "",
+      sort: searchParams.get("sort") ?? "name",
+      minPrice: Number(searchParams.get("minPrice")) || 0,
+      maxPrice: Number(searchParams.get("maxPrice")) || 5000,
+      inStock: searchParams.get("inStock") === "true",
+    });
+  }, [searchParams]);
 
   // Local state for price range (for smooth slider dragging)
-  const [priceRange, setPriceRange] = useState<[number, number]>([
-    urlMinPrice,
-    urlMaxPrice,
+  const [priceRange, setPriceRange] = useState<[number, number]>(() => [
+    initialFilters.minPrice,
+    initialFilters.maxPrice,
   ]);
 
-  // Sync local state when URL changes
+  // Keep slider in sync when filters are updated from URL
   useEffect(() => {
-    setPriceRange([urlMinPrice, urlMaxPrice]);
-  }, [urlMinPrice, urlMaxPrice]);
+    setPriceRange([filters.minPrice, filters.maxPrice]);
+  }, [filters.minPrice, filters.maxPrice]);
 
   // Check which filters are active
+  const currentSearch = filters.q;
+  const currentCategory = filters.category;
+  const currentScentFamily = filters.scentFamily;
+  const currentConcentration = filters.concentration;
+  const currentSort = filters.sort;
+  const currentInStock = filters.inStock;
+
   const isSearchActive = !!currentSearch;
   const isCategoryActive = !!currentCategory;
-  const isColorActive = !!currentColor;
-  const isMaterialActive = !!currentMaterial;
-  const isPriceActive = urlMinPrice > 0 || urlMaxPrice < 5000;
+  const isScentFamilyActive = !!currentScentFamily;
+  const isConcentrationActive = !!currentConcentration;
+  const isPriceActive = filters.minPrice > 0 || filters.maxPrice < 5000;
   const isInStockActive = currentInStock;
 
   const hasActiveFilters =
     isSearchActive ||
     isCategoryActive ||
-    isColorActive ||
-    isMaterialActive ||
+    isScentFamilyActive ||
+    isConcentrationActive ||
     isPriceActive ||
     isInStockActive;
 
@@ -65,8 +106,8 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
   const activeFilterCount = [
     isSearchActive,
     isCategoryActive,
-    isColorActive,
-    isMaterialActive,
+    isScentFamilyActive,
+    isConcentrationActive,
     isPriceActive,
     isInStockActive,
   ].filter(Boolean).length;
@@ -128,7 +169,7 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
         {children}
         {isActive && (
           <Badge className="ml-2 h-5 bg-amber-500 px-1.5 text-xs text-white hover:bg-amber-500">
-            Active
+            Activ
           </Badge>
         )}
       </span>
@@ -162,7 +203,7 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
             className="w-full bg-amber-500 text-white hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700"
           >
             <X className="mr-2 h-4 w-4" />
-            Clear All Filters
+            Șterge toate filtrele
           </Button>
         </div>
       )}
@@ -170,12 +211,12 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
       {/* Search */}
       <div>
         <FilterLabel isActive={isSearchActive} filterKey="q">
-          Search
+          Căutare
         </FilterLabel>
         <form onSubmit={handleSearchSubmit} className="flex gap-2">
           <Input
             name="search"
-            placeholder="Search products..."
+            placeholder="Search perfumes..."
             defaultValue={currentSearch}
             className={`flex-1 ${
               isSearchActive
@@ -184,7 +225,7 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
             }`}
           />
           <Button type="submit" size="sm">
-            Search
+            Caută
           </Button>
         </form>
       </div>
@@ -192,7 +233,7 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
       {/* Category */}
       <div>
         <FilterLabel isActive={isCategoryActive} filterKey="category">
-          Category
+          Categorie
         </FilterLabel>
         <Select
           value={currentCategory || "all"}
@@ -210,7 +251,7 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
+            <SelectItem value="all">Toate categoriile</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category._id} value={category.slug ?? ""}>
                 {category.title}
@@ -220,62 +261,62 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
         </Select>
       </div>
 
-      {/* Color */}
+      {/* Scent Family */}
       <div>
-        <FilterLabel isActive={isColorActive} filterKey="color">
-          Color
+        <FilterLabel isActive={isScentFamilyActive} filterKey="scentFamily">
+          Familie olfactivă
         </FilterLabel>
         <Select
-          value={currentColor || "all"}
+          value={currentScentFamily || "all"}
           onValueChange={(value) =>
-            updateParams({ color: value === "all" ? null : value })
+            updateParams({ scentFamily: value === "all" ? null : value })
           }
         >
           <SelectTrigger
             className={
-              isColorActive
+              isScentFamilyActive
                 ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
                 : ""
             }
           >
-            <SelectValue placeholder="All Colors" />
+            <SelectValue placeholder="All Scent Families" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Colors</SelectItem>
-            {COLORS.map((color) => (
-              <SelectItem key={color.value} value={color.value}>
-                {color.label}
+            <SelectItem value="all">Toate familiile olfactive</SelectItem>
+            {SCENT_FAMILIES.map((family) => (
+              <SelectItem key={family.value} value={family.value}>
+                {family.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
-      {/* Material */}
+      {/* Concentration */}
       <div>
-        <FilterLabel isActive={isMaterialActive} filterKey="material">
-          Material
+        <FilterLabel isActive={isConcentrationActive} filterKey="concentration">
+          Concentrație
         </FilterLabel>
         <Select
-          value={currentMaterial || "all"}
+          value={currentConcentration || "all"}
           onValueChange={(value) =>
-            updateParams({ material: value === "all" ? null : value })
+            updateParams({ concentration: value === "all" ? null : value })
           }
         >
           <SelectTrigger
             className={
-              isMaterialActive
+              isConcentrationActive
                 ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
                 : ""
             }
           >
-            <SelectValue placeholder="All Materials" />
+            <SelectValue placeholder="All Concentrations" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Materials</SelectItem>
-            {MATERIALS.map((material) => (
-              <SelectItem key={material.value} value={material.value}>
-                {material.label}
+            <SelectItem value="all">Toate concentrațiile</SelectItem>
+            {CONCENTRATIONS.map((concentration) => (
+              <SelectItem key={concentration.value} value={concentration.value}>
+                {concentration.label}
               </SelectItem>
             ))}
           </SelectContent>
@@ -285,7 +326,7 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
       {/* Price Range */}
       <div>
         <FilterLabel isActive={isPriceActive} filterKey="price">
-          Price Range: £{priceRange[0]} - £{priceRange[1]}
+          Interval preț: {priceRange[0]} - {priceRange[1]}RON
         </FilterLabel>
         <Slider
           min={0}
@@ -321,10 +362,10 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
                 : "text-zinc-700 dark:text-zinc-300"
             }`}
           >
-            Show only in-stock
+            Doar produse în stoc
             {isInStockActive && (
               <Badge className="ml-2 h-5 bg-amber-500 px-1.5 text-xs text-white hover:bg-amber-500">
-                Active
+                Activ
               </Badge>
             )}
           </span>
@@ -334,7 +375,7 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
       {/* Sort */}
       <div>
         <span className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Sort By
+          Sortează după
         </span>
         <Select
           value={currentSort}

@@ -20,7 +20,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   if (!images || images.length === 0) {
     return (
       <div className="flex aspect-square items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800">
-        <span className="text-zinc-400">No images available</span>
+        <span className="text-zinc-400">Nicio imagine disponibilă</span>
       </div>
     );
   }
@@ -42,7 +42,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           />
         ) : (
           <div className="flex h-full items-center justify-center text-zinc-400">
-            No image
+            Fără imagine
           </div>
         )}
       </div>
@@ -74,7 +74,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 />
               ) : (
                 <div className="flex h-full items-center justify-center text-xs text-zinc-400">
-                  N/A
+                  Indisponibil
                 </div>
               )}
             </button>

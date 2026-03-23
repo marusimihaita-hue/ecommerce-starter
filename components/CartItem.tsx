@@ -48,7 +48,7 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
           />
         ) : (
           <div className="flex h-full items-center justify-center text-xs text-zinc-400">
-            No image
+            Fără imagine
           </div>
         )}
       </div>
@@ -72,7 +72,7 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
             onClick={() => removeItem(item.productId)}
           >
             <Trash2 className="h-4 w-4" />
-            <span className="sr-only">Remove {item.name}</span>
+            <span className="sr-only">Șterge {item.name}</span>
           </Button>
         </div>
 

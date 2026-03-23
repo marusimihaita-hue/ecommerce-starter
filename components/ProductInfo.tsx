@@ -11,6 +11,11 @@ interface ProductInfoProps {
 
 export function ProductInfo({ product }: ProductInfoProps) {
   const imageUrl = product.images?.[0]?.asset?.url;
+  const formatLabel = (value: string) =>
+    value
+      .split("-")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
 
   return (
     <div className="flex flex-col">
@@ -56,35 +61,61 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
       {/* Metadata */}
       <div className="mt-6 space-y-2 border-t border-zinc-200 pt-6 dark:border-zinc-800">
-        {product.material && (
+        {product.volumeMl && (
           <div className="flex justify-between text-sm">
-            <span className="text-zinc-500 dark:text-zinc-400">Material</span>
-            <span className="font-medium capitalize text-zinc-900 dark:text-zinc-100">
-              {product.material}
-            </span>
-          </div>
-        )}
-        {product.color && (
-          <div className="flex justify-between text-sm">
-            <span className="text-zinc-500 dark:text-zinc-400">Color</span>
-            <span className="font-medium capitalize text-zinc-900 dark:text-zinc-100">
-              {product.color}
-            </span>
-          </div>
-        )}
-        {product.dimensions && (
-          <div className="flex justify-between text-sm">
-            <span className="text-zinc-500 dark:text-zinc-400">Dimensions</span>
+            <span className="text-zinc-500 dark:text-zinc-400">Volum</span>
             <span className="font-medium text-zinc-900 dark:text-zinc-100">
-              {product.dimensions}
+              {product.volumeMl} ml
             </span>
           </div>
         )}
-        {product.assemblyRequired !== null && (
+        {product.concentration && (
           <div className="flex justify-between text-sm">
-            <span className="text-zinc-500 dark:text-zinc-400">Assembly</span>
+            <span className="text-zinc-500 dark:text-zinc-400">
+              Concentrație
+            </span>
             <span className="font-medium text-zinc-900 dark:text-zinc-100">
-              {product.assemblyRequired ? "Required" : "Not required"}
+              {formatLabel(product.concentration)}
+            </span>
+          </div>
+        )}
+        {product.scentFamily && (
+          <div className="flex justify-between text-sm">
+            <span className="text-zinc-500 dark:text-zinc-400">
+              Familie olfactivă
+            </span>
+            <span className="font-medium text-zinc-900 dark:text-zinc-100">
+              {formatLabel(product.scentFamily)}
+            </span>
+          </div>
+        )}
+        {product.topNotes && (
+          <div className="flex justify-between text-sm">
+            <span className="text-zinc-500 dark:text-zinc-400">
+              Note de vârf
+            </span>
+            <span className="font-medium text-zinc-900 dark:text-zinc-100">
+              {product.topNotes}
+            </span>
+          </div>
+        )}
+        {product.middleNotes && (
+          <div className="flex justify-between text-sm">
+            <span className="text-zinc-500 dark:text-zinc-400">
+              Note de mijloc
+            </span>
+            <span className="font-medium text-zinc-900 dark:text-zinc-100">
+              {product.middleNotes}
+            </span>
+          </div>
+        )}
+        {product.baseNotes && (
+          <div className="flex justify-between text-sm">
+            <span className="text-zinc-500 dark:text-zinc-400">
+              Note de bază
+            </span>
+            <span className="font-medium text-zinc-900 dark:text-zinc-100">
+              {product.baseNotes}
             </span>
           </div>
         )}

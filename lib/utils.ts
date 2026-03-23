@@ -13,9 +13,9 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function formatPrice(
   amount: number | null | undefined,
-  currency = "£",
+  currency = "RON",
 ): string {
-  return `${currency}${(amount ?? 0).toFixed(2)}`;
+  return `${(amount ?? 0).toFixed()} ${currency}`;
 }
 
 type DateFormatOption = "short" | "long" | "datetime";
@@ -49,7 +49,7 @@ export function formatDate(
 ): string {
   if (!date) return fallback;
   return new Date(date).toLocaleDateString(
-    "en-GB",
+    "ro-RO",
     DATE_FORMAT_OPTIONS[format],
   );
 }

@@ -27,17 +27,17 @@ export function CartSummary({ hasStockIssues = false }: CartSummaryProps) {
         <span>{formatPrice(totalPrice)}</span>
       </div>
       <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-        Shipping calculated at checkout
+        Costul livrării se calculează la finalizare
       </p>
       <div className="mt-4">
         {hasStockIssues ? (
           <Button disabled className="w-full">
-            Resolve stock issues to checkout
+            Rezolvă problemele de stoc pentru a finaliza comanda
           </Button>
         ) : (
           <Button asChild className="w-full">
             <Link href="/checkout" onClick={() => closeCart()}>
-              Checkout
+              Finalizează comanda
             </Link>
           </Button>
         )}
@@ -47,7 +47,7 @@ export function CartSummary({ hasStockIssues = false }: CartSummaryProps) {
           href="/"
           className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
         >
-          Continue Shopping →
+          Continuă cumpărăturile →
         </Link>
       </div>
     </div>

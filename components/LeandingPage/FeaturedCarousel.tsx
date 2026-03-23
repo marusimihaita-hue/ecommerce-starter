@@ -126,7 +126,7 @@ function FeaturedSlide({ product }: FeaturedSlideProps) {
           />
         ) : (
           <div className="flex h-full items-center justify-center bg-zinc-800">
-            <span className="text-zinc-500">No image</span>
+            <span className="text-zinc-500">Fără imagine</span>
           </div>
         )}
 
@@ -167,7 +167,7 @@ function FeaturedSlide({ product }: FeaturedSlideProps) {
             className="bg-white text-zinc-900 hover:bg-zinc-100"
           >
             <Link href={`/products/${product.slug}`}>
-              Shop Now
+              Cumpără acum
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

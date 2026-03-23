@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { PanelLeftClose, PanelLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { PanelLeft, PanelLeftClose } from "lucide-react";
+import { useEffect, useState } from "react";
 import { ProductFilters } from "@/components/LeandingPage/ProductFilters";
 import { ProductGrid } from "@/components/LeandingPage/ProductGrid";
+import { Button } from "@/components/ui/button";
 import type {
   ALL_CATEGORIES_QUERYResult,
   FILTER_PRODUCTS_BY_NAME_QUERYResult,
@@ -14,22 +14,50 @@ interface ProductSectionProps {
   categories: ALL_CATEGORIES_QUERYResult;
   products: FILTER_PRODUCTS_BY_NAME_QUERYResult;
   searchQuery: string;
+  categorySlug: string;
+  scentFamily: string;
+  concentration: string;
+  sort: string;
+  minPrice: number;
+  maxPrice: number;
+  inStock: boolean;
 }
 
 export function ProductSection({
   categories,
   products,
   searchQuery,
+  categorySlug,
+  scentFamily,
+  concentration,
+  sort,
+  minPrice,
+  maxPrice,
+  inStock,
 }: ProductSectionProps) {
-  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  // Show filters by default on desktop, hide on mobile
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setFiltersOpen(true);
+      } else {
+        setFiltersOpen(false);
+      }
+    };
+    handleResize(); // set initial state
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <div className="flex flex-col gap-6">
       {/* Header with results count and filter toggle */}
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          {products.length} {products.length === 1 ? "product" : "products"}{" "}
-          found
+          {products.length} {products.length === 1 ? "produs" : "produse"}{" "}
+          găsite
           {searchQuery && (
             <span>
               {" "}
@@ -49,14 +77,14 @@ export function ProductSection({
           {filtersOpen ? (
             <>
               <PanelLeftClose className="h-4 w-4" />
-              <span className="hidden sm:inline">Hide Filters</span>
-              <span className="sm:hidden">Hide</span>
+              <span className="hidden sm:inline">Ascunde filtrele</span>
+              <span className="sm:hidden">Ascunde</span>
             </>
           ) : (
             <>
               <PanelLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Show Filters</span>
-              <span className="sm:hidden">Filters</span>
+              <span className="hidden sm:inline">Afișează filtrele</span>
+              <span className="sm:hidden">Filtre</span>
             </>
           )}
         </Button>
@@ -70,7 +98,19 @@ export function ProductSection({
             filtersOpen ? "w-full lg:w-72 lg:opacity-100" : "hidden lg:hidden"
           }`}
         >
-          <ProductFilters categories={categories} />
+          <ProductFilters
+            categories={categories}
+            initialFilters={{
+              q: searchQuery,
+              category: categorySlug,
+              scentFamily,
+              concentration,
+              sort,
+              minPrice,
+              maxPrice,
+              inStock,
+            }}
+          />
         </aside>
 
         {/* Product Grid - expands to full width when filters hidden */}

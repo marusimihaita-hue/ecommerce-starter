@@ -1,3 +1,24 @@
+// PAGINATED FILTER QUERIES (safe, nu afectează exporturile existente)
+export const FILTER_PRODUCTS_BY_NAME_PAGINATED = (start: number, end: number) =>
+  `*[${PRODUCT_FILTER_CONDITIONS}] | order(name asc) ${FILTERED_PRODUCT_PROJECTION}[${start}...${end}]`;
+
+export const FILTER_PRODUCTS_BY_PRICE_ASC_PAGINATED = (
+  start: number,
+  end: number,
+) =>
+  `*[${PRODUCT_FILTER_CONDITIONS}] | order(price asc) ${FILTERED_PRODUCT_PROJECTION}[${start}...${end}]`;
+
+export const FILTER_PRODUCTS_BY_PRICE_DESC_PAGINATED = (
+  start: number,
+  end: number,
+) =>
+  `*[${PRODUCT_FILTER_CONDITIONS}] | order(price desc) ${FILTERED_PRODUCT_PROJECTION}[${start}...${end}]`;
+
+export const FILTER_PRODUCTS_BY_RELEVANCE_PAGINATED = (
+  start: number,
+  end: number,
+) =>
+  `*[${PRODUCT_FILTER_CONDITIONS}] | ${RELEVANCE_SCORE} | order(_score desc, name asc) ${FILTERED_PRODUCT_PROJECTION}[${start}...${end}]`;
 import { defineQuery } from "next-sanity";
 import { LOW_STOCK_THRESHOLD } from "../../lib/constants/stock";
 
@@ -9,8 +30,8 @@ import { LOW_STOCK_THRESHOLD } from "../../lib/constants/stock";
 const PRODUCT_FILTER_CONDITIONS = `
   _type == "product"
   && ($categorySlug == "" || category->slug.current == $categorySlug)
-  && ($color == "" || color == $color)
-  && ($material == "" || material == $material)
+  && ($scentFamily == "" || scentFamily == $scentFamily)
+  && ($concentration == "" || concentration == $concentration)
   && ($minPrice == 0 || price >= $minPrice)
   && ($maxPrice == 0 || price <= $maxPrice)
   && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")
@@ -35,8 +56,9 @@ const FILTERED_PRODUCT_PROJECTION = `{
     title,
     "slug": slug.current
   },
-  material,
-  color,
+  volumeMl,
+  concentration,
+  scentFamily,
   stock
 }`;
 
@@ -75,12 +97,14 @@ export const ALL_PRODUCTS_QUERY = defineQuery(`*[
     title,
     "slug": slug.current
   },
-  material,
-  color,
-  dimensions,
+  volumeMl,
+  concentration,
+  scentFamily,
+  topNotes,
+  middleNotes,
+  baseNotes,
   stock,
-  featured,
-  assemblyRequired
+  featured
 }`);
 
 /**
@@ -109,6 +133,9 @@ export const FEATURED_PRODUCTS_QUERY = defineQuery(`*[
     title,
     "slug": slug.current
   },
+  volumeMl,
+  concentration,
+  scentFamily,
   stock
 }`);
 
@@ -135,8 +162,9 @@ export const PRODUCTS_BY_CATEGORY_QUERY = defineQuery(`*[
     title,
     "slug": slug.current
   },
-  material,
-  color,
+  volumeMl,
+  concentration,
+  scentFamily,
   stock
 }`);
 
@@ -166,12 +194,14 @@ export const PRODUCT_BY_SLUG_QUERY = defineQuery(`*[
     title,
     "slug": slug.current
   },
-  material,
-  color,
-  dimensions,
+  volumeMl,
+  concentration,
+  scentFamily,
+  topNotes,
+  middleNotes,
+  baseNotes,
   stock,
-  featured,
-  assemblyRequired
+  featured
 }`);
 
 // ============================================
@@ -211,8 +241,9 @@ export const SEARCH_PRODUCTS_QUERY = defineQuery(`*[
     title,
     "slug": slug.current
   },
-  material,
-  color,
+  volumeMl,
+  concentration,
+  scentFamily,
   stock
 }`);
 
@@ -308,50 +339,36 @@ export const OUT_OF_STOCK_PRODUCTS_QUERY = defineQuery(`*[
     }
   }
 }`);
-
 // ============================================
-// AI Shopping Assistant Query
-// Uses score() + boost() with all filters for AI agent
-// ============================================
+//Pagination
 
-/**
- * Search products for AI shopping assistant
- * Full-featured search with all filters and product details
- */
-export const AI_SEARCH_PRODUCTS_QUERY = defineQuery(`*[
-  _type == "product"
-  && (
-    $searchQuery == ""
-    || name match $searchQuery + "*"
-    || description match $searchQuery + "*"
-    || category->title match $searchQuery + "*"
-  )
-  && ($categorySlug == "" || category->slug.current == $categorySlug)
-  && ($material == "" || material == $material)
-  && ($color == "" || color == $color)
-  && ($minPrice == 0 || price >= $minPrice)
-  && ($maxPrice == 0 || price <= $maxPrice)
-] | order(name asc) [0...20] {
-  _id,
-  name,
-  "slug": slug.current,
-  description,
-  price,
-  "image": images[0]{
-    asset->{
-      _id,
-      url
-    }
-  },
-  category->{
+export const getAllProductsQuery = (page: number, limit: number) => `
+  *[_type == "product"] | order(name asc)[${(page - 1) * limit}...${page * limit}]{
     _id,
-    title,
-    "slug": slug.current
-  },
-  material,
-  color,
-  dimensions,
-  stock,
-  featured,
-  assemblyRequired
-}`);
+    name,
+    description,
+    price,
+    "slug": slug.current,
+    "images": images[]{
+      _key,
+      asset->{
+        _id,
+        url
+      },
+      hotspot
+    },
+    category->{
+      _id,
+      title,
+      "slug": slug.current
+    },
+    volumeMl,
+    concentration,
+    scentFamily,
+    topNotes,
+    middleNotes,
+    baseNotes,
+    stock,
+    featured
+  }
+`;
