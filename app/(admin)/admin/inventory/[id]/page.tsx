@@ -1,19 +1,22 @@
 "use client";
 
-import { Suspense, use } from "react";
-import Link from "next/link";
 import {
-  useDocument,
-  useEditDocument,
-  useDocumentProjection,
   type DocumentHandle,
+  useDocument,
+  useDocumentProjection,
+  useEditDocument,
 } from "@sanity/sdk-react";
 import { ArrowLeft, ExternalLink } from "lucide-react";
+import Link from "next/link";
+import { Suspense, use } from "react";
+import {
+  DeleteButton,
+  ImageUploader,
+  PublishButton,
+  RevertButton,
+} from "@/components/admin";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -21,13 +24,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { CONCENTRATIONS, SCENT_FAMILIES } from "@/lib/constants/filters";
 import {
-  PublishButton,
-  RevertButton,
-  ImageUploader,
-  DeleteButton,
-} from "@/components/admin";
+  CLEANING_DESTINATIONS,
+  DIFFUSER_TYPES,
+  GENDERS,
+  HOME_SUBTYPES,
+  PRODUCT_TYPES,
+} from "@/lib/constants/productOptions";
 
 // Field editor components
 function NameEditor(handle: DocumentHandle) {
@@ -53,6 +60,210 @@ function SlugEditor(handle: DocumentHandle) {
       value={slugValue}
       onChange={(e) => editSlug({ _type: "slug", current: e.target.value })}
       placeholder="product-slug"
+    />
+  );
+}
+
+function BrandEditor(handle: DocumentHandle) {
+  const { data: brand } = useDocument({ ...handle, path: "brand" });
+  const editBrand = useEditDocument({ ...handle, path: "brand" });
+
+  return (
+    <Input
+      value={(brand as string) ?? ""}
+      onChange={(e) => editBrand(e.target.value)}
+      placeholder="Brand name"
+    />
+  );
+}
+
+function ProductTypeEditor(handle: DocumentHandle) {
+  const { data: productType } = useDocument({
+    ...handle,
+    path: "productType",
+  });
+  const editProductType = useEditDocument({
+    ...handle,
+    path: "productType",
+  });
+
+  return (
+    <Select
+      value={(productType as string) ?? "perfume"}
+      onValueChange={(value) => editProductType(value)}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Product type" />
+      </SelectTrigger>
+      <SelectContent>
+        {PRODUCT_TYPES.map((item) => (
+          <SelectItem key={item.value} value={item.value}>
+            {item.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function GenderEditor(handle: DocumentHandle) {
+  const { data: gender } = useDocument({ ...handle, path: "gender" });
+  const editGender = useEditDocument({ ...handle, path: "gender" });
+
+  return (
+    <Select
+      value={(gender as string) ?? ""}
+      onValueChange={(value) => editGender(value)}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Gender" />
+      </SelectTrigger>
+      <SelectContent>
+        {GENDERS.map((item) => (
+          <SelectItem key={item.value} value={item.value}>
+            {item.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function HomeSubtypeEditor(handle: DocumentHandle) {
+  const { data: homeSubtype } = useDocument({
+    ...handle,
+    path: "homeSubtype",
+  });
+  const editHomeSubtype = useEditDocument({
+    ...handle,
+    path: "homeSubtype",
+  });
+
+  return (
+    <Select
+      value={(homeSubtype as string) ?? ""}
+      onValueChange={(value) => editHomeSubtype(value)}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Home subtype" />
+      </SelectTrigger>
+      <SelectContent>
+        {HOME_SUBTYPES.map((item) => (
+          <SelectItem key={item.value} value={item.value}>
+            {item.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function DestinationEditor(handle: DocumentHandle) {
+  const { data: destination } = useDocument({
+    ...handle,
+    path: "destination",
+  });
+  const editDestination = useEditDocument({
+    ...handle,
+    path: "destination",
+  });
+
+  return (
+    <Select
+      value={(destination as string) ?? ""}
+      onValueChange={(value) => editDestination(value)}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Destination" />
+      </SelectTrigger>
+      <SelectContent>
+        {CLEANING_DESTINATIONS.map((item) => (
+          <SelectItem key={item.value} value={item.value}>
+            {item.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function DiffuserTypeEditor(handle: DocumentHandle) {
+  const { data: diffuserType } = useDocument({
+    ...handle,
+    path: "diffuserType",
+  });
+  const editDiffuserType = useEditDocument({
+    ...handle,
+    path: "diffuserType",
+  });
+
+  return (
+    <Select
+      value={(diffuserType as string) ?? ""}
+      onValueChange={(value) => editDiffuserType(value)}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Diffuser type" />
+      </SelectTrigger>
+      <SelectContent>
+        {DIFFUSER_TYPES.map((item) => (
+          <SelectItem key={item.value} value={item.value}>
+            {item.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function HomeScentEditor(handle: DocumentHandle) {
+  const { data: scent } = useDocument({ ...handle, path: "scent" });
+  const editScent = useEditDocument({ ...handle, path: "scent" });
+
+  return (
+    <Input
+      value={(scent as string) ?? ""}
+      onChange={(e) => editScent(e.target.value)}
+      placeholder="Scent description"
+    />
+  );
+}
+
+function PackagingInfoEditor(handle: DocumentHandle) {
+  const { data: packagingInfo } = useDocument({
+    ...handle,
+    path: "packagingInfo",
+  });
+  const editPackagingInfo = useEditDocument({
+    ...handle,
+    path: "packagingInfo",
+  });
+
+  return (
+    <Textarea
+      value={(packagingInfo as string) ?? ""}
+      onChange={(e) => editPackagingInfo(e.target.value)}
+      placeholder="Packaging details..."
+      rows={3}
+    />
+  );
+}
+
+function RecommendedOccasionEditor(handle: DocumentHandle) {
+  const { data: recommendedOccasion } = useDocument({
+    ...handle,
+    path: "recommendedOccasion",
+  });
+  const editRecommendedOccasion = useEditDocument({
+    ...handle,
+    path: "recommendedOccasion",
+  });
+
+  return (
+    <Input
+      value={(recommendedOccasion as string) ?? ""}
+      onChange={(e) => editRecommendedOccasion(e.target.value)}
+      placeholder="e.g. Valentine's, Christmas"
     />
   );
 }
@@ -98,22 +309,22 @@ function StockEditor(handle: DocumentHandle) {
       type="number"
       min="0"
       value={(stock as number) ?? 0}
-      onChange={(e) => editStock(parseInt(e.target.value) || 0)}
+      onChange={(e) => editStock(parseInt(e.target.value, 10) || 0)}
       placeholder="0"
     />
   );
 }
 
 function VolumeEditor(handle: DocumentHandle) {
-  const { data: volumeMl } = useDocument({ ...handle, path: "volumeMl" });
-  const editVolumeMl = useEditDocument({ ...handle, path: "volumeMl" });
+  const { data: volume } = useDocument({ ...handle, path: "volume" });
+  const editVolume = useEditDocument({ ...handle, path: "volume" });
 
   return (
     <Input
       type="number"
       min="0"
-      value={(volumeMl as number) ?? ""}
-      onChange={(e) => editVolumeMl(parseInt(e.target.value) || 0)}
+      value={(volume as number) ?? ""}
+      onChange={(e) => editVolume(parseInt(e.target.value, 10) || 0)}
       placeholder="e.g., 50"
     />
   );
@@ -148,20 +359,23 @@ function ConcentrationEditor(handle: DocumentHandle) {
   );
 }
 
-function ScentFamilyEditor(handle: DocumentHandle) {
-  const { data: scentFamily } = useDocument({ ...handle, path: "scentFamily" });
-  const editScentFamily = useEditDocument({
+function OlfactiveFamilyEditor(handle: DocumentHandle) {
+  const { data: olfactiveFamily } = useDocument({
     ...handle,
-    path: "scentFamily",
+    path: "olfactiveFamily",
+  });
+  const editOlfactiveFamily = useEditDocument({
+    ...handle,
+    path: "olfactiveFamily",
   });
 
   return (
     <Select
-      value={(scentFamily as string) ?? ""}
-      onValueChange={(value) => editScentFamily(value)}
+      value={(olfactiveFamily as string) ?? ""}
+      onValueChange={(value) => editOlfactiveFamily(value)}
     >
       <SelectTrigger>
-        <SelectValue placeholder="Select scent family" />
+        <SelectValue placeholder="Olfactive family" />
       </SelectTrigger>
       <SelectContent>
         {SCENT_FAMILIES.map((item) => (
@@ -219,15 +433,33 @@ function BaseNotesEditor(handle: DocumentHandle) {
   );
 }
 
-function FeaturedEditor(handle: DocumentHandle) {
-  const { data: featured } = useDocument({ ...handle, path: "featured" });
-  const editFeatured = useEditDocument({ ...handle, path: "featured" });
+function MerchBooleanRow({
+  handle,
+  path,
+  title,
+  description,
+}: {
+  handle: DocumentHandle;
+  path: string;
+  title: string;
+  description: string;
+}) {
+  const { data: value } = useDocument({ ...handle, path });
+  const editValue = useEditDocument({ ...handle, path });
 
   return (
-    <Switch
-      checked={(featured as boolean) ?? false}
-      onCheckedChange={(checked: boolean) => editFeatured(checked)}
-    />
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="font-medium text-zinc-900 dark:text-zinc-100">{title}</p>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          {description}
+        </p>
+      </div>
+      <Switch
+        checked={(value as boolean) ?? false}
+        onCheckedChange={(checked: boolean) => editValue(checked)}
+      />
+    </div>
   );
 }
 
@@ -256,6 +488,152 @@ function ProductStoreLink(handle: DocumentHandle) {
       View on store
       <ExternalLink className="h-3.5 w-3.5" />
     </Link>
+  );
+}
+
+function TypeSpecificAttributes({ handle }: { handle: DocumentHandle }) {
+  const { data: productType } = useDocument({
+    ...handle,
+    path: "productType",
+  });
+  const { data: homeSubtype } = useDocument({
+    ...handle,
+    path: "homeSubtype",
+  });
+  const pt = (productType as string) ?? "perfume";
+  const hs = homeSubtype as string | undefined;
+
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <div className="space-y-2 sm:col-span-2">
+        <Label>Product type</Label>
+        <Suspense fallback={<Skeleton className="h-10" />}>
+          <ProductTypeEditor {...handle} />
+        </Suspense>
+      </div>
+
+      {pt === "perfume" && (
+        <>
+          <div className="space-y-2">
+            <Label>Gender</Label>
+            <Suspense fallback={<Skeleton className="h-10" />}>
+              <GenderEditor {...handle} />
+            </Suspense>
+          </div>
+          <div className="space-y-2">
+            <Label>Volume (ml)</Label>
+            <Suspense fallback={<Skeleton className="h-10" />}>
+              <VolumeEditor {...handle} />
+            </Suspense>
+          </div>
+          <div className="space-y-2">
+            <Label>Concentration</Label>
+            <Suspense fallback={<Skeleton className="h-10" />}>
+              <ConcentrationEditor {...handle} />
+            </Suspense>
+          </div>
+          <div className="space-y-2">
+            <Label>Olfactive family</Label>
+            <Suspense fallback={<Skeleton className="h-10" />}>
+              <OlfactiveFamilyEditor {...handle} />
+            </Suspense>
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Top notes</Label>
+            <Suspense fallback={<Skeleton className="h-16" />}>
+              <TopNotesEditor {...handle} />
+            </Suspense>
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Middle notes</Label>
+            <Suspense fallback={<Skeleton className="h-16" />}>
+              <MiddleNotesEditor {...handle} />
+            </Suspense>
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Base notes</Label>
+            <Suspense fallback={<Skeleton className="h-16" />}>
+              <BaseNotesEditor {...handle} />
+            </Suspense>
+          </div>
+        </>
+      )}
+
+      {pt === "home" && (
+        <>
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Home subtype</Label>
+            <Suspense fallback={<Skeleton className="h-10" />}>
+              <HomeSubtypeEditor {...handle} />
+            </Suspense>
+          </div>
+          {hs === "cleaningProducts" && (
+            <>
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Destination</Label>
+                <Suspense fallback={<Skeleton className="h-10" />}>
+                  <DestinationEditor {...handle} />
+                </Suspense>
+              </div>
+              <div className="space-y-2">
+                <Label>Volume (ml)</Label>
+                <Suspense fallback={<Skeleton className="h-10" />}>
+                  <VolumeEditor {...handle} />
+                </Suspense>
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Packaging info</Label>
+                <Suspense fallback={<Skeleton className="h-20" />}>
+                  <PackagingInfoEditor {...handle} />
+                </Suspense>
+              </div>
+            </>
+          )}
+          {hs === "homeFragrance" && (
+            <>
+              <div className="space-y-2">
+                <Label>Diffuser type</Label>
+                <Suspense fallback={<Skeleton className="h-10" />}>
+                  <DiffuserTypeEditor {...handle} />
+                </Suspense>
+              </div>
+              <div className="space-y-2">
+                <Label>Volume (ml)</Label>
+                <Suspense fallback={<Skeleton className="h-10" />}>
+                  <VolumeEditor {...handle} />
+                </Suspense>
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Scent</Label>
+                <Suspense fallback={<Skeleton className="h-10" />}>
+                  <HomeScentEditor {...handle} />
+                </Suspense>
+              </div>
+            </>
+          )}
+        </>
+      )}
+
+      {pt === "gift" && (
+        <>
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Recommended occasion</Label>
+            <Suspense fallback={<Skeleton className="h-10" />}>
+              <RecommendedOccasionEditor {...handle} />
+            </Suspense>
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Packaging info</Label>
+            <Suspense fallback={<Skeleton className="h-20" />}>
+              <PackagingInfoEditor {...handle} />
+            </Suspense>
+          </div>
+          <p className="text-sm text-zinc-500 sm:col-span-2 dark:text-zinc-400">
+            Edit set contents (setContains) in Sanity Studio.
+          </p>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -307,6 +685,12 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
                 </Suspense>
               </div>
               <div className="space-y-2">
+                <Label htmlFor="brand">Brand</Label>
+                <Suspense fallback={<Skeleton className="h-10" />}>
+                  <BrandEditor {...handle} />
+                </Suspense>
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
                 <Suspense fallback={<Skeleton className="h-24" />}>
                   <DescriptionEditor {...handle} />
@@ -336,70 +720,62 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
             </div>
           </div>
 
-          {/* Attributes */}
+          {/* Type-specific attributes */}
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <h2 className="mb-4 font-semibold text-zinc-900 dark:text-zinc-100">
-              Attributes
+              Product type &amp; attributes
             </h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Volume (ml)</Label>
-                <Suspense fallback={<Skeleton className="h-10" />}>
-                  <VolumeEditor {...handle} />
-                </Suspense>
-              </div>
-              <div className="space-y-2">
-                <Label>Concentration</Label>
-                <Suspense fallback={<Skeleton className="h-10" />}>
-                  <ConcentrationEditor {...handle} />
-                </Suspense>
-              </div>
-              <div className="space-y-2">
-                <Label>Scent Family</Label>
-                <Suspense fallback={<Skeleton className="h-10" />}>
-                  <ScentFamilyEditor {...handle} />
-                </Suspense>
-              </div>
-              <div className="space-y-2 sm:col-span-2">
-                <Label>Top Notes</Label>
-                <Suspense fallback={<Skeleton className="h-16" />}>
-                  <TopNotesEditor {...handle} />
-                </Suspense>
-              </div>
-              <div className="space-y-2 sm:col-span-2">
-                <Label>Middle Notes</Label>
-                <Suspense fallback={<Skeleton className="h-16" />}>
-                  <MiddleNotesEditor {...handle} />
-                </Suspense>
-              </div>
-              <div className="space-y-2 sm:col-span-2">
-                <Label>Base Notes</Label>
-                <Suspense fallback={<Skeleton className="h-16" />}>
-                  <BaseNotesEditor {...handle} />
-                </Suspense>
-              </div>
-            </div>
+            <Suspense fallback={<Skeleton className="h-64 rounded-lg" />}>
+              <TypeSpecificAttributes handle={handle} />
+            </Suspense>
           </div>
 
-          {/* Options */}
+          {/* Merchandising flags */}
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <h2 className="mb-4 font-semibold text-zinc-900 dark:text-zinc-100">
-              Options
+              Merchandising
             </h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                    Featured Product
-                  </p>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                    Show on homepage and promotions
-                  </p>
-                </div>
-                <Suspense fallback={<Skeleton className="h-6 w-11" />}>
-                  <FeaturedEditor {...handle} />
-                </Suspense>
-              </div>
+            <div className="space-y-6">
+              <Suspense fallback={<Skeleton className="h-14" />}>
+                <MerchBooleanRow
+                  handle={handle}
+                  path="featuredOnHome"
+                  title="Featured on home"
+                  description="Show in homepage carousel"
+                />
+              </Suspense>
+              <Suspense fallback={<Skeleton className="h-14" />}>
+                <MerchBooleanRow
+                  handle={handle}
+                  path="onSale"
+                  title="On sale"
+                  description="Mark as discounted / on sale"
+                />
+              </Suspense>
+              <Suspense fallback={<Skeleton className="h-14" />}>
+                <MerchBooleanRow
+                  handle={handle}
+                  path="popular"
+                  title="Popular"
+                  description="Highlight as popular"
+                />
+              </Suspense>
+              <Suspense fallback={<Skeleton className="h-14" />}>
+                <MerchBooleanRow
+                  handle={handle}
+                  path="newArrival"
+                  title="New arrival"
+                  description="Highlight as new"
+                />
+              </Suspense>
+              <Suspense fallback={<Skeleton className="h-14" />}>
+                <MerchBooleanRow
+                  handle={handle}
+                  path="gift"
+                  title="Gift highlight"
+                  description="Promote as a gift idea"
+                />
+              </Suspense>
             </div>
           </div>
         </div>

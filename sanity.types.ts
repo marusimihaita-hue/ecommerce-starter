@@ -13,6 +13,15 @@
  */
 
 // Source: schema.json
+export type PaginationView = {
+  _id: string;
+  _type: "paginationView";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  postViewNumberPerPage?: number;
+};
+
 export type Order = {
   _id: string;
   _type: "order";
@@ -61,6 +70,7 @@ export type Product = {
   _rev: string;
   name?: string;
   slug?: Slug;
+  brand?: string;
   price?: number;
   description?: string;
   category?: {
@@ -69,12 +79,21 @@ export type Product = {
     _weak?: boolean;
     [internalGroqTypeReferenceTo]?: "category";
   };
-  volumeMl?: number;
+  productType?: "perfume" | "home" | "gift";
+  gender?: "women" | "men" | "unisex";
+  volume?: number;
   concentration?: "eau-de-cologne" | "eau-de-toilette" | "eau-de-parfum" | "parfum" | "elixir";
-  scentFamily?: "floral" | "woody" | "oriental" | "fresh" | "citrus" | "amber" | "aromatic";
+  olfactiveFamily?: "floral" | "woody" | "oriental" | "fresh" | "citrus" | "amber" | "aromatic";
   topNotes?: string;
   middleNotes?: string;
   baseNotes?: string;
+  homeSubtype?: "cleaningProducts" | "homeFragrance";
+  destination?: "bathroom" | "kitchen" | "livingRoom" | "windows" | "universal" | "laundry" | "floors" | "furniture";
+  packagingInfo?: string;
+  diffuserType?: "spray" | "reedDiffuser" | "candle";
+  scent?: string;
+  setContains?: Array<string>;
+  recommendedOccasion?: string;
   images?: Array<{
     asset?: {
       _ref: string;
@@ -89,7 +108,11 @@ export type Product = {
     _key: string;
   }>;
   stock?: number;
-  featured?: boolean;
+  featuredOnHome?: boolean;
+  onSale?: boolean;
+  popular?: boolean;
+  newArrival?: boolean;
+  gift?: boolean;
 };
 
 export type SanityImageCrop = {
@@ -133,8 +156,7 @@ export type Category = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title?: string;
-  slug?: Slug;
+  kind?: "perfume" | "home" | "gift";
   image?: {
     asset?: {
       _ref: string;
@@ -245,15 +267,16 @@ export type Geopoint = {
   alt?: number;
 };
 
-export type AllSanitySchemaTypes = Order | Product | SanityImageCrop | SanityImageHotspot | Slug | Customer | Category | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageMetadata | SanityFileAsset | SanityAssetSourceData | SanityImageAsset | Geopoint;
+export type AllSanitySchemaTypes = PaginationView | Order | Product | SanityImageCrop | SanityImageHotspot | Slug | Customer | Category | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageMetadata | SanityFileAsset | SanityAssetSourceData | SanityImageAsset | Geopoint;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./sanity/queries/categories.ts
 // Variable: ALL_CATEGORIES_QUERY
-// Query: *[  _type == "category"] | order(title asc) {  _id,  title,  "slug": slug.current,  "image": image{    asset->{      _id,      url    },    hotspot  }}
+// Query: *[  _type == "category"] | order(kind asc) {  _id,  kind,    "slug": kind,  "title": select(    kind == "perfume" => "Parfum",    kind == "home" => "Casă",    kind == "gift" => "Cadou",    "Categorie"  ),  "image": image{    asset->{      _id,      url    },    hotspot  }}
 export type ALL_CATEGORIES_QUERYResult = Array<{
   _id: string;
-  title: string | null;
-  slug: string | null;
+  kind: "gift" | "home" | "perfume" | null;
+  slug: "gift" | "home" | "perfume" | null;
+  title: "Cadou" | "Cas\u0103" | "Categorie" | "Parfum";
   image: {
     asset: {
       _id: string;
@@ -263,11 +286,12 @@ export type ALL_CATEGORIES_QUERYResult = Array<{
   } | null;
 }>;
 // Variable: CATEGORY_BY_SLUG_QUERY
-// Query: *[  _type == "category"  && slug.current == $slug][0] {  _id,  title,  "slug": slug.current,  "image": image{    asset->{      _id,      url    },    hotspot  }}
+// Query: *[  _type == "category"  && kind == $slug][0] {  _id,  kind,    "slug": kind,  "title": select(    kind == "perfume" => "Parfum",    kind == "home" => "Casă",    kind == "gift" => "Cadou",    "Categorie"  ),  "image": image{    asset->{      _id,      url    },    hotspot  }}
 export type CATEGORY_BY_SLUG_QUERYResult = {
   _id: string;
-  title: string | null;
-  slug: string | null;
+  kind: "gift" | "home" | "perfume" | null;
+  slug: "gift" | "home" | "perfume" | null;
+  title: "Cadou" | "Cas\u0103" | "Categorie" | "Parfum";
   image: {
     asset: {
       _id: string;
@@ -365,12 +389,117 @@ export type ORDER_BY_STRIPE_PAYMENT_ID_QUERYResult = {
 } | null;
 
 // Source: ./sanity/queries/products.ts
+// Variable: PRODUCTS_ON_SALE_HOME_QUERY
+// Query: *[  _type == "product"  && onSale == true  && stock > 0] | order(name asc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    kind,    "slug": kind,    "title": select(      kind == "perfume" => "Parfum",      kind == "home" => "Casă",      kind == "gift" => "Cadou",      "Categorie"    )  },  productType,  volume,  concentration,  olfactiveFamily,  stock}
+export type PRODUCTS_ON_SALE_HOME_QUERYResult = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  price: number | null;
+  images: Array<{
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+  }> | null;
+  category: {
+    _id: string;
+    kind: "gift" | "home" | "perfume" | null;
+    slug: "gift" | "home" | "perfume" | null;
+    title: "Cadou" | "Cas\u0103" | "Categorie" | "Parfum";
+  } | null;
+  productType: "gift" | "home" | "perfume" | null;
+  volume: number | null;
+  concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  stock: number | null;
+}>;
+// Variable: PRODUCTS_POPULAR_HOME_QUERY
+// Query: *[  _type == "product"  && popular == true  && stock > 0] | order(name asc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    kind,    "slug": kind,    "title": select(      kind == "perfume" => "Parfum",      kind == "home" => "Casă",      kind == "gift" => "Cadou",      "Categorie"    )  },  productType,  volume,  concentration,  olfactiveFamily,  stock}
+export type PRODUCTS_POPULAR_HOME_QUERYResult = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  price: number | null;
+  images: Array<{
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+  }> | null;
+  category: {
+    _id: string;
+    kind: "gift" | "home" | "perfume" | null;
+    slug: "gift" | "home" | "perfume" | null;
+    title: "Cadou" | "Cas\u0103" | "Categorie" | "Parfum";
+  } | null;
+  productType: "gift" | "home" | "perfume" | null;
+  volume: number | null;
+  concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  stock: number | null;
+}>;
+// Variable: PRODUCTS_NEW_ARRIVAL_HOME_QUERY
+// Query: *[  _type == "product"  && newArrival == true  && stock > 0] | order(name asc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    kind,    "slug": kind,    "title": select(      kind == "perfume" => "Parfum",      kind == "home" => "Casă",      kind == "gift" => "Cadou",      "Categorie"    )  },  productType,  volume,  concentration,  olfactiveFamily,  stock}
+export type PRODUCTS_NEW_ARRIVAL_HOME_QUERYResult = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  price: number | null;
+  images: Array<{
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+  }> | null;
+  category: {
+    _id: string;
+    kind: "gift" | "home" | "perfume" | null;
+    slug: "gift" | "home" | "perfume" | null;
+    title: "Cadou" | "Cas\u0103" | "Categorie" | "Parfum";
+  } | null;
+  productType: "gift" | "home" | "perfume" | null;
+  volume: number | null;
+  concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  stock: number | null;
+}>;
+// Variable: PRODUCTS_GIFT_SETS_HOME_QUERY
+// Query: *[  _type == "product"  && (productType == "gift" || gift == true)  && stock > 0] | order(name asc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    kind,    "slug": kind,    "title": select(      kind == "perfume" => "Parfum",      kind == "home" => "Casă",      kind == "gift" => "Cadou",      "Categorie"    )  },  productType,  volume,  concentration,  olfactiveFamily,  stock}
+export type PRODUCTS_GIFT_SETS_HOME_QUERYResult = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  price: number | null;
+  images: Array<{
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+  }> | null;
+  category: {
+    _id: string;
+    kind: "gift" | "home" | "perfume" | null;
+    slug: "gift" | "home" | "perfume" | null;
+    title: "Cadou" | "Cas\u0103" | "Categorie" | "Parfum";
+  } | null;
+  productType: "gift" | "home" | "perfume" | null;
+  volume: number | null;
+  concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  stock: number | null;
+}>;
 // Variable: ALL_PRODUCTS_QUERY
-// Query: *[  _type == "product"] | order(name asc) {  _id,  name,  "slug": slug.current,  description,  price,  "images": images[]{    _key,    asset->{      _id,      url    },    hotspot  },  category->{    _id,    title,    "slug": slug.current  },  volumeMl,  concentration,  scentFamily,  topNotes,  middleNotes,  baseNotes,  stock,  featured}
+// Query: *[  _type == "product"] | order(name asc) {  _id,  name,  "slug": slug.current,  brand,  description,  price,  "images": images[]{    _key,    asset->{      _id,      url    },    hotspot  },  category->{    _id,    kind,    "slug": kind,    "title": select(      kind == "perfume" => "Parfum",      kind == "home" => "Casă",      kind == "gift" => "Cadou",      "Categorie"    )  },  productType,  gender,  volume,  concentration,  olfactiveFamily,  topNotes,  middleNotes,  baseNotes,  homeSubtype,  destination,  packagingInfo,  diffuserType,  scent,  setContains,  recommendedOccasion,  stock,  featuredOnHome,  onSale,  popular,  newArrival,  gift}
 export type ALL_PRODUCTS_QUERYResult = Array<{
   _id: string;
   name: string | null;
   slug: string | null;
+  brand: string | null;
   description: string | null;
   price: number | null;
   images: Array<{
@@ -383,20 +512,34 @@ export type ALL_PRODUCTS_QUERYResult = Array<{
   }> | null;
   category: {
     _id: string;
-    title: string | null;
-    slug: string | null;
+    kind: "gift" | "home" | "perfume" | null;
+    slug: "gift" | "home" | "perfume" | null;
+    title: "Cadou" | "Cas\u0103" | "Categorie" | "Parfum";
   } | null;
-  volumeMl: number | null;
+  productType: "gift" | "home" | "perfume" | null;
+  gender: "men" | "unisex" | "women" | null;
+  volume: number | null;
   concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
-  scentFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
   topNotes: string | null;
   middleNotes: string | null;
   baseNotes: string | null;
+  homeSubtype: "cleaningProducts" | "homeFragrance" | null;
+  destination: "bathroom" | "floors" | "furniture" | "kitchen" | "laundry" | "livingRoom" | "universal" | "windows" | null;
+  packagingInfo: string | null;
+  diffuserType: "candle" | "reedDiffuser" | "spray" | null;
+  scent: string | null;
+  setContains: Array<string> | null;
+  recommendedOccasion: string | null;
   stock: number | null;
-  featured: boolean | null;
+  featuredOnHome: boolean | null;
+  onSale: boolean | null;
+  popular: boolean | null;
+  newArrival: boolean | null;
+  gift: boolean | null;
 }>;
 // Variable: FEATURED_PRODUCTS_QUERY
-// Query: *[  _type == "product"  && featured == true  && stock > 0] | order(name asc) [0...6] {  _id,  name,  "slug": slug.current,  description,  price,  "images": images[]{    _key,    asset->{      _id,      url    },    hotspot  },  category->{    _id,    title,    "slug": slug.current  },  volumeMl,  concentration,  scentFamily,  stock}
+// Query: *[  _type == "product"  && featuredOnHome == true  && stock > 0] | order(name asc) [0...6] {  _id,  name,  "slug": slug.current,  description,  price,  "images": images[]{    _key,    asset->{      _id,      url    },    hotspot  },  category->{    _id,    kind,    "slug": kind,    "title": select(      kind == "perfume" => "Parfum",      kind == "home" => "Casă",      kind == "gift" => "Cadou",      "Categorie"    )  },  productType,  volume,  concentration,  olfactiveFamily,  stock}
 export type FEATURED_PRODUCTS_QUERYResult = Array<{
   _id: string;
   name: string | null;
@@ -413,16 +556,18 @@ export type FEATURED_PRODUCTS_QUERYResult = Array<{
   }> | null;
   category: {
     _id: string;
-    title: string | null;
-    slug: string | null;
+    kind: "gift" | "home" | "perfume" | null;
+    slug: "gift" | "home" | "perfume" | null;
+    title: "Cadou" | "Cas\u0103" | "Categorie" | "Parfum";
   } | null;
-  volumeMl: number | null;
+  productType: "gift" | "home" | "perfume" | null;
+  volume: number | null;
   concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
-  scentFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
   stock: number | null;
 }>;
 // Variable: PRODUCTS_BY_CATEGORY_QUERY
-// Query: *[  _type == "product"  && category->slug.current == $categorySlug] | order(name asc) {  _id,  name,  "slug": slug.current,  price,  "image": images[0]{    asset->{      _id,      url    },    hotspot  },  category->{    _id,    title,    "slug": slug.current  },  volumeMl,  concentration,  scentFamily,  stock}
+// Query: *[  _type == "product"  && category->kind == $categorySlug] | order(name asc) {  _id,  name,  "slug": slug.current,  price,  "image": images[0]{    asset->{      _id,      url    },    hotspot  },  category->{    _id,    kind,    "slug": kind,    "title": select(      kind == "perfume" => "Parfum",      kind == "home" => "Casă",      kind == "gift" => "Cadou",      "Categorie"    )  },  productType,  volume,  concentration,  olfactiveFamily,  stock}
 export type PRODUCTS_BY_CATEGORY_QUERYResult = Array<{
   _id: string;
   name: string | null;
@@ -437,20 +582,23 @@ export type PRODUCTS_BY_CATEGORY_QUERYResult = Array<{
   } | null;
   category: {
     _id: string;
-    title: string | null;
-    slug: string | null;
+    kind: "gift" | "home" | "perfume" | null;
+    slug: "gift" | "home" | "perfume" | null;
+    title: "Cadou" | "Cas\u0103" | "Categorie" | "Parfum";
   } | null;
-  volumeMl: number | null;
+  productType: "gift" | "home" | "perfume" | null;
+  volume: number | null;
   concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
-  scentFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
   stock: number | null;
 }>;
 // Variable: PRODUCT_BY_SLUG_QUERY
-// Query: *[  _type == "product"  && slug.current == $slug][0] {  _id,  name,  "slug": slug.current,  description,  price,  "images": images[]{    _key,    asset->{      _id,      url    },    hotspot  },  category->{    _id,    title,    "slug": slug.current  },  volumeMl,  concentration,  scentFamily,  topNotes,  middleNotes,  baseNotes,  stock,  featured}
+// Query: *[  _type == "product"  && slug.current == $slug][0] {  _id,  name,  "slug": slug.current,  brand,  description,  price,  "images": images[]{    _key,    asset->{      _id,      url    },    hotspot  },  category->{    _id,    kind,    "slug": kind,    "title": select(      kind == "perfume" => "Parfum",      kind == "home" => "Casă",      kind == "gift" => "Cadou",      "Categorie"    )  },  productType,  gender,  volume,  concentration,  olfactiveFamily,  topNotes,  middleNotes,  baseNotes,  homeSubtype,  destination,  packagingInfo,  diffuserType,  scent,  setContains,  recommendedOccasion,  stock,  featuredOnHome,  onSale,  popular,  newArrival,  gift}
 export type PRODUCT_BY_SLUG_QUERYResult = {
   _id: string;
   name: string | null;
   slug: string | null;
+  brand: string | null;
   description: string | null;
   price: number | null;
   images: Array<{
@@ -463,20 +611,34 @@ export type PRODUCT_BY_SLUG_QUERYResult = {
   }> | null;
   category: {
     _id: string;
-    title: string | null;
-    slug: string | null;
+    kind: "gift" | "home" | "perfume" | null;
+    slug: "gift" | "home" | "perfume" | null;
+    title: "Cadou" | "Cas\u0103" | "Categorie" | "Parfum";
   } | null;
-  volumeMl: number | null;
+  productType: "gift" | "home" | "perfume" | null;
+  gender: "men" | "unisex" | "women" | null;
+  volume: number | null;
   concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
-  scentFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
   topNotes: string | null;
   middleNotes: string | null;
   baseNotes: string | null;
+  homeSubtype: "cleaningProducts" | "homeFragrance" | null;
+  destination: "bathroom" | "floors" | "furniture" | "kitchen" | "laundry" | "livingRoom" | "universal" | "windows" | null;
+  packagingInfo: string | null;
+  diffuserType: "candle" | "reedDiffuser" | "spray" | null;
+  scent: string | null;
+  setContains: Array<string> | null;
+  recommendedOccasion: string | null;
   stock: number | null;
-  featured: boolean | null;
+  featuredOnHome: boolean | null;
+  onSale: boolean | null;
+  popular: boolean | null;
+  newArrival: boolean | null;
+  gift: boolean | null;
 } | null;
 // Variable: SEARCH_PRODUCTS_QUERY
-// Query: *[  _type == "product"  && (    name match $searchQuery + "*"    || description match $searchQuery + "*"  )] | score(  boost(name match $searchQuery + "*", 3),  boost(description match $searchQuery + "*", 1)) | order(_score desc) {  _id,  _score,  name,  "slug": slug.current,  price,  "image": images[0]{    asset->{      _id,      url    },    hotspot  },  category->{    _id,    title,    "slug": slug.current  },  volumeMl,  concentration,  scentFamily,  stock}
+// Query: *[  _type == "product"  && (    name match $searchQuery + "*"    || description match $searchQuery + "*"  )] | score(  boost(name match $searchQuery + "*", 3),  boost(description match $searchQuery + "*", 1)) | order(_score desc) {  _id,  _score,  name,  "slug": slug.current,  price,  "image": images[0]{    asset->{      _id,      url    },    hotspot  },  category->{    _id,    kind,    "slug": kind,    "title": select(      kind == "perfume" => "Parfum",      kind == "home" => "Casă",      kind == "gift" => "Cadou",      "Categorie"    )  },  productType,  volume,  concentration,  olfactiveFamily,  stock}
 export type SEARCH_PRODUCTS_QUERYResult = Array<{
   _id: string;
   _score: null;
@@ -492,16 +654,18 @@ export type SEARCH_PRODUCTS_QUERYResult = Array<{
   } | null;
   category: {
     _id: string;
-    title: string | null;
-    slug: string | null;
+    kind: "gift" | "home" | "perfume" | null;
+    slug: "gift" | "home" | "perfume" | null;
+    title: "Cadou" | "Cas\u0103" | "Categorie" | "Parfum";
   } | null;
-  volumeMl: number | null;
+  productType: "gift" | "home" | "perfume" | null;
+  volume: number | null;
   concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
-  scentFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
   stock: number | null;
 }>;
 // Variable: FILTER_PRODUCTS_BY_NAME_QUERY
-// Query: *[  _type == "product"  && ($categorySlug == "" || category->slug.current == $categorySlug)  && ($scentFamily == "" || scentFamily == $scentFamily)  && ($concentration == "" || concentration == $concentration)  && ($minPrice == 0 || price >= $minPrice)  && ($maxPrice == 0 || price <= $maxPrice)  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")  && ($inStock == false || stock > 0)] | order(name asc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    title,    "slug": slug.current  },  volumeMl,  concentration,  scentFamily,  stock}
+// Query: *[  _type == "product"  && ($categorySlug == "" || category->kind == $categorySlug)  && ($olfactiveFamily == "" || (productType == "perfume" && olfactiveFamily == $olfactiveFamily))  && ($concentration == "" || (productType == "perfume" && concentration == $concentration))  && ($minPrice == 0 || price >= $minPrice)  && ($maxPrice == 0 || price <= $maxPrice)  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")  && ($inStock == false || stock > 0)  && ($gender == "" || (productType == "perfume" && gender == $gender))  && ($homeSubtype == "" || (productType == "home" && homeSubtype == $homeSubtype))  && ($volume == 0 || volume == $volume)  && ($destination == "" || (productType == "home" && homeSubtype == "cleaningProducts" && destination == $destination))  && ($diffuserType == "" || (productType == "home" && homeSubtype == "homeFragrance" && diffuserType == $diffuserType))] | order(name asc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    kind,    "slug": kind,    "title": select(      kind == "perfume" => "Parfum",      kind == "home" => "Casă",      kind == "gift" => "Cadou",      "Categorie"    )  },  productType,  volume,  concentration,  olfactiveFamily,  stock}
 export type FILTER_PRODUCTS_BY_NAME_QUERYResult = Array<{
   _id: string;
   name: string | null;
@@ -516,16 +680,18 @@ export type FILTER_PRODUCTS_BY_NAME_QUERYResult = Array<{
   }> | null;
   category: {
     _id: string;
-    title: string | null;
-    slug: string | null;
+    kind: "gift" | "home" | "perfume" | null;
+    slug: "gift" | "home" | "perfume" | null;
+    title: "Cadou" | "Cas\u0103" | "Categorie" | "Parfum";
   } | null;
-  volumeMl: number | null;
+  productType: "gift" | "home" | "perfume" | null;
+  volume: number | null;
   concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
-  scentFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
   stock: number | null;
 }>;
 // Variable: FILTER_PRODUCTS_BY_PRICE_ASC_QUERY
-// Query: *[  _type == "product"  && ($categorySlug == "" || category->slug.current == $categorySlug)  && ($scentFamily == "" || scentFamily == $scentFamily)  && ($concentration == "" || concentration == $concentration)  && ($minPrice == 0 || price >= $minPrice)  && ($maxPrice == 0 || price <= $maxPrice)  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")  && ($inStock == false || stock > 0)] | order(price asc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    title,    "slug": slug.current  },  volumeMl,  concentration,  scentFamily,  stock}
+// Query: *[  _type == "product"  && ($categorySlug == "" || category->kind == $categorySlug)  && ($olfactiveFamily == "" || (productType == "perfume" && olfactiveFamily == $olfactiveFamily))  && ($concentration == "" || (productType == "perfume" && concentration == $concentration))  && ($minPrice == 0 || price >= $minPrice)  && ($maxPrice == 0 || price <= $maxPrice)  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")  && ($inStock == false || stock > 0)  && ($gender == "" || (productType == "perfume" && gender == $gender))  && ($homeSubtype == "" || (productType == "home" && homeSubtype == $homeSubtype))  && ($volume == 0 || volume == $volume)  && ($destination == "" || (productType == "home" && homeSubtype == "cleaningProducts" && destination == $destination))  && ($diffuserType == "" || (productType == "home" && homeSubtype == "homeFragrance" && diffuserType == $diffuserType))] | order(price asc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    kind,    "slug": kind,    "title": select(      kind == "perfume" => "Parfum",      kind == "home" => "Casă",      kind == "gift" => "Cadou",      "Categorie"    )  },  productType,  volume,  concentration,  olfactiveFamily,  stock}
 export type FILTER_PRODUCTS_BY_PRICE_ASC_QUERYResult = Array<{
   _id: string;
   name: string | null;
@@ -540,16 +706,18 @@ export type FILTER_PRODUCTS_BY_PRICE_ASC_QUERYResult = Array<{
   }> | null;
   category: {
     _id: string;
-    title: string | null;
-    slug: string | null;
+    kind: "gift" | "home" | "perfume" | null;
+    slug: "gift" | "home" | "perfume" | null;
+    title: "Cadou" | "Cas\u0103" | "Categorie" | "Parfum";
   } | null;
-  volumeMl: number | null;
+  productType: "gift" | "home" | "perfume" | null;
+  volume: number | null;
   concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
-  scentFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
   stock: number | null;
 }>;
 // Variable: FILTER_PRODUCTS_BY_PRICE_DESC_QUERY
-// Query: *[  _type == "product"  && ($categorySlug == "" || category->slug.current == $categorySlug)  && ($scentFamily == "" || scentFamily == $scentFamily)  && ($concentration == "" || concentration == $concentration)  && ($minPrice == 0 || price >= $minPrice)  && ($maxPrice == 0 || price <= $maxPrice)  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")  && ($inStock == false || stock > 0)] | order(price desc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    title,    "slug": slug.current  },  volumeMl,  concentration,  scentFamily,  stock}
+// Query: *[  _type == "product"  && ($categorySlug == "" || category->kind == $categorySlug)  && ($olfactiveFamily == "" || (productType == "perfume" && olfactiveFamily == $olfactiveFamily))  && ($concentration == "" || (productType == "perfume" && concentration == $concentration))  && ($minPrice == 0 || price >= $minPrice)  && ($maxPrice == 0 || price <= $maxPrice)  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")  && ($inStock == false || stock > 0)  && ($gender == "" || (productType == "perfume" && gender == $gender))  && ($homeSubtype == "" || (productType == "home" && homeSubtype == $homeSubtype))  && ($volume == 0 || volume == $volume)  && ($destination == "" || (productType == "home" && homeSubtype == "cleaningProducts" && destination == $destination))  && ($diffuserType == "" || (productType == "home" && homeSubtype == "homeFragrance" && diffuserType == $diffuserType))] | order(price desc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    kind,    "slug": kind,    "title": select(      kind == "perfume" => "Parfum",      kind == "home" => "Casă",      kind == "gift" => "Cadou",      "Categorie"    )  },  productType,  volume,  concentration,  olfactiveFamily,  stock}
 export type FILTER_PRODUCTS_BY_PRICE_DESC_QUERYResult = Array<{
   _id: string;
   name: string | null;
@@ -564,16 +732,18 @@ export type FILTER_PRODUCTS_BY_PRICE_DESC_QUERYResult = Array<{
   }> | null;
   category: {
     _id: string;
-    title: string | null;
-    slug: string | null;
+    kind: "gift" | "home" | "perfume" | null;
+    slug: "gift" | "home" | "perfume" | null;
+    title: "Cadou" | "Cas\u0103" | "Categorie" | "Parfum";
   } | null;
-  volumeMl: number | null;
+  productType: "gift" | "home" | "perfume" | null;
+  volume: number | null;
   concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
-  scentFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
   stock: number | null;
 }>;
 // Variable: FILTER_PRODUCTS_BY_RELEVANCE_QUERY
-// Query: *[  _type == "product"  && ($categorySlug == "" || category->slug.current == $categorySlug)  && ($scentFamily == "" || scentFamily == $scentFamily)  && ($concentration == "" || concentration == $concentration)  && ($minPrice == 0 || price >= $minPrice)  && ($maxPrice == 0 || price <= $maxPrice)  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")  && ($inStock == false || stock > 0)] | score(  boost(name match $searchQuery + "*", 3),  boost(description match $searchQuery + "*", 1)) | order(_score desc, name asc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    title,    "slug": slug.current  },  volumeMl,  concentration,  scentFamily,  stock}
+// Query: *[  _type == "product"  && ($categorySlug == "" || category->kind == $categorySlug)  && ($olfactiveFamily == "" || (productType == "perfume" && olfactiveFamily == $olfactiveFamily))  && ($concentration == "" || (productType == "perfume" && concentration == $concentration))  && ($minPrice == 0 || price >= $minPrice)  && ($maxPrice == 0 || price <= $maxPrice)  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")  && ($inStock == false || stock > 0)  && ($gender == "" || (productType == "perfume" && gender == $gender))  && ($homeSubtype == "" || (productType == "home" && homeSubtype == $homeSubtype))  && ($volume == 0 || volume == $volume)  && ($destination == "" || (productType == "home" && homeSubtype == "cleaningProducts" && destination == $destination))  && ($diffuserType == "" || (productType == "home" && homeSubtype == "homeFragrance" && diffuserType == $diffuserType))] | score(  boost(name match $searchQuery + "*", 3),  boost(description match $searchQuery + "*", 1)) | order(_score desc, name asc) {  _id,  name,  "slug": slug.current,  price,  "images": images[0...4]{    _key,    asset->{      _id,      url    }  },  category->{    _id,    kind,    "slug": kind,    "title": select(      kind == "perfume" => "Parfum",      kind == "home" => "Casă",      kind == "gift" => "Cadou",      "Categorie"    )  },  productType,  volume,  concentration,  olfactiveFamily,  stock}
 export type FILTER_PRODUCTS_BY_RELEVANCE_QUERYResult = Array<{
   _id: string;
   name: string | null;
@@ -588,14 +758,19 @@ export type FILTER_PRODUCTS_BY_RELEVANCE_QUERYResult = Array<{
   }> | null;
   category: {
     _id: string;
-    title: string | null;
-    slug: string | null;
+    kind: "gift" | "home" | "perfume" | null;
+    slug: "gift" | "home" | "perfume" | null;
+    title: "Cadou" | "Cas\u0103" | "Categorie" | "Parfum";
   } | null;
-  volumeMl: number | null;
+  productType: "gift" | "home" | "perfume" | null;
+  volume: number | null;
   concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
-  scentFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
   stock: number | null;
 }>;
+// Variable: FILTERED_PRODUCTS_COUNT_QUERY
+// Query: count(*[  _type == "product"  && ($categorySlug == "" || category->kind == $categorySlug)  && ($olfactiveFamily == "" || (productType == "perfume" && olfactiveFamily == $olfactiveFamily))  && ($concentration == "" || (productType == "perfume" && concentration == $concentration))  && ($minPrice == 0 || price >= $minPrice)  && ($maxPrice == 0 || price <= $maxPrice)  && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")  && ($inStock == false || stock > 0)  && ($gender == "" || (productType == "perfume" && gender == $gender))  && ($homeSubtype == "" || (productType == "home" && homeSubtype == $homeSubtype))  && ($volume == 0 || volume == $volume)  && ($destination == "" || (productType == "home" && homeSubtype == "cleaningProducts" && destination == $destination))  && ($diffuserType == "" || (productType == "home" && homeSubtype == "homeFragrance" && diffuserType == $diffuserType))])
+export type FILTERED_PRODUCTS_COUNT_QUERYResult = number;
 // Variable: PRODUCTS_BY_IDS_QUERY
 // Query: *[  _type == "product"  && _id in $ids] {  _id,  name,  "slug": slug.current,  price,  "image": images[0]{    asset->{      _id,      url    },    hotspot  },  stock}
 export type PRODUCTS_BY_IDS_QUERYResult = Array<{
@@ -638,6 +813,69 @@ export type OUT_OF_STOCK_PRODUCTS_QUERYResult = Array<{
       url: string | null;
     } | null;
   } | null;
+}>;
+// Variable: HOME_OFFER_PRODUCTS_QUERY
+// Query: *[  _type == "product"  && onSale == true  && stock > 0] | order(name asc)[0...4] {  _id,  name,  "slug": slug.current,  price,  "images": images[0...2]{    _key,    asset->{      _id,      url    }  },  brand,  productType,  volume,  concentration,  olfactiveFamily,  stock}
+export type HOME_OFFER_PRODUCTS_QUERYResult = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  price: number | null;
+  images: Array<{
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+  }> | null;
+  brand: string | null;
+  productType: "gift" | "home" | "perfume" | null;
+  volume: number | null;
+  concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  stock: number | null;
+}>;
+// Variable: HOME_POPULAR_PRODUCTS_QUERY
+// Query: *[  _type == "product"  && popular == true  && stock > 0] | order(name asc)[0...4] {  _id,  name,  "slug": slug.current,  price,  "images": images[0...2]{    _key,    asset->{      _id,      url    }  },  brand,  productType,  volume,  concentration,  olfactiveFamily,  stock}
+export type HOME_POPULAR_PRODUCTS_QUERYResult = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  price: number | null;
+  images: Array<{
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+  }> | null;
+  brand: string | null;
+  productType: "gift" | "home" | "perfume" | null;
+  volume: number | null;
+  concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  stock: number | null;
+}>;
+// Variable: HOME_GIFT_PRODUCTS_QUERY
+// Query: *[  _type == "product"  && gift == true  && stock > 0] | order(name asc)[0...4] {  _id,  name,  "slug": slug.current,  price,  "images": images[0...2]{    _key,    asset->{      _id,      url    }  },  brand,  productType,  volume,  concentration,  olfactiveFamily,  stock}
+export type HOME_GIFT_PRODUCTS_QUERYResult = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  price: number | null;
+  images: Array<{
+    _key: string;
+    asset: {
+      _id: string;
+      url: string | null;
+    } | null;
+  }> | null;
+  brand: string | null;
+  productType: "gift" | "home" | "perfume" | null;
+  volume: number | null;
+  concentration: "eau-de-cologne" | "eau-de-parfum" | "eau-de-toilette" | "elixir" | "parfum" | null;
+  olfactiveFamily: "amber" | "aromatic" | "citrus" | "floral" | "fresh" | "oriental" | "woody" | null;
+  stock: number | null;
 }>;
 
 // Source: ./sanity/queries/stats.ts
@@ -683,13 +921,13 @@ export type TOP_SELLING_PRODUCTS_QUERYResult = Array<{
   quantity: number | null;
 } | null>;
 // Variable: PRODUCTS_INVENTORY_QUERY
-// Query: *[_type == "product"] {  _id,  name,  price,  stock,  "category": category->title}
+// Query: *[_type == "product"] {  _id,  name,  price,  stock,  "category": select(    category->kind == "perfume" => "Parfum",    category->kind == "home" => "Casă",    category->kind == "gift" => "Cadou",    category->kind  )}
 export type PRODUCTS_INVENTORY_QUERYResult = Array<{
   _id: string;
   name: string | null;
   price: number | null;
   stock: number | null;
-  category: string | null;
+  category: "Cadou" | "Cas\u0103" | "gift" | "home" | "Parfum" | "perfume" | null;
 }>;
 // Variable: UNFULFILLED_ORDERS_QUERY
 // Query: *[  _type == "order"  && status == "paid"  && !(_id in path("drafts.**"))] | order(createdAt asc) {  _id,  orderNumber,  total,  createdAt,  email,  "itemCount": count(items)}
@@ -714,33 +952,41 @@ export type REVENUE_BY_PERIOD_QUERYResult = {
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    "*[\n  _type == \"category\"\n] | order(title asc) {\n  _id,\n  title,\n  \"slug\": slug.current,\n  \"image\": image{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  }\n}": ALL_CATEGORIES_QUERYResult;
-    "*[\n  _type == \"category\"\n  && slug.current == $slug\n][0] {\n  _id,\n  title,\n  \"slug\": slug.current,\n  \"image\": image{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  }\n}": CATEGORY_BY_SLUG_QUERYResult;
+    "*[\n  _type == \"category\"\n] | order(kind asc) {\n  _id,\n  kind,\n  \n  \"slug\": kind,\n  \"title\": select(\n    kind == \"perfume\" => \"Parfum\",\n    kind == \"home\" => \"Cas\u0103\",\n    kind == \"gift\" => \"Cadou\",\n    \"Categorie\"\n  )\n,\n  \"image\": image{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  }\n}": ALL_CATEGORIES_QUERYResult;
+    "*[\n  _type == \"category\"\n  && kind == $slug\n][0] {\n  _id,\n  kind,\n  \n  \"slug\": kind,\n  \"title\": select(\n    kind == \"perfume\" => \"Parfum\",\n    kind == \"home\" => \"Cas\u0103\",\n    kind == \"gift\" => \"Cadou\",\n    \"Categorie\"\n  )\n,\n  \"image\": image{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  }\n}": CATEGORY_BY_SLUG_QUERYResult;
     "*[\n  _type == \"customer\"\n  && email == $email\n][0]{\n  _id,\n  email,\n  name,\n  clerkUserId,\n  stripeCustomerId,\n  createdAt\n}": CUSTOMER_BY_EMAIL_QUERYResult;
     "*[\n  _type == \"customer\"\n  && stripeCustomerId == $stripeCustomerId\n][0]{\n  _id,\n  email,\n  name,\n  clerkUserId,\n  stripeCustomerId,\n  createdAt\n}": CUSTOMER_BY_STRIPE_ID_QUERYResult;
     "*[\n  _type == \"order\"\n  && clerkUserId == $clerkUserId\n] | order(createdAt desc) {\n  _id,\n  orderNumber,\n  total,\n  status,\n  createdAt,\n  \"itemCount\": count(items),\n  \"itemNames\": items[].product->name,\n  \"itemImages\": items[].product->images[0].asset->url\n}": ORDERS_BY_USER_QUERYResult;
     "*[\n  _type == \"order\"\n  && _id == $id\n][0] {\n  _id,\n  orderNumber,\n  clerkUserId,\n  email,\n  items[]{\n    _key,\n    quantity,\n    priceAtPurchase,\n    product->{\n      _id,\n      name,\n      \"slug\": slug.current,\n      \"image\": images[0]{\n        asset->{\n          _id,\n          url\n        }\n      }\n    }\n  },\n  total,\n  status,\n  address{\n    name,\n    line1,\n    line2,\n    city,\n    postcode,\n    country\n  },\n  stripePaymentId,\n  createdAt\n}": ORDER_BY_ID_QUERYResult;
     "*[\n  _type == \"order\"\n] | order(createdAt desc) [0...$limit] {\n  _id,\n  orderNumber,\n  email,\n  total,\n  status,\n  createdAt\n}": RECENT_ORDERS_QUERYResult;
     "*[\n  _type == \"order\"\n  && stripePaymentId == $stripePaymentId\n][0]{ _id }": ORDER_BY_STRIPE_PAYMENT_ID_QUERYResult;
-    "*[\n  _type == \"product\"\n] | order(name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  description,\n  price,\n  \"images\": images[]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  volumeMl,\n  concentration,\n  scentFamily,\n  topNotes,\n  middleNotes,\n  baseNotes,\n  stock,\n  featured\n}": ALL_PRODUCTS_QUERYResult;
-    "*[\n  _type == \"product\"\n  && featured == true\n  && stock > 0\n] | order(name asc) [0...6] {\n  _id,\n  name,\n  \"slug\": slug.current,\n  description,\n  price,\n  \"images\": images[]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  volumeMl,\n  concentration,\n  scentFamily,\n  stock\n}": FEATURED_PRODUCTS_QUERYResult;
-    "*[\n  _type == \"product\"\n  && category->slug.current == $categorySlug\n] | order(name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"image\": images[0]{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  volumeMl,\n  concentration,\n  scentFamily,\n  stock\n}": PRODUCTS_BY_CATEGORY_QUERYResult;
-    "*[\n  _type == \"product\"\n  && slug.current == $slug\n][0] {\n  _id,\n  name,\n  \"slug\": slug.current,\n  description,\n  price,\n  \"images\": images[]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  volumeMl,\n  concentration,\n  scentFamily,\n  topNotes,\n  middleNotes,\n  baseNotes,\n  stock,\n  featured\n}": PRODUCT_BY_SLUG_QUERYResult;
-    "*[\n  _type == \"product\"\n  && (\n    name match $searchQuery + \"*\"\n    || description match $searchQuery + \"*\"\n  )\n] | score(\n  boost(name match $searchQuery + \"*\", 3),\n  boost(description match $searchQuery + \"*\", 1)\n) | order(_score desc) {\n  _id,\n  _score,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"image\": images[0]{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  volumeMl,\n  concentration,\n  scentFamily,\n  stock\n}": SEARCH_PRODUCTS_QUERYResult;
-    "*[\n  _type == \"product\"\n  && ($categorySlug == \"\" || category->slug.current == $categorySlug)\n  && ($scentFamily == \"\" || scentFamily == $scentFamily)\n  && ($concentration == \"\" || concentration == $concentration)\n  && ($minPrice == 0 || price >= $minPrice)\n  && ($maxPrice == 0 || price <= $maxPrice)\n  && ($searchQuery == \"\" || name match $searchQuery + \"*\" || description match $searchQuery + \"*\")\n  && ($inStock == false || stock > 0)\n] | order(name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"images\": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  volumeMl,\n  concentration,\n  scentFamily,\n  stock\n}": FILTER_PRODUCTS_BY_NAME_QUERYResult;
-    "*[\n  _type == \"product\"\n  && ($categorySlug == \"\" || category->slug.current == $categorySlug)\n  && ($scentFamily == \"\" || scentFamily == $scentFamily)\n  && ($concentration == \"\" || concentration == $concentration)\n  && ($minPrice == 0 || price >= $minPrice)\n  && ($maxPrice == 0 || price <= $maxPrice)\n  && ($searchQuery == \"\" || name match $searchQuery + \"*\" || description match $searchQuery + \"*\")\n  && ($inStock == false || stock > 0)\n] | order(price asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"images\": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  volumeMl,\n  concentration,\n  scentFamily,\n  stock\n}": FILTER_PRODUCTS_BY_PRICE_ASC_QUERYResult;
-    "*[\n  _type == \"product\"\n  && ($categorySlug == \"\" || category->slug.current == $categorySlug)\n  && ($scentFamily == \"\" || scentFamily == $scentFamily)\n  && ($concentration == \"\" || concentration == $concentration)\n  && ($minPrice == 0 || price >= $minPrice)\n  && ($maxPrice == 0 || price <= $maxPrice)\n  && ($searchQuery == \"\" || name match $searchQuery + \"*\" || description match $searchQuery + \"*\")\n  && ($inStock == false || stock > 0)\n] | order(price desc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"images\": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  volumeMl,\n  concentration,\n  scentFamily,\n  stock\n}": FILTER_PRODUCTS_BY_PRICE_DESC_QUERYResult;
-    "*[\n  _type == \"product\"\n  && ($categorySlug == \"\" || category->slug.current == $categorySlug)\n  && ($scentFamily == \"\" || scentFamily == $scentFamily)\n  && ($concentration == \"\" || concentration == $concentration)\n  && ($minPrice == 0 || price >= $minPrice)\n  && ($maxPrice == 0 || price <= $maxPrice)\n  && ($searchQuery == \"\" || name match $searchQuery + \"*\" || description match $searchQuery + \"*\")\n  && ($inStock == false || stock > 0)\n] | score(\n  boost(name match $searchQuery + \"*\", 3),\n  boost(description match $searchQuery + \"*\", 1)\n) | order(_score desc, name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"images\": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  volumeMl,\n  concentration,\n  scentFamily,\n  stock\n}": FILTER_PRODUCTS_BY_RELEVANCE_QUERYResult;
+    "*[\n  _type == \"product\"\n  && onSale == true\n  && stock > 0\n] | order(name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"images\": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    kind,\n    \"slug\": kind,\n    \"title\": select(\n      kind == \"perfume\" => \"Parfum\",\n      kind == \"home\" => \"Cas\u0103\",\n      kind == \"gift\" => \"Cadou\",\n      \"Categorie\"\n    )\n  },\n  productType,\n  volume,\n  concentration,\n  olfactiveFamily,\n  stock\n\n}": PRODUCTS_ON_SALE_HOME_QUERYResult;
+    "*[\n  _type == \"product\"\n  && popular == true\n  && stock > 0\n] | order(name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"images\": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    kind,\n    \"slug\": kind,\n    \"title\": select(\n      kind == \"perfume\" => \"Parfum\",\n      kind == \"home\" => \"Cas\u0103\",\n      kind == \"gift\" => \"Cadou\",\n      \"Categorie\"\n    )\n  },\n  productType,\n  volume,\n  concentration,\n  olfactiveFamily,\n  stock\n\n}": PRODUCTS_POPULAR_HOME_QUERYResult;
+    "*[\n  _type == \"product\"\n  && newArrival == true\n  && stock > 0\n] | order(name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"images\": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    kind,\n    \"slug\": kind,\n    \"title\": select(\n      kind == \"perfume\" => \"Parfum\",\n      kind == \"home\" => \"Cas\u0103\",\n      kind == \"gift\" => \"Cadou\",\n      \"Categorie\"\n    )\n  },\n  productType,\n  volume,\n  concentration,\n  olfactiveFamily,\n  stock\n\n}": PRODUCTS_NEW_ARRIVAL_HOME_QUERYResult;
+    "*[\n  _type == \"product\"\n  && (productType == \"gift\" || gift == true)\n  && stock > 0\n] | order(name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"images\": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    kind,\n    \"slug\": kind,\n    \"title\": select(\n      kind == \"perfume\" => \"Parfum\",\n      kind == \"home\" => \"Cas\u0103\",\n      kind == \"gift\" => \"Cadou\",\n      \"Categorie\"\n    )\n  },\n  productType,\n  volume,\n  concentration,\n  olfactiveFamily,\n  stock\n\n}": PRODUCTS_GIFT_SETS_HOME_QUERYResult;
+    "*[\n  _type == \"product\"\n] | order(name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  brand,\n  description,\n  price,\n  \"images\": images[]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    kind,\n    \"slug\": kind,\n    \"title\": select(\n      kind == \"perfume\" => \"Parfum\",\n      kind == \"home\" => \"Cas\u0103\",\n      kind == \"gift\" => \"Cadou\",\n      \"Categorie\"\n    )\n  },\n  productType,\n  gender,\n  volume,\n  concentration,\n  olfactiveFamily,\n  topNotes,\n  middleNotes,\n  baseNotes,\n  homeSubtype,\n  destination,\n  packagingInfo,\n  diffuserType,\n  scent,\n  setContains,\n  recommendedOccasion,\n  stock,\n  featuredOnHome,\n  onSale,\n  popular,\n  newArrival,\n  gift\n}": ALL_PRODUCTS_QUERYResult;
+    "*[\n  _type == \"product\"\n  && featuredOnHome == true\n  && stock > 0\n] | order(name asc) [0...6] {\n  _id,\n  name,\n  \"slug\": slug.current,\n  description,\n  price,\n  \"images\": images[]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    kind,\n    \"slug\": kind,\n    \"title\": select(\n      kind == \"perfume\" => \"Parfum\",\n      kind == \"home\" => \"Cas\u0103\",\n      kind == \"gift\" => \"Cadou\",\n      \"Categorie\"\n    )\n  },\n  productType,\n  volume,\n  concentration,\n  olfactiveFamily,\n  stock\n}": FEATURED_PRODUCTS_QUERYResult;
+    "*[\n  _type == \"product\"\n  && category->kind == $categorySlug\n] | order(name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"image\": images[0]{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    kind,\n    \"slug\": kind,\n    \"title\": select(\n      kind == \"perfume\" => \"Parfum\",\n      kind == \"home\" => \"Cas\u0103\",\n      kind == \"gift\" => \"Cadou\",\n      \"Categorie\"\n    )\n  },\n  productType,\n  volume,\n  concentration,\n  olfactiveFamily,\n  stock\n}": PRODUCTS_BY_CATEGORY_QUERYResult;
+    "*[\n  _type == \"product\"\n  && slug.current == $slug\n][0] {\n  _id,\n  name,\n  \"slug\": slug.current,\n  brand,\n  description,\n  price,\n  \"images\": images[]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    kind,\n    \"slug\": kind,\n    \"title\": select(\n      kind == \"perfume\" => \"Parfum\",\n      kind == \"home\" => \"Cas\u0103\",\n      kind == \"gift\" => \"Cadou\",\n      \"Categorie\"\n    )\n  },\n  productType,\n  gender,\n  volume,\n  concentration,\n  olfactiveFamily,\n  topNotes,\n  middleNotes,\n  baseNotes,\n  homeSubtype,\n  destination,\n  packagingInfo,\n  diffuserType,\n  scent,\n  setContains,\n  recommendedOccasion,\n  stock,\n  featuredOnHome,\n  onSale,\n  popular,\n  newArrival,\n  gift\n}": PRODUCT_BY_SLUG_QUERYResult;
+    "*[\n  _type == \"product\"\n  && (\n    name match $searchQuery + \"*\"\n    || description match $searchQuery + \"*\"\n  )\n] | score(\n  boost(name match $searchQuery + \"*\", 3),\n  boost(description match $searchQuery + \"*\", 1)\n) | order(_score desc) {\n  _id,\n  _score,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"image\": images[0]{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    kind,\n    \"slug\": kind,\n    \"title\": select(\n      kind == \"perfume\" => \"Parfum\",\n      kind == \"home\" => \"Cas\u0103\",\n      kind == \"gift\" => \"Cadou\",\n      \"Categorie\"\n    )\n  },\n  productType,\n  volume,\n  concentration,\n  olfactiveFamily,\n  stock\n}": SEARCH_PRODUCTS_QUERYResult;
+    "*[\n  _type == \"product\"\n  && ($categorySlug == \"\" || category->kind == $categorySlug)\n  && ($olfactiveFamily == \"\" || (productType == \"perfume\" && olfactiveFamily == $olfactiveFamily))\n  && ($concentration == \"\" || (productType == \"perfume\" && concentration == $concentration))\n  && ($minPrice == 0 || price >= $minPrice)\n  && ($maxPrice == 0 || price <= $maxPrice)\n  && ($searchQuery == \"\" || name match $searchQuery + \"*\" || description match $searchQuery + \"*\")\n  && ($inStock == false || stock > 0)\n  && ($gender == \"\" || (productType == \"perfume\" && gender == $gender))\n  && ($homeSubtype == \"\" || (productType == \"home\" && homeSubtype == $homeSubtype))\n  && ($volume == 0 || volume == $volume)\n  && ($destination == \"\" || (productType == \"home\" && homeSubtype == \"cleaningProducts\" && destination == $destination))\n  && ($diffuserType == \"\" || (productType == \"home\" && homeSubtype == \"homeFragrance\" && diffuserType == $diffuserType))\n] | order(name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"images\": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    kind,\n    \"slug\": kind,\n    \"title\": select(\n      kind == \"perfume\" => \"Parfum\",\n      kind == \"home\" => \"Cas\u0103\",\n      kind == \"gift\" => \"Cadou\",\n      \"Categorie\"\n    )\n  },\n  productType,\n  volume,\n  concentration,\n  olfactiveFamily,\n  stock\n\n}": FILTER_PRODUCTS_BY_NAME_QUERYResult;
+    "*[\n  _type == \"product\"\n  && ($categorySlug == \"\" || category->kind == $categorySlug)\n  && ($olfactiveFamily == \"\" || (productType == \"perfume\" && olfactiveFamily == $olfactiveFamily))\n  && ($concentration == \"\" || (productType == \"perfume\" && concentration == $concentration))\n  && ($minPrice == 0 || price >= $minPrice)\n  && ($maxPrice == 0 || price <= $maxPrice)\n  && ($searchQuery == \"\" || name match $searchQuery + \"*\" || description match $searchQuery + \"*\")\n  && ($inStock == false || stock > 0)\n  && ($gender == \"\" || (productType == \"perfume\" && gender == $gender))\n  && ($homeSubtype == \"\" || (productType == \"home\" && homeSubtype == $homeSubtype))\n  && ($volume == 0 || volume == $volume)\n  && ($destination == \"\" || (productType == \"home\" && homeSubtype == \"cleaningProducts\" && destination == $destination))\n  && ($diffuserType == \"\" || (productType == \"home\" && homeSubtype == \"homeFragrance\" && diffuserType == $diffuserType))\n] | order(price asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"images\": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    kind,\n    \"slug\": kind,\n    \"title\": select(\n      kind == \"perfume\" => \"Parfum\",\n      kind == \"home\" => \"Cas\u0103\",\n      kind == \"gift\" => \"Cadou\",\n      \"Categorie\"\n    )\n  },\n  productType,\n  volume,\n  concentration,\n  olfactiveFamily,\n  stock\n\n}": FILTER_PRODUCTS_BY_PRICE_ASC_QUERYResult;
+    "*[\n  _type == \"product\"\n  && ($categorySlug == \"\" || category->kind == $categorySlug)\n  && ($olfactiveFamily == \"\" || (productType == \"perfume\" && olfactiveFamily == $olfactiveFamily))\n  && ($concentration == \"\" || (productType == \"perfume\" && concentration == $concentration))\n  && ($minPrice == 0 || price >= $minPrice)\n  && ($maxPrice == 0 || price <= $maxPrice)\n  && ($searchQuery == \"\" || name match $searchQuery + \"*\" || description match $searchQuery + \"*\")\n  && ($inStock == false || stock > 0)\n  && ($gender == \"\" || (productType == \"perfume\" && gender == $gender))\n  && ($homeSubtype == \"\" || (productType == \"home\" && homeSubtype == $homeSubtype))\n  && ($volume == 0 || volume == $volume)\n  && ($destination == \"\" || (productType == \"home\" && homeSubtype == \"cleaningProducts\" && destination == $destination))\n  && ($diffuserType == \"\" || (productType == \"home\" && homeSubtype == \"homeFragrance\" && diffuserType == $diffuserType))\n] | order(price desc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"images\": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    kind,\n    \"slug\": kind,\n    \"title\": select(\n      kind == \"perfume\" => \"Parfum\",\n      kind == \"home\" => \"Cas\u0103\",\n      kind == \"gift\" => \"Cadou\",\n      \"Categorie\"\n    )\n  },\n  productType,\n  volume,\n  concentration,\n  olfactiveFamily,\n  stock\n\n}": FILTER_PRODUCTS_BY_PRICE_DESC_QUERYResult;
+    "*[\n  _type == \"product\"\n  && ($categorySlug == \"\" || category->kind == $categorySlug)\n  && ($olfactiveFamily == \"\" || (productType == \"perfume\" && olfactiveFamily == $olfactiveFamily))\n  && ($concentration == \"\" || (productType == \"perfume\" && concentration == $concentration))\n  && ($minPrice == 0 || price >= $minPrice)\n  && ($maxPrice == 0 || price <= $maxPrice)\n  && ($searchQuery == \"\" || name match $searchQuery + \"*\" || description match $searchQuery + \"*\")\n  && ($inStock == false || stock > 0)\n  && ($gender == \"\" || (productType == \"perfume\" && gender == $gender))\n  && ($homeSubtype == \"\" || (productType == \"home\" && homeSubtype == $homeSubtype))\n  && ($volume == 0 || volume == $volume)\n  && ($destination == \"\" || (productType == \"home\" && homeSubtype == \"cleaningProducts\" && destination == $destination))\n  && ($diffuserType == \"\" || (productType == \"home\" && homeSubtype == \"homeFragrance\" && diffuserType == $diffuserType))\n] | score(\n  boost(name match $searchQuery + \"*\", 3),\n  boost(description match $searchQuery + \"*\", 1)\n) | order(_score desc, name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"images\": images[0...4]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  category->{\n    _id,\n    kind,\n    \"slug\": kind,\n    \"title\": select(\n      kind == \"perfume\" => \"Parfum\",\n      kind == \"home\" => \"Cas\u0103\",\n      kind == \"gift\" => \"Cadou\",\n      \"Categorie\"\n    )\n  },\n  productType,\n  volume,\n  concentration,\n  olfactiveFamily,\n  stock\n\n}": FILTER_PRODUCTS_BY_RELEVANCE_QUERYResult;
+    "count(*[\n  _type == \"product\"\n  && ($categorySlug == \"\" || category->kind == $categorySlug)\n  && ($olfactiveFamily == \"\" || (productType == \"perfume\" && olfactiveFamily == $olfactiveFamily))\n  && ($concentration == \"\" || (productType == \"perfume\" && concentration == $concentration))\n  && ($minPrice == 0 || price >= $minPrice)\n  && ($maxPrice == 0 || price <= $maxPrice)\n  && ($searchQuery == \"\" || name match $searchQuery + \"*\" || description match $searchQuery + \"*\")\n  && ($inStock == false || stock > 0)\n  && ($gender == \"\" || (productType == \"perfume\" && gender == $gender))\n  && ($homeSubtype == \"\" || (productType == \"home\" && homeSubtype == $homeSubtype))\n  && ($volume == 0 || volume == $volume)\n  && ($destination == \"\" || (productType == \"home\" && homeSubtype == \"cleaningProducts\" && destination == $destination))\n  && ($diffuserType == \"\" || (productType == \"home\" && homeSubtype == \"homeFragrance\" && diffuserType == $diffuserType))\n])": FILTERED_PRODUCTS_COUNT_QUERYResult;
     "*[\n  _type == \"product\"\n  && _id in $ids\n] {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"image\": images[0]{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  stock\n}": PRODUCTS_BY_IDS_QUERYResult;
     "*[\n  _type == \"product\"\n  && stock > 0\n  && stock <= 5\n] | order(stock asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  stock,\n  \"image\": images[0]{\n    asset->{\n      _id,\n      url\n    }\n  }\n}": LOW_STOCK_PRODUCTS_QUERYResult;
     "*[\n  _type == \"product\"\n  && stock == 0\n] | order(name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  \"image\": images[0]{\n    asset->{\n      _id,\n      url\n    }\n  }\n}": OUT_OF_STOCK_PRODUCTS_QUERYResult;
+    "*[\n  _type == \"product\"\n  && onSale == true\n  && stock > 0\n] | order(name asc)[0...4] {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"images\": images[0...2]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  brand,\n  productType,\n  volume,\n  concentration,\n  olfactiveFamily,\n  stock\n}": HOME_OFFER_PRODUCTS_QUERYResult;
+    "*[\n  _type == \"product\"\n  && popular == true\n  && stock > 0\n] | order(name asc)[0...4] {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"images\": images[0...2]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  brand,\n  productType,\n  volume,\n  concentration,\n  olfactiveFamily,\n  stock\n}": HOME_POPULAR_PRODUCTS_QUERYResult;
+    "*[\n  _type == \"product\"\n  && gift == true\n  && stock > 0\n] | order(name asc)[0...4] {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"images\": images[0...2]{\n    _key,\n    asset->{\n      _id,\n      url\n    }\n  },\n  brand,\n  productType,\n  volume,\n  concentration,\n  olfactiveFamily,\n  stock\n}": HOME_GIFT_PRODUCTS_QUERYResult;
     "count(*[_type == \"product\"])": PRODUCT_COUNT_QUERYResult;
     "count(*[_type == \"order\"])": ORDER_COUNT_QUERYResult;
     "math::sum(*[\n  _type == \"order\"\n  && status in [\"paid\", \"shipped\", \"delivered\"]\n].total)": TOTAL_REVENUE_QUERYResult;
     "*[\n  _type == \"order\"\n  && createdAt >= $startDate\n  && !(_id in path(\"drafts.**\"))\n] | order(createdAt desc) {\n  _id,\n  orderNumber,\n  total,\n  status,\n  createdAt,\n  \"itemCount\": count(items),\n  items[]{\n    quantity,\n    priceAtPurchase,\n    \"productName\": product->name,\n    \"productId\": product->_id\n  }\n}": ORDERS_LAST_7_DAYS_QUERYResult;
     "{\n  \"paid\": count(*[_type == \"order\" && status == \"paid\" && !(_id in path(\"drafts.**\"))]),\n  \"shipped\": count(*[_type == \"order\" && status == \"shipped\" && !(_id in path(\"drafts.**\"))]),\n  \"delivered\": count(*[_type == \"order\" && status == \"delivered\" && !(_id in path(\"drafts.**\"))]),\n  \"cancelled\": count(*[_type == \"order\" && status == \"cancelled\" && !(_id in path(\"drafts.**\"))])\n}": ORDER_STATUS_DISTRIBUTION_QUERYResult;
     "*[\n  _type == \"order\"\n  && status in [\"paid\", \"shipped\", \"delivered\"]\n  && !(_id in path(\"drafts.**\"))\n] {\n  items[]{\n    \"productId\": product->_id,\n    \"productName\": product->name,\n    \"productPrice\": product->price,\n    quantity\n  }\n}.items[]": TOP_SELLING_PRODUCTS_QUERYResult;
-    "*[_type == \"product\"] {\n  _id,\n  name,\n  price,\n  stock,\n  \"category\": category->title\n}": PRODUCTS_INVENTORY_QUERYResult;
+    "*[_type == \"product\"] {\n  _id,\n  name,\n  price,\n  stock,\n  \"category\": select(\n    category->kind == \"perfume\" => \"Parfum\",\n    category->kind == \"home\" => \"Cas\u0103\",\n    category->kind == \"gift\" => \"Cadou\",\n    category->kind\n  )\n}": PRODUCTS_INVENTORY_QUERYResult;
     "*[\n  _type == \"order\"\n  && status == \"paid\"\n  && !(_id in path(\"drafts.**\"))\n] | order(createdAt asc) {\n  _id,\n  orderNumber,\n  total,\n  createdAt,\n  email,\n  \"itemCount\": count(items)\n}": UNFULFILLED_ORDERS_QUERYResult;
     "{\n  \"currentPeriod\": math::sum(*[\n    _type == \"order\"\n    && status in [\"paid\", \"shipped\", \"delivered\"]\n    && createdAt >= $currentStart\n    && !(_id in path(\"drafts.**\"))\n  ].total),\n  \"previousPeriod\": math::sum(*[\n    _type == \"order\"\n    && status in [\"paid\", \"shipped\", \"delivered\"]\n    && createdAt >= $previousStart\n    && createdAt < $currentStart\n    && !(_id in path(\"drafts.**\"))\n  ].total),\n  \"currentOrderCount\": count(*[\n    _type == \"order\"\n    && createdAt >= $currentStart\n    && !(_id in path(\"drafts.**\"))\n  ]),\n  \"previousOrderCount\": count(*[\n    _type == \"order\"\n    && createdAt >= $previousStart\n    && createdAt < $currentStart\n    && !(_id in path(\"drafts.**\"))\n  ])\n}": REVENUE_BY_PERIOD_QUERYResult;
   }

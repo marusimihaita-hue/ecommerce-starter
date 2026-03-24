@@ -1,5 +1,49 @@
 [
   {
+    "name": "paginationView",
+    "type": "document",
+    "attributes": {
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "paginationView"
+        }
+      },
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "postViewNumberPerPage": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
+      }
+    }
+  },
+  {
     "name": "order",
     "type": "document",
     "attributes": {
@@ -301,6 +345,13 @@
         },
         "optional": true
       },
+      "brand": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "price": {
         "type": "objectAttribute",
         "value": {
@@ -345,7 +396,49 @@
         },
         "optional": true
       },
-      "volumeMl": {
+      "productType": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "perfume"
+            },
+            {
+              "type": "string",
+              "value": "home"
+            },
+            {
+              "type": "string",
+              "value": "gift"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "gender": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "women"
+            },
+            {
+              "type": "string",
+              "value": "men"
+            },
+            {
+              "type": "string",
+              "value": "unisex"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "volume": {
         "type": "objectAttribute",
         "value": {
           "type": "number"
@@ -381,7 +474,7 @@
         },
         "optional": true
       },
-      "scentFamily": {
+      "olfactiveFamily": {
         "type": "objectAttribute",
         "value": {
           "type": "union",
@@ -433,6 +526,116 @@
         "optional": true
       },
       "baseNotes": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "homeSubtype": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "cleaningProducts"
+            },
+            {
+              "type": "string",
+              "value": "homeFragrance"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "destination": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "bathroom"
+            },
+            {
+              "type": "string",
+              "value": "kitchen"
+            },
+            {
+              "type": "string",
+              "value": "livingRoom"
+            },
+            {
+              "type": "string",
+              "value": "windows"
+            },
+            {
+              "type": "string",
+              "value": "universal"
+            },
+            {
+              "type": "string",
+              "value": "laundry"
+            },
+            {
+              "type": "string",
+              "value": "floors"
+            },
+            {
+              "type": "string",
+              "value": "furniture"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "packagingInfo": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "diffuserType": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "spray"
+            },
+            {
+              "type": "string",
+              "value": "reedDiffuser"
+            },
+            {
+              "type": "string",
+              "value": "candle"
+            }
+          ]
+        },
+        "optional": true
+      },
+      "scent": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "setContains": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "string"
+          }
+        },
+        "optional": true
+      },
+      "recommendedOccasion": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -529,7 +732,35 @@
         },
         "optional": true
       },
-      "featured": {
+      "featuredOnHome": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "boolean"
+        },
+        "optional": true
+      },
+      "onSale": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "boolean"
+        },
+        "optional": true
+      },
+      "popular": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "boolean"
+        },
+        "optional": true
+      },
+      "newArrival": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "boolean"
+        },
+        "optional": true
+      },
+      "gift": {
         "type": "objectAttribute",
         "value": {
           "type": "boolean"
@@ -763,18 +994,24 @@
           "type": "string"
         }
       },
-      "title": {
+      "kind": {
         "type": "objectAttribute",
         "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "slug": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "inline",
-          "name": "slug"
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "perfume"
+            },
+            {
+              "type": "string",
+              "value": "home"
+            },
+            {
+              "type": "string",
+              "value": "gift"
+            }
+          ]
         },
         "optional": true
       },

@@ -1,6 +1,11 @@
 import { TagIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
+import { PRODUCT_TYPE_SANITY_LIST } from "@/lib/constants/productOptions";
 
+/**
+ * Shop categories are fixed: one document per product line (perfume / home / gift).
+ * `kind` matches `product.productType` and is used as the public URL segment (/catalog/[slug]).
+ */
 export const categoryType = defineType({
   name: "category",
   title: "Category",
@@ -8,21 +13,19 @@ export const categoryType = defineType({
   icon: TagIcon,
   fields: [
     defineField({
-      name: "title",
+      name: "kind",
+      title: "Category (product line)",
       type: "string",
-      validation: (rule) => [
-        rule.required().error("Category title is required"),
-      ],
-    }),
-    defineField({
-      name: "slug",
-      type: "slug",
+      description:
+        "Exactly three categories: Parfum, Casă, Cadou — same values as product type.",
       options: {
-        source: "title",
-        maxLength: 96,
+        list: [...PRODUCT_TYPE_SANITY_LIST],
+        layout: "radio",
       },
       validation: (rule) => [
-        rule.required().error("Slug is required for URL generation"),
+        rule
+          .required()
+          .error("Choose which product line this category represents"),
       ],
     }),
     defineField({
@@ -31,13 +34,24 @@ export const categoryType = defineType({
       options: {
         hotspot: true,
       },
-      description: "Category thumbnail image",
+      description: "Thumbnail for category tiles and navigation",
     }),
   ],
   preview: {
     select: {
-      title: "title",
+      kind: "kind",
       media: "image",
+    },
+    prepare({ kind, media }) {
+      const label =
+        PRODUCT_TYPE_SANITY_LIST.find((k) => k.value === kind)?.title ??
+        (kind as string) ??
+        "Category";
+      return {
+        title: label,
+        subtitle: kind ? String(kind) : undefined,
+        media,
+      };
     },
   },
 });

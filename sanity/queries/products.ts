@@ -19,6 +19,7 @@ export const FILTER_PRODUCTS_BY_RELEVANCE_PAGINATED = (
   end: number,
 ) =>
   `*[${PRODUCT_FILTER_CONDITIONS}] | ${RELEVANCE_SCORE} | order(_score desc, name asc) ${FILTERED_PRODUCT_PROJECTION}[${start}...${end}]`;
+
 import { defineQuery } from "next-sanity";
 import { LOW_STOCK_THRESHOLD } from "../../lib/constants/stock";
 
@@ -29,17 +30,22 @@ import { LOW_STOCK_THRESHOLD } from "../../lib/constants/stock";
 /** Common filter conditions for product filtering */
 const PRODUCT_FILTER_CONDITIONS = `
   _type == "product"
-  && ($categorySlug == "" || category->slug.current == $categorySlug)
-  && ($scentFamily == "" || scentFamily == $scentFamily)
-  && ($concentration == "" || concentration == $concentration)
+  && ($categorySlug == "" || category->kind == $categorySlug)
+  && ($olfactiveFamily == "" || (productType == "perfume" && olfactiveFamily == $olfactiveFamily))
+  && ($concentration == "" || (productType == "perfume" && concentration == $concentration))
   && ($minPrice == 0 || price >= $minPrice)
   && ($maxPrice == 0 || price <= $maxPrice)
   && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")
   && ($inStock == false || stock > 0)
+  && ($gender == "" || (productType == "perfume" && gender == $gender))
+  && ($homeSubtype == "" || (productType == "home" && homeSubtype == $homeSubtype))
+  && ($volume == 0 || volume == $volume)
+  && ($destination == "" || (productType == "home" && homeSubtype == "cleaningProducts" && destination == $destination))
+  && ($diffuserType == "" || (productType == "home" && homeSubtype == "homeFragrance" && diffuserType == $diffuserType))
 `;
 
-/** Projection for filtered product lists (includes multiple images for hover) */
-const FILTERED_PRODUCT_PROJECTION = `{
+/** Shared fields for product cards (grid + homepage rows) */
+const PRODUCT_CARD_LIST_FIELDS = `
   _id,
   name,
   "slug": slug.current,
@@ -53,13 +59,24 @@ const FILTERED_PRODUCT_PROJECTION = `{
   },
   category->{
     _id,
-    title,
-    "slug": slug.current
+    kind,
+    "slug": kind,
+    "title": select(
+      kind == "perfume" => "Parfum",
+      kind == "home" => "Casă",
+      kind == "gift" => "Cadou",
+      "Categorie"
+    )
   },
-  volumeMl,
+  productType,
+  volume,
   concentration,
-  scentFamily,
+  olfactiveFamily,
   stock
+`;
+
+/** Projection for filtered product lists (includes multiple images for hover) */
+const FILTERED_PRODUCT_PROJECTION = `{${PRODUCT_CARD_LIST_FIELDS}
 }`;
 
 /** Scoring for relevance-based search */
@@ -67,6 +84,46 @@ const RELEVANCE_SCORE = `score(
   boost(name match $searchQuery + "*", 3),
   boost(description match $searchQuery + "*", 1)
 )`;
+
+/**
+ * Products flagged on sale (homepage „Oferte”)
+ */
+export const PRODUCTS_ON_SALE_HOME_QUERY = defineQuery(`*[
+  _type == "product"
+  && onSale == true
+  && stock > 0
+] | order(name asc) {${PRODUCT_CARD_LIST_FIELDS}
+}`);
+
+/**
+ * Popular products (homepage „Populare”)
+ */
+export const PRODUCTS_POPULAR_HOME_QUERY = defineQuery(`*[
+  _type == "product"
+  && popular == true
+  && stock > 0
+] | order(name asc) {${PRODUCT_CARD_LIST_FIELDS}
+}`);
+
+/**
+ * New arrivals (homepage „Noi”)
+ */
+export const PRODUCTS_NEW_ARRIVAL_HOME_QUERY = defineQuery(`*[
+  _type == "product"
+  && newArrival == true
+  && stock > 0
+] | order(name asc) {${PRODUCT_CARD_LIST_FIELDS}
+}`);
+
+/**
+ * Gift sets / gift line (homepage „Seturi cadou”)
+ */
+export const PRODUCTS_GIFT_SETS_HOME_QUERY = defineQuery(`*[
+  _type == "product"
+  && (productType == "gift" || gift == true)
+  && stock > 0
+] | order(name asc) {${PRODUCT_CARD_LIST_FIELDS}
+}`);
 
 // ============================================
 // All Products Query
@@ -82,6 +139,7 @@ export const ALL_PRODUCTS_QUERY = defineQuery(`*[
   _id,
   name,
   "slug": slug.current,
+  brand,
   description,
   price,
   "images": images[]{
@@ -94,17 +152,36 @@ export const ALL_PRODUCTS_QUERY = defineQuery(`*[
   },
   category->{
     _id,
-    title,
-    "slug": slug.current
+    kind,
+    "slug": kind,
+    "title": select(
+      kind == "perfume" => "Parfum",
+      kind == "home" => "Casă",
+      kind == "gift" => "Cadou",
+      "Categorie"
+    )
   },
-  volumeMl,
+  productType,
+  gender,
+  volume,
   concentration,
-  scentFamily,
+  olfactiveFamily,
   topNotes,
   middleNotes,
   baseNotes,
+  homeSubtype,
+  destination,
+  packagingInfo,
+  diffuserType,
+  scent,
+  setContains,
+  recommendedOccasion,
   stock,
-  featured
+  featuredOnHome,
+  onSale,
+  popular,
+  newArrival,
+  gift
 }`);
 
 /**
@@ -112,7 +189,7 @@ export const ALL_PRODUCTS_QUERY = defineQuery(`*[
  */
 export const FEATURED_PRODUCTS_QUERY = defineQuery(`*[
   _type == "product"
-  && featured == true
+  && featuredOnHome == true
   && stock > 0
 ] | order(name asc) [0...6] {
   _id,
@@ -130,12 +207,19 @@ export const FEATURED_PRODUCTS_QUERY = defineQuery(`*[
   },
   category->{
     _id,
-    title,
-    "slug": slug.current
+    kind,
+    "slug": kind,
+    "title": select(
+      kind == "perfume" => "Parfum",
+      kind == "home" => "Casă",
+      kind == "gift" => "Cadou",
+      "Categorie"
+    )
   },
-  volumeMl,
+  productType,
+  volume,
   concentration,
-  scentFamily,
+  olfactiveFamily,
   stock
 }`);
 
@@ -144,7 +228,7 @@ export const FEATURED_PRODUCTS_QUERY = defineQuery(`*[
  */
 export const PRODUCTS_BY_CATEGORY_QUERY = defineQuery(`*[
   _type == "product"
-  && category->slug.current == $categorySlug
+  && category->kind == $categorySlug
 ] | order(name asc) {
   _id,
   name,
@@ -159,12 +243,19 @@ export const PRODUCTS_BY_CATEGORY_QUERY = defineQuery(`*[
   },
   category->{
     _id,
-    title,
-    "slug": slug.current
+    kind,
+    "slug": kind,
+    "title": select(
+      kind == "perfume" => "Parfum",
+      kind == "home" => "Casă",
+      kind == "gift" => "Cadou",
+      "Categorie"
+    )
   },
-  volumeMl,
+  productType,
+  volume,
   concentration,
-  scentFamily,
+  olfactiveFamily,
   stock
 }`);
 
@@ -179,6 +270,7 @@ export const PRODUCT_BY_SLUG_QUERY = defineQuery(`*[
   _id,
   name,
   "slug": slug.current,
+  brand,
   description,
   price,
   "images": images[]{
@@ -191,17 +283,36 @@ export const PRODUCT_BY_SLUG_QUERY = defineQuery(`*[
   },
   category->{
     _id,
-    title,
-    "slug": slug.current
+    kind,
+    "slug": kind,
+    "title": select(
+      kind == "perfume" => "Parfum",
+      kind == "home" => "Casă",
+      kind == "gift" => "Cadou",
+      "Categorie"
+    )
   },
-  volumeMl,
+  productType,
+  gender,
+  volume,
   concentration,
-  scentFamily,
+  olfactiveFamily,
   topNotes,
   middleNotes,
   baseNotes,
+  homeSubtype,
+  destination,
+  packagingInfo,
+  diffuserType,
+  scent,
+  setContains,
+  recommendedOccasion,
   stock,
-  featured
+  featuredOnHome,
+  onSale,
+  popular,
+  newArrival,
+  gift
 }`);
 
 // ============================================
@@ -238,12 +349,19 @@ export const SEARCH_PRODUCTS_QUERY = defineQuery(`*[
   },
   category->{
     _id,
-    title,
-    "slug": slug.current
+    kind,
+    "slug": kind,
+    "title": select(
+      kind == "perfume" => "Parfum",
+      kind == "home" => "Casă",
+      kind == "gift" => "Cadou",
+      "Categorie"
+    )
   },
-  volumeMl,
+  productType,
+  volume,
   concentration,
-  scentFamily,
+  olfactiveFamily,
   stock
 }`);
 
@@ -278,6 +396,11 @@ export const FILTER_PRODUCTS_BY_PRICE_DESC_QUERY = defineQuery(
  */
 export const FILTER_PRODUCTS_BY_RELEVANCE_QUERY = defineQuery(
   `*[${PRODUCT_FILTER_CONDITIONS}] | ${RELEVANCE_SCORE} | order(_score desc, name asc) ${FILTERED_PRODUCT_PROJECTION}`,
+);
+
+/** Count products matching the same filters as FILTER_PRODUCTS_* (for pagination). */
+export const FILTERED_PRODUCTS_COUNT_QUERY = defineQuery(
+  `count(*[${PRODUCT_FILTER_CONDITIONS}])`,
 );
 
 /**
@@ -359,16 +482,121 @@ export const getAllProductsQuery = (page: number, limit: number) => `
     },
     category->{
       _id,
-      title,
-      "slug": slug.current
+      kind,
+      "slug": kind,
+      "title": select(
+        kind == "perfume" => "Parfum",
+        kind == "home" => "Casă",
+        kind == "gift" => "Cadou",
+        "Categorie"
+      )
     },
-    volumeMl,
+    brand,
+    productType,
+    gender,
+    volume,
     concentration,
-    scentFamily,
+    olfactiveFamily,
     topNotes,
     middleNotes,
     baseNotes,
+    homeSubtype,
+    destination,
+    packagingInfo,
+    diffuserType,
+    scent,
+    setContains,
+    recommendedOccasion,
     stock,
-    featured
+    featuredOnHome,
+    onSale,
+    popular,
+    newArrival,
+    gift
   }
 `;
+
+// ============================================
+// Homepage Section Queries
+// ============================================
+
+/**
+ * Get products on sale for homepage (first 4)
+ */
+export const HOME_OFFER_PRODUCTS_QUERY = defineQuery(`*[
+  _type == "product"
+  && onSale == true
+  && stock > 0
+] | order(name asc)[0...4] {
+  _id,
+  name,
+  "slug": slug.current,
+  price,
+  "images": images[0...2]{
+    _key,
+    asset->{
+      _id,
+      url
+    }
+  },
+  brand,
+  productType,
+  volume,
+  concentration,
+  olfactiveFamily,
+  stock
+}`);
+
+/**
+ * Get popular products for homepage (first 4)
+ */
+export const HOME_POPULAR_PRODUCTS_QUERY = defineQuery(`*[
+  _type == "product"
+  && popular == true
+  && stock > 0
+] | order(name asc)[0...4] {
+  _id,
+  name,
+  "slug": slug.current,
+  price,
+  "images": images[0...2]{
+    _key,
+    asset->{
+      _id,
+      url
+    }
+  },
+  brand,
+  productType,
+  volume,
+  concentration,
+  olfactiveFamily,
+  stock
+}`);
+
+/**
+ * Get gift set products for homepage (first 4)
+ */
+export const HOME_GIFT_PRODUCTS_QUERY = defineQuery(`*[
+  _type == "product"
+  && gift == true
+  && stock > 0
+] | order(name asc)[0...4] {
+  _id,
+  name,
+  "slug": slug.current,
+  price,
+  "images": images[0...2]{
+    _key,
+    asset->{
+      _id,
+      url
+    }
+  },
+  brand,
+  productType,
+  volume,
+  concentration,
+  olfactiveFamily,
+  stock
+}`);

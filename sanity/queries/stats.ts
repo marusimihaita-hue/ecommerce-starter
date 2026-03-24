@@ -81,7 +81,12 @@ export const PRODUCTS_INVENTORY_QUERY = defineQuery(`*[_type == "product"] {
   name,
   price,
   stock,
-  "category": category->title
+  "category": select(
+    category->kind == "perfume" => "Parfum",
+    category->kind == "home" => "Casă",
+    category->kind == "gift" => "Cadou",
+    category->kind
+  )
 }`);
 
 /**

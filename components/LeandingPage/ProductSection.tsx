@@ -6,6 +6,10 @@ import { ProductFilters } from "@/components/LeandingPage/ProductFilters";
 import { ProductGrid } from "@/components/LeandingPage/ProductGrid";
 import { Button } from "@/components/ui/button";
 import type {
+  CatalogFilterProfile,
+  CatalogLockedPreset,
+} from "@/lib/catalog/types";
+import type {
   ALL_CATEGORIES_QUERYResult,
   FILTER_PRODUCTS_BY_NAME_QUERYResult,
 } from "@/sanity.types";
@@ -13,10 +17,19 @@ import type {
 interface ProductSectionProps {
   categories: ALL_CATEGORIES_QUERYResult;
   products: FILTER_PRODUCTS_BY_NAME_QUERYResult;
+  /** When paginated server-side, total matching products (not just current page). */
+  totalCount?: number;
+  filterProfile?: CatalogFilterProfile;
+  lockedFilters?: CatalogLockedPreset;
   searchQuery: string;
   categorySlug: string;
-  scentFamily: string;
+  olfactiveFamily: string;
   concentration: string;
+  gender: string;
+  homeSubtype: string;
+  volume: number;
+  destination: string;
+  diffuserType: string;
   sort: string;
   minPrice: number;
   maxPrice: number;
@@ -26,16 +39,25 @@ interface ProductSectionProps {
 export function ProductSection({
   categories,
   products,
+  totalCount,
+  filterProfile = "all",
+  lockedFilters,
   searchQuery,
   categorySlug,
-  scentFamily,
+  olfactiveFamily,
   concentration,
+  gender,
+  homeSubtype,
+  volume,
+  destination,
+  diffuserType,
   sort,
   minPrice,
   maxPrice,
   inStock,
 }: ProductSectionProps) {
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const displayCount = totalCount ?? products.length;
 
   // Show filters by default on desktop, hide on mobile
   useEffect(() => {
@@ -56,7 +78,7 @@ export function ProductSection({
       {/* Header with results count and filter toggle */}
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          {products.length} {products.length === 1 ? "produs" : "produse"}{" "}
+          {displayCount} {displayCount === 1 ? "produs" : "produse"}{" "}
           găsite
           {searchQuery && (
             <span>
@@ -100,11 +122,18 @@ export function ProductSection({
         >
           <ProductFilters
             categories={categories}
+            filterProfile={filterProfile}
+            lockedFilters={lockedFilters}
             initialFilters={{
               q: searchQuery,
               category: categorySlug,
-              scentFamily,
+              olfactiveFamily,
               concentration,
+              gender,
+              homeSubtype,
+              volume,
+              destination,
+              diffuserType,
               sort,
               minPrice,
               maxPrice,

@@ -24,7 +24,7 @@ interface ProductProjection {
   slug: string;
   stock: number;
   price: number;
-  featured: boolean;
+  featuredOnHome: boolean;
   category: {
     title: string;
   } | null;
@@ -43,9 +43,15 @@ function ProductRowContent(handle: DocumentHandle) {
       "slug": slug.current,
       stock,
       price,
-      featured,
+      featuredOnHome,
       category->{
-        title
+        kind,
+        "title": select(
+          kind == "perfume" => "Parfum",
+          kind == "home" => "Casă",
+          kind == "gift" => "Cadou",
+          "Categorie"
+        )
       },
       "image": images[0]{
         asset->{
@@ -112,7 +118,7 @@ function ProductRowContent(handle: DocumentHandle) {
               <span className="truncate font-medium text-zinc-900 group-hover:text-zinc-600 dark:text-zinc-100 dark:group-hover:text-zinc-300 sm:hover:text-zinc-600 sm:dark:hover:text-zinc-300">
                 {data.name || "Untitled Product"}
               </span>
-              {data.featured && (
+              {data.featuredOnHome && (
                 <Star className="h-3.5 w-3.5 shrink-0 fill-amber-400 text-amber-400 sm:hidden" />
               )}
               {data.slug && (

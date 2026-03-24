@@ -2,19 +2,20 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type * as React from "react";
 import { useRef, useState } from "react";
 import type { ALL_CATEGORIES_QUERYResult } from "@/sanity.types";
 
 interface CategoryTilesProps {
   categories: ALL_CATEGORIES_QUERYResult;
-  activeCategory?: string;
 }
 
-export function CategoryTiles({
-  categories,
-  activeCategory,
-}: CategoryTilesProps) {
+export function CategoryTiles({ categories }: CategoryTilesProps) {
+  const pathname = usePathname();
+  const catalogSlugMatch = pathname.match(/^\/catalog\/([^/?]+)/);
+  const catalogSlug = catalogSlugMatch?.[1] ?? null;
+
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -108,7 +109,7 @@ export function CategoryTiles({
         <Link
           href="/"
           className={`group relative flex-shrink-0 overflow-hidden rounded-xl transition-all duration-300 ${
-            !activeCategory
+            pathname === "/"
               ? "ring-2 ring-amber-500 ring-offset-2 dark:ring-offset-zinc-900"
               : "hover:ring-2 hover:ring-zinc-300 hover:ring-offset-2 dark:hover:ring-zinc-600 dark:hover:ring-offset-zinc-900"
           }`}
@@ -135,13 +136,13 @@ export function CategoryTiles({
 
         {/* Category tiles */}
         {categories.map((category) => {
-          const isActive = activeCategory === category.slug;
+          const isActive = catalogSlug === category.slug;
           const imageUrl = category.image?.asset?.url;
 
           return (
             <Link
               key={category._id}
-              href={`/?category=${category.slug}`}
+              href={`/catalog/${category.slug}`}
               className={`group relative flex-shrink-0 overflow-hidden rounded-xl transition-all duration-300 ${
                 isActive
                   ? "ring-2 ring-amber-500 ring-offset-2 dark:ring-offset-zinc-900"

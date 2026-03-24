@@ -14,17 +14,23 @@ import { cn } from "@/lib/utils";
 interface FeaturedToggleProps extends DocumentHandle {}
 
 function FeaturedToggleContent(handle: FeaturedToggleProps) {
-  const { data: featured } = useDocument({ ...handle, path: "featured" });
-  const editFeatured = useEditDocument({ ...handle, path: "featured" });
+  const { data: featuredOnHome } = useDocument({
+    ...handle,
+    path: "featuredOnHome",
+  });
+  const editFeaturedOnHome = useEditDocument({
+    ...handle,
+    path: "featuredOnHome",
+  });
 
-  const isFeatured = featured as boolean;
+  const isFeatured = featuredOnHome as boolean;
 
   return (
     <Button
       variant="ghost"
       size="icon"
       className="h-8 w-8"
-      onClick={() => editFeatured(!isFeatured)}
+      onClick={() => editFeaturedOnHome(!isFeatured)}
       title={isFeatured ? "Remove from featured" : "Add to featured"}
     >
       <Star

@@ -1,15 +1,26 @@
 import { defineQuery } from "next-sanity";
 
+/** Shared: label + URL segment (identical to productType values). */
+const CATEGORY_LABELS = `
+  "slug": kind,
+  "title": select(
+    kind == "perfume" => "Parfum",
+    kind == "home" => "Casă",
+    kind == "gift" => "Cadou",
+    "Categorie"
+  )
+`;
+
 /**
- * Get all categories
- * Used for navigation and filters
+ * Get all categories (exactly: perfume, home, gift — one document per kind).
+ * Used on navigation and filters
  */
 export const ALL_CATEGORIES_QUERY = defineQuery(`*[
   _type == "category"
-] | order(title asc) {
+] | order(kind asc) {
   _id,
-  title,
-  "slug": slug.current,
+  kind,
+  ${CATEGORY_LABELS},
   "image": image{
     asset->{
       _id,
@@ -20,15 +31,15 @@ export const ALL_CATEGORIES_QUERY = defineQuery(`*[
 }`);
 
 /**
- * Get category by slug
+ * Get category by URL segment ($slug is kind: perfume | home | gift)
  */
 export const CATEGORY_BY_SLUG_QUERY = defineQuery(`*[
   _type == "category"
-  && slug.current == $slug
+  && kind == $slug
 ][0] {
   _id,
-  title,
-  "slug": slug.current,
+  kind,
+  ${CATEGORY_LABELS},
   "image": image{
     asset->{
       _id,
