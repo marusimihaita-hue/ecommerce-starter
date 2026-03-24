@@ -1,14 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { Menu } from "lucide-react";
+import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
 import {
   useNavMenuActions,
   useNavMenuIsOpen,
@@ -24,9 +24,9 @@ const MAIN_LINKS = [
 ] as const;
 
 const SPECIAL_LINKS = [
-  { label: "Oferte", href: "/#oferte" },
-  { label: "Noutăți", href: "/#noutati" },
-  { label: "Populare", href: "/#populare" },
+  { label: "Oferte", href: "/catalog/oferte" },
+  { label: "Noutăți", href: "/catalog/noutati" },
+  { label: "Populare", href: "/catalog/populare" },
 ] as const;
 
 export function NavMenuSheet() {

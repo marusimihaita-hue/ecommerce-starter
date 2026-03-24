@@ -1,13 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Menu,
-  Package,
-  PackageCheck,
-  ShoppingCart,
-  User,
-} from "lucide-react";
+import { Menu, Package, PackageCheck, ShoppingCart, User } from "lucide-react";
 import { SignInButton, UserButton, useAuth } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { useCartActions, useTotalItems } from "@/lib/store/cart-store-provider";
@@ -22,16 +16,16 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 -ml-4">
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            className="shrink-0"
+            className="shrink-0 h-10 w-10"
             onClick={openNavMenu}
             aria-label="Deschide meniul"
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="h-9 w-9" />
           </Button>
           {/* Logo */}
           <Link href="/">
@@ -45,9 +39,9 @@ export function Header() {
         <div className="flex items-center gap-2">
           {/* My Orders - Only when signed in */}
           {isSignedIn && (
-            <Button asChild variant="ghost" size="icon">
+            <Button asChild variant="ghost" size="icon" className=" h-10 w-10">
               <Link href="/orders" className="flex items-center gap-2">
-                <PackageCheck className="h-5 w-5" />
+                <PackageCheck className="h-9 w-9" />
               </Link>
             </Button>
           )}
@@ -56,10 +50,10 @@ export function Header() {
           <Button
             variant="ghost"
             size="sm"
-            className="relative mr-2"
+            className="relative mr-2  h-10 w-10"
             onClick={openCart}
           >
-            <ShoppingCart className="h-5 w-5" />
+            <ShoppingCart className="h-10 w-10" />
             {totalItems > 0 && (
               <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-900 text-xs font-medium text-white dark:bg-zinc-100 dark:text-zinc-900 ">
                 {totalItems > 99 ? "99+" : totalItems}

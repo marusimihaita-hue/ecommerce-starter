@@ -10,17 +10,6 @@ export const locations = [
     phone: "0730 076 100",
     phoneHours: "L-V 09:00-18:00",
   },
-  {
-    name: "Ploiest, Hale Centrală, CompactValdav",
-    address: "Strada Emile Zola 4, 100043 Ploiești",
-    schedule: [
-      { days: "Luni - Vineri", hours: "8:00 - 19:00" },
-      { days: "Sâmbătă", hours: "8:30 - 14:00" },
-      { days: "Duminica", hours: "închis" },
-    ],
-    phone: "0730 076 100",
-    phoneHours: "L-V 09:00-18:00",
-  },
 ];
 export const aboutUs = {
   title: "Despre noi",

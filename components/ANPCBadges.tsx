@@ -1,6 +1,6 @@
 const Anpc = () => {
   return (
-    <div className="w-full bg-white border-t">
+    <div className="w-full bg-gray-50 border-t">
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div
           className="

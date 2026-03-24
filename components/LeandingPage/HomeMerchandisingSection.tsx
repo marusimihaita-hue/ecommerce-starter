@@ -1,4 +1,4 @@
-import { ProductCard } from "@/components/LeandingPage/ProductCard";
+import { HomeMerchandisingProductCarousel } from "@/components/LeandingPage/HomeMerchandisingProductCarousel";
 import type { PRODUCTS_ON_SALE_HOME_QUERYResult } from "@/sanity.types";
 
 type RowProduct = PRODUCTS_ON_SALE_HOME_QUERYResult[number];
@@ -23,24 +23,14 @@ export function HomeMerchandisingSection({
   return (
     <section
       id={id}
-      className="w-full scroll-mt-20 border-b border-zinc-200 bg-white py-10 dark:border-zinc-800 dark:bg-zinc-950"
+      className="w-full scroll-mt-20  border-zinc-200 bg-white pt-10 pb-2 dark:border-zinc-800 dark:bg-zinc-950"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-2xl">
+      <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
+        <h2 className="ml-12 text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-2xl border-b-1 pb-1">
           {title}
         </h2>
-        <div
-          className="mt-6 flex gap-6 overflow-x-auto pb-2 pt-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          style={{ touchAction: "pan-x" }}
-        >
-          {products.map((product) => (
-            <div
-              key={product._id}
-              className="w-[min(100%,280px)] shrink-0 sm:w-[300px]"
-            >
-              <ProductCard product={product} />
-            </div>
-          ))}
+        <div className="mt-6 pb-2 pt-1">
+          <HomeMerchandisingProductCarousel products={products} />
         </div>
       </div>
     </section>

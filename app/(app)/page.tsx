@@ -7,7 +7,6 @@ import { HomeMerchandisingSection } from "@/components/LeandingPage/HomeMerchand
 import { sanityFetch } from "@/sanity/lib/live";
 import { ALL_CATEGORIES_QUERY } from "@/sanity/queries/categories";
 import {
-  FEATURED_PRODUCTS_QUERY,
   PRODUCTS_GIFT_SETS_HOME_QUERY,
   PRODUCTS_NEW_ARRIVAL_HOME_QUERY,
   PRODUCTS_ON_SALE_HOME_QUERY,
@@ -33,14 +32,12 @@ export default async function Home({ searchParams }: PageProps) {
 
   const [
     { data: categories },
-    { data: featuredProducts },
     { data: onSaleProducts },
     { data: popularProducts },
     { data: newProducts },
     { data: giftSetProducts },
   ] = await Promise.all([
     sanityFetch({ query: ALL_CATEGORIES_QUERY }),
-    sanityFetch({ query: FEATURED_PRODUCTS_QUERY }),
     sanityFetch({ query: PRODUCTS_ON_SALE_HOME_QUERY }),
     sanityFetch({ query: PRODUCTS_POPULAR_HOME_QUERY }),
     sanityFetch({ query: PRODUCTS_NEW_ARRIVAL_HOME_QUERY }),
@@ -50,18 +47,20 @@ export default async function Home({ searchParams }: PageProps) {
   return (
     <div>
       <Suspense fallback={<FeaturedCarouselSkeleton />}>
-        <FeaturedCarousel products={featuredProducts} />
+        <FeaturedCarousel />
       </Suspense>
 
       <div className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8 ml-10">
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-            Categorii
-          </h1>
-        </div>
+        <div>
+          <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+              Categorii
+            </h1>
+          </div>
 
-        <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 mt-6">
-          <CategoryTiles categories={categories} />
+          <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 mt-6">
+            <CategoryTiles categories={categories} />
+          </div>
         </div>
       </div>
 
@@ -70,11 +69,20 @@ export default async function Home({ searchParams }: PageProps) {
         title="Oferte"
         products={onSaleProducts}
       />
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-8">
+        <img
+          src="/Ultra-Wide-Angle-Panoramas-1.jpg"
+          alt="Panoramic view"
+          className="w-full h-auto rounded-lg shadow-md object-cover"
+        />
+      </div>
       <HomeMerchandisingSection
         id="populare"
         title="Populare"
         products={popularProducts}
       />
+
       <HomeMerchandisingSection
         id="noutati"
         title="Noutăți"

@@ -42,6 +42,7 @@ const PRODUCT_FILTER_CONDITIONS = `
   && ($volume == 0 || volume == $volume)
   && ($destination == "" || (productType == "home" && homeSubtype == "cleaningProducts" && destination == $destination))
   && ($diffuserType == "" || (productType == "home" && homeSubtype == "homeFragrance" && diffuserType == $diffuserType))
+  && ($merchandisingFilter == "" || ($merchandisingFilter == "onSale" && onSale == true) || ($merchandisingFilter == "popular" && popular == true) || ($merchandisingFilter == "newArrival" && newArrival == true))
 `;
 
 /** Shared fields for product cards (grid + homepage rows) */

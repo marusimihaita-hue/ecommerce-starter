@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Autoplay from "embla-carousel-autoplay";
-import { ArrowRight } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -13,18 +12,10 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { cn, formatPrice } from "@/lib/utils";
-import type { FEATURED_PRODUCTS_QUERYResult } from "@/sanity.types";
+import { cn } from "@/lib/utils";
+import { FEATURED_BANNERS } from "@/lib/landing/featured-banners";
 
-type FeaturedProduct = FEATURED_PRODUCTS_QUERYResult[number];
-
-interface FeaturedCarouselProps {
-  products: FEATURED_PRODUCTS_QUERYResult;
-}
-
-export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
+export function FeaturedCarousel() {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
@@ -47,131 +38,85 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
     [api],
   );
 
-  if (products.length === 0) {
-    return null;
-  }
+  const navButtonClass =
+    "top-1/2 z-10 h-10 w-10 -translate-y-1/2 border-0 bg-black/25 text-white shadow-none backdrop-blur-[2px] hover:bg-black/40 hover:text-white disabled:opacity-30 sm:h-11 sm:w-11";
 
   return (
-    <div className="relative w-full bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
-      <Carousel
-        setApi={setApi}
-        opts={{
-          loop: true,
-          align: "start",
-        }}
-        plugins={[
-          Autoplay({
-            delay: 5000,
-            stopOnInteraction: false,
-            stopOnMouseEnter: true,
-          }),
-        ]}
-        className="w-full"
-      >
-        <CarouselContent className="-ml-0">
-          {products.map((product) => (
-            <CarouselItem key={product._id} className="pl-0">
-              <FeaturedSlide product={product} />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
+    <div className="relative w-full bg-white px-3 pb-2 pt-3 sm:px-4 sm:pb-3 sm:pt-4 md:px-6 lg:px-8">
+      <div className="relative mx-auto max-w-screen-2xl">
+        <Carousel
+          setApi={setApi}
+          opts={{
+            loop: true,
+            align: "start",
+          }}
+          plugins={[
+            Autoplay({
+              delay: 5000,
+              stopOnInteraction: false,
+              stopOnMouseEnter: true,
+            }),
+          ]}
+          className="w-full"
+        >
+          <CarouselContent className="ml-0">
+            {FEATURED_BANNERS.map((banner, index) => (
+              <CarouselItem key={banner.id} className="pl-0">
+                <Link
+                  href={banner.href}
+                  className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
+                  aria-label={`${banner.imageAlt} — ${banner.headline}`}
+                >
+                  <div className="relative min-h-[150px] w-full overflow-hidden  shadow-lg aspect-20/9 sm:aspect-8/3 lg:aspect-28/9">
+                    <Image
+                      src={banner.imageSrc}
+                      alt={banner.imageAlt}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1536px) 90vw, 1280px"
+                      priority={index === 0}
+                    />
+                    <div
+                      className="absolute inset-0 bg-linear-to-t from-black/80 via-black/25 to-transparent"
+                      aria-hidden
+                    />
+                    <p className="absolute inset-x-0 bottom-0 px-4 pb-4 pt-12 text-center text-xs font-bold uppercase tracking-[0.12em] text-white sm:pb-6 sm:text-sm md:text-base lg:text-lg">
+                      {banner.headline}
+                    </p>
+                  </div>
+                </Link>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
 
-        {/* Navigation arrows - positioned inside */}
-        <CarouselPrevious className="left-4 border-zinc-700 bg-zinc-800/80 text-white hover:bg-zinc-700 hover:text-white sm:left-8" />
-        <CarouselNext className="right-4 border-zinc-700 bg-zinc-800/80 text-white hover:bg-zinc-700 hover:text-white sm:right-8" />
-      </Carousel>
-
-      {/* Dot indicators */}
-      {count > 1 && (
-        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2 sm:bottom-6">
-          {Array.from({ length: count }).map((_, index) => (
-            <button
-              key={`dot-${index}`}
-              type="button"
-              onClick={() => scrollTo(index)}
-              className={cn(
-                "h-2 w-2 rounded-full transition-all duration-300",
-                current === index
-                  ? "w-6 bg-white"
-                  : "bg-white/40 hover:bg-white/60",
-              )}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-interface FeaturedSlideProps {
-  product: FeaturedProduct;
-}
-
-function FeaturedSlide({ product }: FeaturedSlideProps) {
-  const mainImage = product.images?.[0]?.asset?.url;
-
-  return (
-    <div className="flex min-h-[400px] flex-col md:min-h-[450px] md:flex-row lg:min-h-[500px]">
-      {/* Image Section - Left side (60% on desktop) */}
-      <div className="relative h-64 w-full md:h-auto md:w-3/5">
-        {mainImage ? (
-          <Image
-            src={mainImage}
-            alt={product.name ?? "Featured product"}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 60vw"
-            priority
+          <CarouselPrevious
+            className={cn("left-2 sm:left-4", navButtonClass)}
+            aria-label="Slide anterioară"
           />
-        ) : (
-          <div className="flex h-full items-center justify-center bg-zinc-800">
-            <span className="text-zinc-500">Fără imagine</span>
+          <CarouselNext
+            className={cn("right-2 sm:right-4", navButtonClass)}
+            aria-label="Slide următoare"
+          />
+        </Carousel>
+
+        {count > 1 && (
+          <div className="pointer-events-none absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-2 sm:bottom-6">
+            {Array.from({ length: count }).map((_, index) => (
+              <button
+                key={`dot-${index}`}
+                type="button"
+                onClick={() => scrollTo(index)}
+                className={cn(
+                  "pointer-events-auto h-2 rounded-full transition-all duration-300",
+                  current === index
+                    ? "w-6 bg-white"
+                    : "w-2 bg-white/45 hover:bg-white/70",
+                )}
+                aria-label={`Salt la slide-ul ${index + 1}`}
+              />
+            ))}
           </div>
         )}
-
-        {/* Gradient overlay for image edge blending */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-zinc-900/90 dark:to-zinc-950/90 hidden md:block" />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/90 via-transparent to-transparent md:hidden" />
-      </div>
-
-      {/* Content Section - Right side (40% on desktop) */}
-      <div className="flex w-full flex-col justify-center px-6 py-8 md:w-2/5 md:px-10 lg:px-16">
-        {product.category && (
-          <Badge
-            variant="secondary"
-            className="mb-4 w-fit bg-amber-500/20 text-amber-400 hover:bg-amber-500/30"
-          >
-            {product.category.title}
-          </Badge>
-        )}
-
-        <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
-          {product.name}
-        </h2>
-
-        {product.description && (
-          <p className="mt-4 line-clamp-3 text-sm text-zinc-300 sm:text-base lg:text-lg">
-            {product.description}
-          </p>
-        )}
-
-        <p className="mt-6 text-3xl font-bold text-white lg:text-4xl">
-          {formatPrice(product.price)}
-        </p>
-
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Button
-            asChild
-            size="lg"
-            className="bg-white text-zinc-900 hover:bg-zinc-100"
-          >
-            <Link href={`/products/${product.slug}`}>
-              Cumpără acum
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
       </div>
     </div>
   );

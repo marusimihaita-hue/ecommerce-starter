@@ -38,7 +38,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const hasMultipleImages = images.length > 1;
 
   return (
-    <Card className="group relative flex h-full flex-col overflow-hidden rounded-xl border-0 bg-white p-0 shadow-sm ring-1 ring-zinc-950/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-950/10 dark:bg-zinc-900 dark:ring-white/10 dark:hover:shadow-zinc-950/50">
+    <Card className="group relative flex h-full flex-col overflow-hidden rounded-xl border-0 bg-white p-0 shadow-sm ring-1 ring-zinc-950/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-950/10 dark:bg-zinc-900 dark:ring-white/10 dark:hover:shadow-zinc-950/50 ">
       <Link href={`/products/${product.slug}`} className="block">
         <div
           className={cn(

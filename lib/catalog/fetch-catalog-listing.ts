@@ -75,6 +75,8 @@ export async function fetchCatalogListing({
   const volume = Number.isFinite(volumeRaw) ? volumeRaw : 0;
   const destination = firstParam(searchParams.destination);
   const diffuserType = firstParam(searchParams.diffuserType);
+  const merchandisingFilter =
+    preset.merchandisingFilter !== undefined ? preset.merchandisingFilter : "";
 
   const filterParams = {
     categorySlug,
@@ -89,6 +91,7 @@ export async function fetchCatalogListing({
     volume,
     destination,
     diffuserType,
+    merchandisingFilter,
   };
 
   const start = (pageNum - 1) * pageSize;

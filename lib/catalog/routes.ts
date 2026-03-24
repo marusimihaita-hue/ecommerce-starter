@@ -45,6 +45,21 @@ const NAV_ROUTES: Record<
     profile: "home",
     preset: { categorySlug: "home", homeSubtype: "homeFragrance" },
   },
+  oferte: {
+    title: "Oferte",
+    profile: "all",
+    preset: { merchandisingFilter: "onSale" },
+  },
+  populare: {
+    title: "Populare",
+    profile: "all",
+    preset: { merchandisingFilter: "popular" },
+  },
+  noutati: {
+    title: "Noutăți",
+    profile: "all",
+    preset: { merchandisingFilter: "newArrival" },
+  },
 };
 
 export const STATIC_CATALOG_SLUGS = [
