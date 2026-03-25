@@ -22,7 +22,10 @@ export function StockBadge({ productId, stock, className }: StockBadgeProps) {
     return (
       <Badge
         variant="secondary"
-        className={cn("w-fit bg-blue-100 text-blue-800", className)}
+        className={cn(
+          "w-fit border border-border bg-muted text-muted-foreground",
+          className,
+        )}
       >
         Limită atinsă
       </Badge>
@@ -33,7 +36,10 @@ export function StockBadge({ productId, stock, className }: StockBadgeProps) {
     return (
       <Badge
         variant="secondary"
-        className={cn("w-fit bg-amber-100 text-amber-800", className)}
+        className={cn(
+          "w-fit bg-brand-mint/15 text-[#0f5c44] dark:bg-brand-mint/20 dark:text-[#8ee4c5]",
+          className,
+        )}
       >
         Doar {stock} rămase în stoc
       </Badge>

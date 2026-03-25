@@ -49,16 +49,16 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
       {/* Thumbnail Grid */}
       {images.length > 1 && (
-        <div className="grid grid-cols-4 gap-2 sm:grid-cols-5 md:grid-cols-6">
+        <div className="flex flex-wrap gap-2">
           {images.map((image, index) => (
             <button
               key={image._key}
               type="button"
               onClick={() => setSelectedIndex(index)}
-              aria-label={`View image ${index + 1}`}
+              aria-label={`Imaginea ${index + 1}`}
               aria-pressed={selectedIndex === index}
               className={cn(
-                "relative aspect-square overflow-hidden rounded-md bg-zinc-100 transition-all dark:bg-zinc-800",
+                "relative aspect-square w-[4.5rem] shrink-0 overflow-hidden rounded-md bg-zinc-100 transition-all sm:w-20 dark:bg-zinc-800",
                 selectedIndex === index
                   ? "ring-2 ring-zinc-900 dark:ring-zinc-100"
                   : "hover:opacity-75",

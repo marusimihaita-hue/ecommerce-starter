@@ -10,11 +10,11 @@ interface ProductGridProps {
 export function ProductGrid({ products }: ProductGridProps) {
   if (products.length === 0) {
     return (
-      <div className="min-h-[1000px] rounded-2xl border-2 border-dashed border-zinc-200 bg-zinc-50/50 dark:border-zinc-800 dark:bg-zinc-900/50">
+      <div className="flex min-h-[min(100dvh,36rem)] items-center justify-center rounded-2xl border border-dashed border-border bg-muted/40 px-4 py-16">
         <EmptyState
           icon={PackageSearch}
-          title="No products found"
-          description="Try adjusting your search or filters to find what you're looking for"
+          title="Niciun produs găsit"
+          description="Încearcă alte cuvinte la căutare sau relaxează filtrele pentru a vedea mai multe rezultate."
           size="lg"
         />
       </div>
@@ -23,9 +23,12 @@ export function ProductGrid({ products }: ProductGridProps) {
 
   return (
     <div className="@container">
-      <div className="grid grid-cols-1 gap-6 @md:grid-cols-2 @xl:grid-cols-3 @6xl:grid-cols-4 @md:gap-8">
+      {/* Coloane cu lățime plafonată: puține produse nu întind carduri pe tot ecranul */}
+      <div className="grid grid-cols-1 justify-start gap-6 sm:grid-cols-[repeat(auto-fill,minmax(min(100%,17rem),20.5rem))] sm:gap-8">
         {products.map((product) => (
-          <ProductCard key={product._id} product={product} />
+          <div key={product._id} className="min-w-0 w-full">
+            <ProductCard product={product} />
+          </div>
         ))}
       </div>
     </div>

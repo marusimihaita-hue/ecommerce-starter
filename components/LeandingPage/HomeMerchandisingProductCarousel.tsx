@@ -26,7 +26,7 @@ export function HomeMerchandisingProductCarousel({
         containScroll: "trimSnaps",
         dragFree: true,
       }}
-      className="relative w-full px-2 sm:px-10 "
+      className="relative w-full"
     >
       <CarouselContent className="-ml-4">
         {products.map((product) => (
@@ -40,11 +40,11 @@ export function HomeMerchandisingProductCarousel({
       </CarouselContent>
       <CarouselPrevious
         aria-label="Produse anterioare"
-        className="hidden sm:flex top-1/2 left-0 z-10 size-9 -translate-y-1/2 border-zinc-200 bg-white/95 shadow-md backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-950/95"
+        className="hidden sm:flex top-1/2 left-0 z-10 size-9 -translate-y-1/2 border-border bg-background/95 text-foreground shadow-md backdrop-blur-sm"
       />
       <CarouselNext
         aria-label="Produse următoare"
-        className="hidden sm:flex top-1/2 right-0 z-10 size-9 -translate-y-1/2 border-zinc-200 bg-white/95 shadow-md backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-950/95"
+        className="hidden sm:flex top-1/2 right-0 z-10 size-9 -translate-y-1/2 border-border bg-background/95 text-foreground shadow-md backdrop-blur-sm"
       />
     </Carousel>
   );

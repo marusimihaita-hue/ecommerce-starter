@@ -8,6 +8,7 @@ import {
   useTotalItems,
   useCartActions,
 } from "@/lib/store/cart-store-provider";
+import { getShippingChargeRon } from "@/lib/constants/shipping";
 
 interface CartSummaryProps {
   hasStockIssues?: boolean;
@@ -17,18 +18,26 @@ export function CartSummary({ hasStockIssues = false }: CartSummaryProps) {
   const totalPrice = useTotalPrice();
   const totalItems = useTotalItems();
   const { closeCart } = useCartActions();
+  const shippingCharge = getShippingChargeRon(totalPrice);
 
   if (totalItems === 0) return null;
 
   return (
-    <div className="border-t border-zinc-200 p-4 dark:border-zinc-800">
-      <div className="flex justify-between text-base font-medium text-zinc-900 dark:text-zinc-100">
+    <div className="border-t border-border p-4">
+      <div className="flex justify-between text-base font-medium text-foreground">
         <span>Subtotal</span>
         <span>{formatPrice(totalPrice)}</span>
       </div>
-      <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-        Costul livrării se calculează la finalizare
-      </p>
+      <div className="mt-2 flex justify-between text-sm text-muted-foreground">
+        <span>Livrare (estimat)</span>
+        <span className="font-medium text-foreground">
+          {shippingCharge === 0 ? (
+            <span className="font-semibold text-brand-mint">Gratuit</span>
+          ) : (
+            formatPrice(shippingCharge)
+          )}
+        </span>
+      </div>
       <div className="mt-4">
         {hasStockIssues ? (
           <Button disabled className="w-full">
@@ -45,7 +54,7 @@ export function CartSummary({ hasStockIssues = false }: CartSummaryProps) {
       <div className="mt-3 text-center">
         <Link
           href="/"
-          className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+          className="text-sm text-muted-foreground transition-colors hover:text-primary"
         >
           Continuă cumpărăturile →
         </Link>

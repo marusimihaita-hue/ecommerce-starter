@@ -3,8 +3,8 @@ import Anpc from "./ANPCBadges";
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-white text-black mt-10 border-t-1 pt-8">
-      <div className="max-w-6xl mx-auto px-4 pt-1 mb-12 ">
+    <footer className="mt-10 w-full border-t border-border bg-background pt-8 text-foreground">
+      <div className="mx-auto mb-12 max-w-screen-2xl px-4 pt-1">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 ">
           {/* 1. Plata cu Cardul */}
           <div className="flex flex-col items-center text-center">
@@ -18,15 +18,15 @@ const Footer = () => {
               strokeWidth="1"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="mb-4 text-gray-800"
+              className="mb-4 text-primary"
             >
               <rect width="20" height="14" x="2" y="5" rx="2" />
               <line x1="2" x2="22" y1="10" y2="10" />
             </svg>
-            <h3 className="text-sm font-bold uppercase tracking-widest text-gray-900">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">
               Plata Online cu Cardul
             </h3>
-            <p className="text-xs text-gray-500 mt-2 font-light italic">
+            <p className="mt-2 text-xs font-light italic text-muted-foreground">
               Plătește în siguranță cu cardul
             </p>
           </div>
@@ -43,7 +43,7 @@ const Footer = () => {
               strokeWidth="1"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="mb-4 text-gray-800"
+              className="mb-4 text-primary"
             >
               <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
               <path d="M15 18H9" />
@@ -51,11 +51,11 @@ const Footer = () => {
               <circle cx="7" cy="18" r="2" />
               <circle cx="17" cy="18" r="2" />
             </svg>
-            <h3 className="text-sm font-bold uppercase tracking-widest text-gray-900">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">
               Transport Gratuit
             </h3>
-            <p className="text-xs text-gray-500 mt-2 font-light italic">
-              La comenzi de peste 1000 lei
+            <p className="mt-2 text-xs font-light italic text-muted-foreground">
+              Gratuit de la 200 lei · sub 200 lei: 19 lei livrare
             </p>
           </div>
 
@@ -71,7 +71,7 @@ const Footer = () => {
               strokeWidth="1"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="mb-4 text-gray-800"
+              className="mb-4 text-primary"
             >
               <path d="M20 12v10H4V12" />
               <path d="M2 7h20v5H2z" />
@@ -79,10 +79,10 @@ const Footer = () => {
               <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
               <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
             </svg>
-            <h3 className="text-sm font-bold uppercase tracking-widest text-gray-900">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">
               Ambalat cu Grijă
             </h3>
-            <p className="text-xs text-gray-500 mt-2 font-light italic">
+            <p className="mt-2 text-xs font-light italic text-muted-foreground">
               Pregătit special pentru cadou
             </p>
           </div>
@@ -96,7 +96,10 @@ const Footer = () => {
             className="flex flex-col items-center gap-4 text-center 
                         md:flex-row md:flex-wrap md:justify-center md:gap-x-10 md:gap-y-4"
           >
-            <Link href="/info/about-us" className="hover:underline">
+            <Link
+              href="/info/about-us"
+              className="text-muted-foreground transition-colors hover:text-primary hover:underline"
+            >
               Despre noi
             </Link>
 
@@ -104,15 +107,24 @@ const Footer = () => {
               Politica Cookies
             </Link>
 
-            <Link href="/protectia-date" className="hover:underline">
+            <Link
+              href="/protectia-date"
+              className="text-muted-foreground transition-colors hover:text-primary hover:underline"
+            >
               Politica privind protecția datelor cu caracter personal
             </Link>
 
-            <Link href="/termeni-conditii" className="hover:underline">
+            <Link
+              href="/termeni-conditii"
+              className="text-muted-foreground transition-colors hover:text-primary hover:underline"
+            >
               Termeni și condiții
             </Link>
 
-            <Link href="/gdpr" className="hover:underline">
+            <Link
+              href="/gdpr"
+              className="text-muted-foreground transition-colors hover:text-primary hover:underline"
+            >
               Politica GDPR
             </Link>
           </div>
@@ -126,13 +138,16 @@ const Footer = () => {
               PROTECȚIA CONSUMATORULUI A.N.P.C
             </Link>
 
-            <Link href="/info/contact" className="hover:underline">
+            <Link
+              href="/info/contact"
+              className="text-muted-foreground transition-colors hover:text-primary hover:underline"
+            >
               Contact
             </Link>
           </div>
 
           {/* Copyright */}
-          <div className="mt-6 text-center text-sm text-gray-600">
+          <div className="mt-6 text-center text-sm text-muted-foreground">
             © 2026 CompactValdav
           </div>
         </div>

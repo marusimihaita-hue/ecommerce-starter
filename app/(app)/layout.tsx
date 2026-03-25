@@ -17,7 +17,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <NavMenuStoreProvider>
           {/* <ShippingAlert /> */}
           <Header />
-          <main>{children}</main>
+          <main className="min-h-[calc(100dvh-4rem)]">{children}</main>
           <Footer />
           <NavMenuSheet />
           <CartSheet />

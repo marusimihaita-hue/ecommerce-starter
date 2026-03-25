@@ -39,7 +39,7 @@ export function NavMenuSheet() {
         side="left"
         className="flex w-full flex-col sm:max-w-lg gap-0"
       >
-        <SheetHeader className="border-b border-zinc-200 dark:border-zinc-800">
+        <SheetHeader className="border-b border-border">
           <SheetTitle className="flex items-center gap-2">
             <Menu className="h-4 w-4" />
             Meniu
@@ -47,7 +47,7 @@ export function NavMenuSheet() {
         </SheetHeader>
 
         <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-4">
-          <p className="px-3 pb-2 text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+          <p className="px-3 pb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Categorii principale
           </p>
           <ul className="space-y-0.5">
@@ -56,7 +56,7 @@ export function NavMenuSheet() {
                 <Link
                   href={item.href}
                   onClick={closeNavMenu}
-                  className="block rounded-md px-3 py-2.5 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-100 dark:text-zinc-100 dark:hover:bg-zinc-900"
+                  className="block rounded-md px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                 >
                   {item.label}
                 </Link>
@@ -64,9 +64,9 @@ export function NavMenuSheet() {
             ))}
           </ul>
 
-          <Separator className="my-4 bg-zinc-200 dark:bg-zinc-800" />
+          <Separator className="my-4 bg-border" />
 
-          <p className="px-3 pb-2 text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+          <p className="px-3 pb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Secțiuni speciale
           </p>
           <ul className="space-y-0.5">
@@ -75,7 +75,7 @@ export function NavMenuSheet() {
                 <Link
                   href={item.href}
                   onClick={closeNavMenu}
-                  className="block rounded-md px-3 py-2.5 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-100 dark:text-zinc-100 dark:hover:bg-zinc-900"
+                  className="block rounded-md px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                 >
                   {item.label}
                 </Link>

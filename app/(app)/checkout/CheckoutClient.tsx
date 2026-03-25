@@ -12,6 +12,7 @@ import {
   useTotalItems,
 } from "@/lib/store/cart-store-provider";
 import { useCartStock } from "@/lib/hooks/useCartStock";
+import { getShippingChargeRon } from "@/lib/constants/shipping";
 
 export function CheckoutClient() {
   const items = useCartItems();
@@ -19,15 +20,18 @@ export function CheckoutClient() {
   const totalItems = useTotalItems();
   const { stockMap, isLoading, hasStockIssues } = useCartStock(items);
 
+  const shippingCharge = getShippingChargeRon(totalPrice);
+  const orderTotal = totalPrice + shippingCharge;
+
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="text-center">
-          <ShoppingBag className="mx-auto h-16 w-16 text-zinc-300 dark:text-zinc-600" />
-          <h1 className="mt-6 text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+          <ShoppingBag className="mx-auto h-16 w-16 text-muted-foreground/50" />
+          <h1 className="mt-6 text-2xl font-bold text-foreground">
             Coșul tău este gol
           </h1>
-          <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 text-muted-foreground">
             Adaugă produse în coș înainte de a finaliza comanda.
           </p>
           <Button asChild className="mt-8">
@@ -44,12 +48,12 @@ export function CheckoutClient() {
       <div className="mb-8">
         <Link
           href="/"
-          className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+          className="inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-primary"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Continuă cumpărăturile
         </Link>
-        <h1 className="mt-4 text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+        <h1 className="mt-4 text-3xl font-bold text-foreground">
           Finalizează comanda
         </h1>
       </div>
@@ -57,9 +61,9 @@ export function CheckoutClient() {
       <div className="grid gap-8 lg:grid-cols-5">
         {/* Cart Items */}
         <div className="lg:col-span-3">
-          <div className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-            <div className="border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
-              <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
+          <div className="rounded-lg border border-border bg-card text-card-foreground">
+            <div className="border-b border-border px-6 py-4">
+              <h2 className="font-semibold text-foreground">
                 Comanda ta ({totalItems} produse)
               </h2>
             </div>
@@ -78,15 +82,15 @@ export function CheckoutClient() {
             {/* Loading State */}
             {isLoading && (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-zinc-400" />
-                <span className="ml-2 text-sm text-zinc-500">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                <span className="ml-2 text-sm text-muted-foreground">
                   Verificare stoc...
                 </span>
               </div>
             )}
 
             {/* Items List */}
-            <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
+            <div className="divide-y divide-border">
               {items.map((item) => {
                 const stockInfo = stockMap.get(item.productId);
                 const hasIssue =
@@ -100,7 +104,7 @@ export function CheckoutClient() {
                     }`}
                   >
                     {/* Image */}
-                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-zinc-100 dark:bg-zinc-800">
+                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-muted">
                       {item.image ? (
                         <Image
                           src={item.image}
@@ -110,7 +114,7 @@ export function CheckoutClient() {
                           sizes="80px"
                         />
                       ) : (
-                        <div className="flex h-full items-center justify-center text-xs text-zinc-400">
+                        <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
                           No image
                         </div>
                       )}
@@ -119,10 +123,10 @@ export function CheckoutClient() {
                     {/* Details */}
                     <div className="flex flex-1 flex-col justify-between">
                       <div>
-                        <h3 className="font-medium text-zinc-900 dark:text-zinc-100">
+                        <h3 className="font-medium text-foreground">
                           {item.name}
                         </h3>
-                        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                        <p className="mt-1 text-sm text-muted-foreground">
                           Cantitate: {item.quantity}
                         </p>
                         {stockInfo?.isOutOfStock && (
@@ -140,11 +144,11 @@ export function CheckoutClient() {
 
                     {/* Price */}
                     <div className="text-right">
-                      <p className="font-medium text-zinc-900 dark:text-zinc-100">
+                      <p className="font-medium text-foreground">
                         {formatPrice(item.price * item.quantity)}
                       </p>
                       {item.quantity > 1 && (
-                        <p className="text-sm text-zinc-500">
+                        <p className="text-sm text-muted-foreground">
                           {formatPrice(item.price)} bucata
                         </p>
                       )}
@@ -158,35 +162,39 @@ export function CheckoutClient() {
 
         {/* Order Total & Checkout */}
         <div className="lg:col-span-2">
-          <div className="sticky top-24 rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-            <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
+          <div className="sticky top-24 rounded-lg border border-border bg-card p-6 text-card-foreground">
+            <h2 className="font-semibold text-foreground">
               Sumar plată
             </h2>
 
             <div className="mt-6 space-y-4">
               <div className="flex justify-between text-sm">
-                <span className="text-zinc-500 dark:text-zinc-400">
+                <span className="text-muted-foreground">
                   Subtotal
                 </span>
-                <span className="text-zinc-900 dark:text-zinc-100">
+                <span className="text-foreground">
                   {formatPrice(totalPrice)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-zinc-500 dark:text-zinc-400">
+                <span className="text-muted-foreground">
                   Livrare
                 </span>
-                <span className="text-zinc-900 dark:text-zinc-100">
-                  Calculat la finalizare
+                <span className="text-foreground">
+                  {shippingCharge === 0 ? (
+                    <span className="font-semibold text-brand-mint">Gratuit</span>
+                  ) : (
+                    formatPrice(shippingCharge)
+                  )}
                 </span>
               </div>
-              <div className="border-t border-zinc-200 pt-4 dark:border-zinc-800">
+              <div className="border-t border-border pt-4">
                 <div className="flex justify-between text-base font-semibold">
-                  <span className="text-zinc-900 dark:text-zinc-100">
+                  <span className="text-foreground">
                     Total
                   </span>
-                  <span className="text-zinc-900 dark:text-zinc-100">
-                    {formatPrice(totalPrice)}
+                  <span className="text-foreground">
+                    {formatPrice(orderTotal)}
                   </span>
                 </div>
               </div>
@@ -196,7 +204,7 @@ export function CheckoutClient() {
               <CheckoutButton disabled={hasStockIssues || isLoading} />
             </div>
 
-            <p className="mt-4 text-center text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="mt-4 text-center text-xs text-muted-foreground">
               Redirecționare către plata Stripe securizată
             </p>
           </div>

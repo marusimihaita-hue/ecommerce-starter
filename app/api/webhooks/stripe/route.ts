@@ -18,6 +18,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
+/** Id unic pentru idempotență + câmpul order.stripePaymentId (PI id sau fallback la session id). */
+function paymentRefFromSession(session: Stripe.Checkout.Session): string {
+  const pi = session.payment_intent;
+  if (typeof pi === "string" && pi.length > 0) return pi;
+  if (pi && typeof pi === "object" && "id" in pi) {
+    return (pi as Stripe.PaymentIntent).id;
+  }
+  return session.id;
+}
+
 export async function POST(req: Request) {
   const body = await req.text();
   const headersList = await headers();
@@ -58,7 +68,7 @@ export async function POST(req: Request) {
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  const stripePaymentId = session.payment_intent as string;
+  const stripePaymentId = paymentRefFromSession(session);
 
   try {
     // Idempotency check: prevent duplicate processing on webhook retries

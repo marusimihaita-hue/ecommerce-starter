@@ -32,23 +32,23 @@ export function CartSheet() {
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && closeCart()}>
       <SheetContent className="flex w-full flex-col sm:max-w-lg gap-0">
-        <SheetHeader className="border-b border-zinc-200 dark:border-zinc-800">
+        <SheetHeader className="border-b border-border">
           <SheetTitle className="flex items-center gap-2">
-            <ShoppingCart className="h-4 w-4 mr-1 " />
+            <ShoppingCart className="mr-1 h-4 w-4" />
             Coș de cumpărături ({totalItems})
             {isLoading && (
-              <Loader2 className="h-4 w-4 animate-spin text-zinc-400" />
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
             )}
           </SheetTitle>
         </SheetHeader>
 
         {items.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center text-center">
-            <ShoppingCart className="h-12 w-12 text-zinc-300 dark:text-zinc-600" />
-            <h3 className="mt-4 text-lg font-medium text-zinc-900 dark:text-zinc-100">
+            <ShoppingCart className="h-12 w-12 text-muted-foreground/50" />
+            <h3 className="mt-4 text-lg font-medium text-foreground">
               Coșul tău este gol
             </h3>
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="mt-1 text-sm text-muted-foreground">
               Adaugă produse pentru a începe
             </p>
           </div>
@@ -67,7 +67,7 @@ export function CartSheet() {
 
             {/* Cart Items */}
             <div className="flex-1 overflow-y-auto px-5">
-              <div className="space-y-2 py-2 divide-y divide-zinc-200 dark:divide-zinc-800">
+              <div className="divide-y divide-border space-y-2 py-2">
                 {items.map((item) => (
                   <CartItem
                     key={item.productId}

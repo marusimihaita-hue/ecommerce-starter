@@ -92,11 +92,15 @@ export default async function CatalogCategoryPage({ params, searchParams }: Page
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+    <div className="mx-auto max-w-screen-2xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <h1 className="scroll-mt-24 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
         {resolved.title}
       </h1>
-      <div className="mt-8">
+      <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        Răsfoiește produsele din această categorie și folosește filtrele pentru a
+        restrânge rezultatele.
+      </p>
+      <div className="mt-6 sm:mt-8">
         <ProductSection
           categories={cats}
           products={products}

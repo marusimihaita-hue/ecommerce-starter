@@ -14,80 +14,94 @@ export function Header() {
   const totalItems = useTotalItems();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-2 -ml-4">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
+      <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+        <div className="flex min-w-0 flex-1 items-center gap-1 sm:gap-2">
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            className="shrink-0 h-10 w-10"
+            className="size-10 shrink-0"
             onClick={openNavMenu}
             aria-label="Deschide meniul"
           >
-            <Menu className="h-9 w-9" />
+            <Menu className="size-5" strokeWidth={2} aria-hidden />
           </Button>
-          {/* Logo */}
-          <Link href="/">
-            <span className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+          <Link
+            href="/"
+            className="min-w-0 truncate rounded-md py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <span className="text-xl font-bold tracking-tight text-foreground">
               CValdav
             </span>
           </Link>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-2">
-          {/* My Orders - Only when signed in */}
+        <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
           {isSignedIn && (
-            <Button asChild variant="ghost" size="icon" className=" h-10 w-10">
-              <Link href="/orders" className="flex items-center gap-2">
-                <PackageCheck className="h-9 w-9" />
+            <Button asChild variant="ghost" size="icon" className="size-10">
+              <Link
+                href="/orders"
+                className="inline-flex size-10 items-center justify-center"
+                aria-label="Comenzile mele"
+              >
+                <PackageCheck className="size-5" strokeWidth={2} aria-hidden />
               </Link>
             </Button>
           )}
 
-          {/* Cart Button */}
           <Button
+            type="button"
             variant="ghost"
-            size="sm"
-            className="relative mr-2  h-10 w-10"
+            size="icon"
+            className="relative size-10"
             onClick={openCart}
+            aria-label={
+              totalItems > 0
+                ? `Deschide coșul, ${totalItems} produse`
+                : "Deschide coșul"
+            }
           >
-            <ShoppingCart className="h-10 w-10" />
+            <ShoppingCart className="size-5" strokeWidth={2} aria-hidden />
             {totalItems > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-900 text-xs font-medium text-white dark:bg-zinc-100 dark:text-zinc-900 ">
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold leading-none text-primary-foreground">
                 {totalItems > 99 ? "99+" : totalItems}
               </span>
             )}
-            <span className="sr-only">Deschide coșul ({totalItems} items)</span>
           </Button>
 
-          {/* User */}
-          {isSignedIn ? (
-            <UserButton
-              afterSwitchSessionUrl="/"
-              appearance={{
-                elements: {
-                  avatarBox: "h-9 w-9",
-                },
-              }}
-            >
-              <UserButton.MenuItems>
-                <UserButton.Link
-                  label="My Orders"
-                  labelIcon={<Package className="h-4 w-4" />}
-                  href="/orders"
-                />
-              </UserButton.MenuItems>
-            </UserButton>
-          ) : (
-            <SignInButton mode="modal">
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
-                <span className="sr-only">Autentificare</span>
-              </Button>
-            </SignInButton>
-          )}
+          <div className="flex size-10 items-center justify-center">
+            {isSignedIn ? (
+              <UserButton
+                afterSwitchSessionUrl="/"
+                appearance={{
+                  elements: {
+                    avatarBox: "h-8 w-8 ring-1 ring-border",
+                    userButtonPopoverCard: "rounded-xl",
+                  },
+                }}
+              >
+                <UserButton.MenuItems>
+                  <UserButton.Link
+                    label="My Orders"
+                    labelIcon={<Package className="h-4 w-4" />}
+                    href="/orders"
+                  />
+                </UserButton.MenuItems>
+              </UserButton>
+            ) : (
+              <SignInButton mode="modal">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-10"
+                  aria-label="Autentificare"
+                >
+                  <User className="size-5" strokeWidth={2} aria-hidden />
+                </Button>
+              </SignInButton>
+            )}
+          </div>
         </div>
       </div>
     </header>

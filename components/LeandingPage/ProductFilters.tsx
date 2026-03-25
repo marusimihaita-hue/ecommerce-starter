@@ -250,13 +250,13 @@ export function ProductFilters({
       <span
         className={`block text-sm font-medium ${
           isActive
-            ? "text-zinc-900 dark:text-zinc-100"
-            : "text-zinc-700 dark:text-zinc-300"
+            ? "text-foreground"
+            : "text-muted-foreground"
         }`}
       >
         {children}
         {isActive && (
-          <Badge className="ml-2 h-5 bg-amber-500 px-1.5 text-xs text-white hover:bg-amber-500">
+          <Badge className="ml-2 h-5 bg-primary px-1.5 text-xs text-primary-foreground hover:bg-primary">
             Activ
           </Badge>
         )}
@@ -265,8 +265,8 @@ export function ProductFilters({
         <button
           type="button"
           onClick={() => clearSingleFilter(filterKey)}
-          className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
-          aria-label={`Clear ${filterKey} filter`}
+          className="text-muted-foreground hover:text-foreground"
+          aria-label="Șterge acest filtru"
         >
           <X className="h-4 w-4" />
         </button>
@@ -275,11 +275,11 @@ export function ProductFilters({
   );
 
   return (
-    <div className="space-y-6 rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+    <div className="space-y-6 rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm sm:p-6">
       {hasActiveFilters && (
-        <div className="rounded-lg border-2 border-amber-300 bg-amber-50 p-3 dark:border-amber-700 dark:bg-amber-950">
+        <div className="rounded-lg border-2 border-primary/35 bg-accent p-3">
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm font-medium text-amber-800 dark:text-amber-200">
+            <span className="text-sm font-medium text-foreground">
               {activeFilterCount}{" "}
               {activeFilterCount === 1 ? "filtru activ" : "filtre active"}
             </span>
@@ -287,7 +287,7 @@ export function ProductFilters({
           <Button
             size="sm"
             onClick={handleClearFilters}
-            className="w-full bg-amber-500 text-white hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <X className="mr-2 h-4 w-4" />
             Șterge filtrele opționale
@@ -307,7 +307,7 @@ export function ProductFilters({
             key={currentSearch}
             className={`flex-1 ${
               isSearchActive
-                ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
+                ? "border-primary ring-1 ring-primary"
                 : ""
             }`}
           />
@@ -331,7 +331,7 @@ export function ProductFilters({
             <SelectTrigger
               className={
                 isCategoryActive
-                  ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
+                  ? "border-primary ring-1 ring-primary"
                   : ""
               }
             >
@@ -363,7 +363,7 @@ export function ProductFilters({
             <SelectTrigger
               className={
                 isGenderActive
-                  ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
+                  ? "border-primary ring-1 ring-primary"
                   : ""
               }
             >
@@ -401,7 +401,7 @@ export function ProductFilters({
               <SelectTrigger
                 className={
                   isOlfactiveFamilyActive
-                    ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
+                    ? "border-primary ring-1 ring-primary"
                     : ""
                 }
               >
@@ -436,7 +436,7 @@ export function ProductFilters({
               <SelectTrigger
                 className={
                   isConcentrationActive
-                    ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
+                    ? "border-primary ring-1 ring-primary"
                     : ""
                 }
               >
@@ -476,7 +476,7 @@ export function ProductFilters({
             <SelectTrigger
               className={
                 isHomeSubtypeActive
-                  ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
+                  ? "border-primary ring-1 ring-primary"
                   : ""
               }
             >
@@ -508,7 +508,7 @@ export function ProductFilters({
             <SelectTrigger
               className={
                 isDestinationActive
-                  ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
+                  ? "border-primary ring-1 ring-primary"
                   : ""
               }
             >
@@ -540,7 +540,7 @@ export function ProductFilters({
             <SelectTrigger
               className={
                 isDiffuserActive
-                  ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
+                  ? "border-primary ring-1 ring-primary"
                   : ""
               }
             >
@@ -574,7 +574,7 @@ export function ProductFilters({
             <SelectTrigger
               className={
                 isVolumeActive
-                  ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
+                  ? "border-primary ring-1 ring-primary"
                   : ""
               }
             >
@@ -608,7 +608,7 @@ export function ProductFilters({
               maxPrice: max < 5000 ? max : null,
             })
           }
-          className={`mt-4 ${isPriceActive ? "[&_[role=slider]]:border-amber-500 [&_[role=slider]]:ring-amber-500" : ""}`}
+          className={`mt-4 ${isPriceActive ? "[&_[role=slider]]:border-primary [&_[role=slider]]:ring-primary" : ""}`}
         />
       </div>
 
@@ -620,18 +620,16 @@ export function ProductFilters({
             onChange={(e) =>
               updateParams({ inStock: e.target.checked ? "true" : null })
             }
-            className="h-5 w-5 rounded border-zinc-300 text-amber-500 focus:ring-amber-500 dark:border-zinc-600 dark:bg-zinc-800"
+            className="h-5 w-5 rounded border-border text-primary focus:ring-primary"
           />
           <span
             className={`text-sm font-medium ${
-              isInStockActive
-                ? "text-zinc-900 dark:text-zinc-100"
-                : "text-zinc-700 dark:text-zinc-300"
+              isInStockActive ? "text-foreground" : "text-muted-foreground"
             }`}
           >
             Doar produse în stoc
             {isInStockActive && (
-              <Badge className="ml-2 h-5 bg-amber-500 px-1.5 text-xs text-white hover:bg-amber-500">
+              <Badge className="ml-2 h-5 bg-primary px-1.5 text-xs text-primary-foreground hover:bg-primary">
                 Activ
               </Badge>
             )}
@@ -640,7 +638,7 @@ export function ProductFilters({
       </div>
 
       <div>
-        <span className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <span className="mb-2 block text-sm font-medium text-muted-foreground">
           Sortează după
         </span>
         <Select

@@ -6,6 +6,7 @@ import { client } from "@/sanity/lib/client";
 import { getOrCreateStripeCustomer } from "@/lib/actions/customer";
 import { PRODUCTS_BY_IDS_QUERY } from "@/sanity/queries/products";
 import { CartItem } from "../store/cart-store";
+import { getShippingChargeRon } from "@/lib/constants/shipping";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error("STRIPE_SECRET_KEY is not defined");
@@ -100,6 +101,25 @@ export async function createCheckoutSession(
         },
         quantity,
       }));
+
+    const subtotalRon = validatedItems.reduce(
+      (sum, { product, quantity }) =>
+        sum + (product.price ?? 0) * quantity,
+      0,
+    );
+    const shippingRon = getShippingChargeRon(subtotalRon);
+    if (shippingRon > 0) {
+      lineItems.push({
+        price_data: {
+          currency: "ron",
+          product_data: {
+            name: "Livrare",
+          },
+          unit_amount: Math.round(shippingRon * 100),
+        },
+        quantity: 1,
+      });
+    }
 
     // 6. Get or create Stripe customer
     const userEmail = user.emailAddresses[0]?.emailAddress ?? "";

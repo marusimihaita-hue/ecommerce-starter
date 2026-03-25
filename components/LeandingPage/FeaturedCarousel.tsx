@@ -39,10 +39,10 @@ export function FeaturedCarousel() {
   );
 
   const navButtonClass =
-    "top-1/2 z-10 h-10 w-10 -translate-y-1/2 border-0 bg-black/25 text-white shadow-none backdrop-blur-[2px] hover:bg-black/40 hover:text-white disabled:opacity-30 sm:h-11 sm:w-11";
+    "top-1/2 z-10 h-10 w-10 -translate-y-1/2 border-0 bg-primary/85 text-primary-foreground shadow-none backdrop-blur-[2px] hover:bg-primary hover:text-primary-foreground disabled:opacity-30 sm:h-11 sm:w-11";
 
   return (
-    <div className="relative w-full bg-white px-3 pb-2 pt-3 sm:px-4 sm:pb-3 sm:pt-4 md:px-6 lg:px-8">
+    <div className="relative w-full bg-background px-3 pb-2 pt-3 sm:px-4 sm:pb-3 sm:pt-4 md:px-6 lg:px-8">
       <div className="relative mx-auto max-w-screen-2xl">
         <Carousel
           setApi={setApi}
@@ -107,7 +107,7 @@ export function FeaturedCarousel() {
                 type="button"
                 onClick={() => scrollTo(index)}
                 className={cn(
-                  "pointer-events-auto h-2 rounded-full transition-all duration-300",
+                  "pointer-events-auto h-2 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900",
                   current === index
                     ? "w-6 bg-white"
                     : "w-2 bg-white/45 hover:bg-white/70",

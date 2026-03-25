@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { CategoryTiles } from "@/components/LeandingPage/CategoryTitles";
 import { FeaturedCarousel } from "@/components/LeandingPage/FeaturedCarousel";
@@ -50,15 +51,15 @@ export default async function Home({ searchParams }: PageProps) {
         <FeaturedCarousel />
       </Suspense>
 
-      <div className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="border-b border-border bg-background">
         <div>
-          <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
+          {/* <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
             <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
               Categorii
             </h1>
-          </div>
+          </div> */}
 
-          <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 mt-6">
+          <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 mt-6 ">
             <CategoryTiles categories={categories} />
           </div>
         </div>
@@ -70,12 +71,17 @@ export default async function Home({ searchParams }: PageProps) {
         products={onSaleProducts}
       />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-8">
-        <img
-          src="/Ultra-Wide-Angle-Panoramas-1.jpg"
-          alt="Panoramic view"
-          className="w-full h-auto rounded-lg shadow-md object-cover"
-        />
+      <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 my-10">
+        <div className="relative aspect-21/9 w-full overflow-hidden rounded-xl shadow-md ring-1 ring-border sm:aspect-3/1">
+          <Image
+            src="/Ultra-Wide-Angle-Panoramas-1.jpg"
+            alt="Atmosferă și stil — imagine panoramică CValdav"
+            fill
+            className="object-cover"
+            sizes="(max-width: 1536px) 100vw, 1536px"
+            priority={false}
+          />
+        </div>
       </div>
       <HomeMerchandisingSection
         id="populare"
@@ -89,6 +95,7 @@ export default async function Home({ searchParams }: PageProps) {
         products={newProducts}
       />
       <HomeMerchandisingSection
+        id="seturi-cadou"
         title="Seturi cadou"
         products={giftSetProducts}
       />

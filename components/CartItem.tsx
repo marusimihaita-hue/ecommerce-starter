@@ -34,7 +34,7 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
       {/* Image */}
       <div
         className={cn(
-          "relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-zinc-100 dark:bg-zinc-800",
+          "relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-muted",
           isOutOfStock && "opacity-50",
         )}
       >
@@ -59,8 +59,8 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
           <Link
             href={`/products/${item.productId}`}
             className={cn(
-              "font-medium text-zinc-900 hover:text-zinc-600 dark:text-zinc-100 dark:hover:text-zinc-300",
-              isOutOfStock && "text-zinc-400 dark:text-zinc-500",
+              "font-medium text-foreground transition-colors hover:text-primary",
+              isOutOfStock && "text-muted-foreground",
             )}
           >
             {item.name}
@@ -68,7 +68,7 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-zinc-400 hover:text-red-500"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive"
             onClick={() => removeItem(item.productId)}
           >
             <Trash2 className="h-4 w-4" />
@@ -76,7 +76,7 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
           </Button>
         </div>
 
-        <p className="mt-1 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+        <p className="mt-1 text-sm font-medium text-foreground">
           {formatPrice(item.price)}
         </p>
 
@@ -86,6 +86,7 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
           {!isOutOfStock && (
             <div className="w-32 flex self-end ml-auto">
               <AddToCartButton
+                variant="cartLine"
                 productId={item.productId}
                 name={item.name}
                 price={item.price}

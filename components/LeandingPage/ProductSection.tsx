@@ -75,26 +75,31 @@ export function ProductSection({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Header with results count and filter toggle */}
-      <div className="flex items-center justify-between gap-4">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          {displayCount} {displayCount === 1 ? "produs" : "produse"}{" "}
-          găsite
+      <div className="flex flex-col gap-3 rounded-xl border border-border bg-muted/50 px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-muted-foreground">
+          <span className="font-semibold text-foreground">{displayCount}</span>{" "}
+          {displayCount === 1 ? "produs găsit" : "produse găsite"}
           {searchQuery && (
             <span>
               {" "}
-              for &quot;<span className="font-medium">{searchQuery}</span>&quot;
+              pentru{" "}
+              <span className="font-medium text-foreground">
+                &quot;{searchQuery}&quot;
+              </span>
             </span>
           )}
         </p>
 
-        {/* Filter toggle button */}
         <Button
           variant="outline"
           size="sm"
           onClick={() => setFiltersOpen(!filtersOpen)}
-          className="flex items-center gap-2 border-zinc-300 bg-white shadow-sm transition-all hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
-          aria-label={filtersOpen ? "Hide filters" : "Show filters"}
+          className="shrink-0 gap-2 shadow-sm"
+          aria-expanded={filtersOpen}
+          aria-controls="catalog-filters"
+          aria-label={
+            filtersOpen ? "Ascunde panoul de filtre" : "Afișează panoul de filtre"
+          }
         >
           {filtersOpen ? (
             <>
@@ -113,11 +118,13 @@ export function ProductSection({
       </div>
 
       {/* Main content area */}
-      <div className="flex flex-col gap-8 lg:flex-row">
-        {/* Sidebar Filters - completely hidden when collapsed on desktop */}
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
         <aside
+          id="catalog-filters"
           className={`shrink-0 transition-all duration-300 ease-in-out ${
-            filtersOpen ? "w-full lg:w-72 lg:opacity-100" : "hidden lg:hidden"
+            filtersOpen
+              ? "w-full lg:w-72 lg:max-h-[calc(100dvh-5.5rem)] lg:overflow-y-auto lg:overflow-x-hidden lg:pr-1 lg:sticky lg:top-20 lg:self-start lg:opacity-100"
+              : "hidden lg:hidden"
           }`}
         >
           <ProductFilters
@@ -143,7 +150,7 @@ export function ProductSection({
         </aside>
 
         {/* Product Grid - expands to full width when filters hidden */}
-        <main className="flex-1 transition-all duration-300">
+        <main className="min-w-0 flex-1 transition-all duration-300">
           <ProductGrid products={products} />
         </main>
       </div>
