@@ -41,7 +41,7 @@ export function StockBadge({ productId, stock, className }: StockBadgeProps) {
           className,
         )}
       >
-        Doar {stock} rămase în stoc
+        Stoc limitat: {stock}
       </Badge>
     );
   }

@@ -118,41 +118,41 @@ export function AddToCartButton({
 
   // Card / pagină produs: același UI înainte și după adăugare (fără −/+ după add).
   const qtyPicker = showQuantityBeforeAdd && stock > 0 && (
-      <div
-        className={cn(
-          "flex h-11 shrink-0 items-center rounded-md border border-border bg-card",
-          "w-full sm:w-auto sm:min-w-34",
-        )}
-        role="group"
-        aria-label="Cantitate"
+    <div
+      className={cn(
+        "flex h-11 shrink-0 items-center rounded-md border border-border bg-card",
+        "w-full sm:w-auto sm:min-w-34",
+      )}
+      role="group"
+      aria-label="Cantitate"
+    >
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="h-full flex-1 rounded-r-none"
+        disabled={pickQty <= 1}
+        onClick={() => setPickQty((q) => Math.max(1, q - 1))}
+        aria-label="Scade cantitatea"
       >
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-full flex-1 rounded-r-none"
-          disabled={pickQty <= 1}
-          onClick={() => setPickQty((q) => Math.max(1, q - 1))}
-          aria-label="Scade cantitatea"
-        >
-          <Minus className="h-4 w-4" />
-        </Button>
-        <span className="min-w-10 text-center text-sm font-semibold tabular-nums">
-          {pickQty}
-        </span>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-full flex-1 rounded-l-none"
-          disabled={pickQty >= stock}
-          onClick={() => setPickQty((q) => Math.min(stock, q + 1))}
-          aria-label="Crește cantitatea"
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-      </div>
-    );
+        <Minus className="h-4 w-4" />
+      </Button>
+      <span className="min-w-10 text-center text-sm font-semibold tabular-nums">
+        {pickQty}
+      </span>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="h-full flex-1 rounded-l-none"
+        disabled={pickQty >= stock}
+        onClick={() => setPickQty((q) => Math.min(stock, q + 1))}
+        aria-label="Crește cantitatea"
+      >
+        <Plus className="h-4 w-4" />
+      </Button>
+    </div>
+  );
 
   return (
     <div
