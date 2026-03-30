@@ -1,4 +1,3 @@
-import { CategoryTilesSkeleton } from "@/components/CategoryTilesSkeleton";
 import { ProductFiltersSkeleton } from "@/components/ProductFiltersSkeleton";
 import { ProductGridSkeleton } from "@/components/ProductGridSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,11 +10,6 @@ export default function HomeLoading() {
         <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
           <Skeleton className="h-8 w-48" />
           <Skeleton className="mt-2 h-4 w-56" />
-        </div>
-
-        {/* Category Tiles */}
-        <div className="mt-6">
-          <CategoryTilesSkeleton />
         </div>
       </div>
 

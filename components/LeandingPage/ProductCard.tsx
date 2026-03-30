@@ -24,7 +24,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const hasMultipleImages = images.length > 1;
 
   return (
-    <Card className="group relative flex h-full flex-col overflow-hidden rounded-xl border-0 bg-card p-0 text-card-foreground shadow-sm ring-1 ring-border/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10">
+    <Card className="group relative flex h-full flex-col overflow-hidden rounded-xs border-0 bg-card p-0 text-card-foreground shadow-sm ring-1 ring-border/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10">
       <Link href={`/products/${product.slug}`} className="block">
         <div
           className={cn(
@@ -38,7 +38,7 @@ export function ProductCard({ product }: ProductCardProps) {
               alt={product.name ?? "Product image"}
               fill
               className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
-              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+              sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
             />
           ) : (
             <div className="flex h-full items-center justify-center text-muted-foreground">

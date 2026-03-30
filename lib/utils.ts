@@ -6,10 +6,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Format a price amount with currency symbol
+ * Format a price amount with currency code (store uses RON).
  * @param amount - The price amount (can be null/undefined)
- * @param currency - Currency symbol (default: "£")
- * @returns Formatted price string (e.g., "£599.99")
+ * @param currency - Currency code (default: "RON")
  */
 export function formatPrice(
   amount: number | null | undefined,
@@ -45,7 +44,7 @@ const DATE_FORMAT_OPTIONS: Record<
 export function formatDate(
   date: string | null | undefined,
   format: DateFormatOption = "long",
-  fallback = "Date unknown",
+  fallback = "Dată necunoscută",
 ): string {
   if (!date) return fallback;
   return new Date(date).toLocaleDateString(
@@ -57,11 +56,11 @@ export function formatDate(
 /**
  * Format an order number for display (shows only the last segment after the last hyphen)
  * @param orderNumber - Full order number (e.g., "ORD-2024-ABC123")
- * @returns Shortened order number (e.g., "ABC123") or "N/A" if null
+ * @returns Shortened order number (e.g., "ABC123") or "—" if null
  */
 export function formatOrderNumber(
   orderNumber: string | null | undefined,
 ): string {
-  if (!orderNumber) return "N/A";
+  if (!orderNumber) return "—";
   return orderNumber.split("-").pop() ?? orderNumber;
 }

@@ -32,8 +32,10 @@ interface OrderDetailProjection {
     line1: string;
     line2: string | null;
     city: string;
+    state: string | null;
     postcode: string;
     country: string;
+    phone: string | null;
   } | null;
   items: Array<{
     _key: string;
@@ -67,8 +69,10 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
         line1,
         line2,
         city,
+        state,
         postcode,
-        country
+        country,
+        phone
       },
       items[]{
         _key,
@@ -91,7 +95,7 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
   if (!data) {
     return (
       <div className="py-16 text-center">
-        <p className="text-zinc-500">Order not found</p>
+        <p className="text-zinc-500">Comanda nu a fost găsită</p>
       </div>
     );
   }
@@ -102,7 +106,7 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-2xl">
-            Order {data.orderNumber}
+            Comandă {data.orderNumber}
           </h1>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
             {formatDate(data.createdAt, "datetime")}
@@ -113,7 +117,7 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
           <div className="flex items-center gap-3">
             <span className="text-sm text-zinc-500 dark:text-zinc-400">
-              Status:
+              Stare:
             </span>
             <Suspense fallback={<Skeleton className="h-10 w-[140px]" />}>
               <StatusSelect {...handle} />
@@ -136,7 +140,7 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
           <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
             <div className="border-b border-zinc-200 px-4 py-3 dark:border-zinc-800 sm:px-6 sm:py-4">
               <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
-                Items ({data.items?.length ?? 0})
+                Articole ({data.items?.length ?? 0})
               </h2>
             </div>
             <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
@@ -157,7 +161,7 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center text-xs text-zinc-400">
-                        No image
+                        Fără imagine
                       </div>
                     )}
                   </div>
@@ -167,7 +171,7 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
                     <div>
                       <div className="flex items-start gap-2">
                         <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100 sm:text-base">
-                          {item.product?.name ?? "Unknown Product"}
+                          {item.product?.name ?? "Produs necunoscut"}
                         </span>
                         {item.product?.slug && (
                           <Link
@@ -180,7 +184,7 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
                         )}
                       </div>
                       <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 sm:text-sm">
-                        Qty: {item.quantity} ×{" "}
+                        Cant.: {item.quantity} ×{" "}
                         {formatPrice(item.priceAtPurchase)}
                       </p>
                     </div>
@@ -202,7 +206,7 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
           {/* Order Summary */}
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
-              Order Summary
+              Rezumat comandă
             </h2>
             <div className="mt-4 space-y-3">
               <div className="flex justify-between text-sm">
@@ -216,7 +220,7 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
               <div className="border-t border-zinc-200 pt-3 dark:border-zinc-800">
                 <div className="flex justify-between font-semibold">
                   <span className="text-zinc-900 dark:text-zinc-100">
-                    Total
+                    Total (RON)
                   </span>
                   <span className="text-zinc-900 dark:text-zinc-100">
                     {formatPrice(data.total)}
@@ -234,7 +238,7 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
             <div className="flex items-center gap-2">
               <CreditCard className="h-5 w-5 text-zinc-400" />
               <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
-                Customer
+                Client
               </h2>
             </div>
             <div className="mt-4 space-y-2 text-sm">
@@ -243,7 +247,7 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
               </p>
               {data.stripePaymentId && (
                 <p className="break-all text-xs text-zinc-500 dark:text-zinc-400">
-                  Payment: {data.stripePaymentId}
+                  Plată: {data.stripePaymentId}
                 </p>
               )}
             </div>
@@ -255,7 +259,7 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
               <div className="flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-zinc-400" />
                 <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
-                  Shipping Address
+                  Adresă livrare
                 </h2>
               </div>
               <Edit2 className="h-4 w-4 text-zinc-400" />
@@ -278,17 +282,17 @@ function OrderDetailContent({ handle }: { handle: DocumentHandle }) {
           {/* Studio Link */}
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
-              Advanced Editing
+              Editare avansată
             </h2>
             <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-              For additional changes, edit this order in Sanity Studio.
+              Pentru modificări suplimentare, editează comanda în Sanity Studio.
             </p>
             <Link
               href={`/studio/structure/order;${handle.documentId}`}
               target="_blank"
               className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-zinc-900 hover:text-zinc-600 dark:text-zinc-100 dark:hover:text-zinc-300"
             >
-              Open in Studio
+              Deschide în Studio
               <ExternalLink className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -343,7 +347,7 @@ export default function OrderDetailPage({ params }: PageProps) {
         className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to Orders
+        Înapoi la comenzi
       </Link>
 
       {/* Order Detail */}

@@ -26,34 +26,8 @@ export function ProductInfoSkeleton() {
       {/* Stock Badge */}
       <Skeleton className="h-6 w-20" />
 
-      {/* Product Details */}
-      <div className="space-y-3 border-t border-zinc-200 pt-6 dark:border-zinc-800">
-        <Skeleton className="h-5 w-32" />
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <Skeleton className="h-4 w-16" />
-            <Skeleton className="h-4 w-24" />
-          </div>
-          <div className="space-y-1">
-            <Skeleton className="h-4 w-16" />
-            <Skeleton className="h-4 w-24" />
-          </div>
-          <div className="space-y-1">
-            <Skeleton className="h-4 w-16" />
-            <Skeleton className="h-4 w-24" />
-          </div>
-          <div className="space-y-1">
-            <Skeleton className="h-4 w-16" />
-            <Skeleton className="h-4 w-24" />
-          </div>
-        </div>
-      </div>
-
       {/* Add to Cart Button */}
       <Skeleton className="h-12 w-full" />
-
-      {/* AI Similar Button */}
-      <Skeleton className="h-10 w-full" />
     </div>
   );
 }

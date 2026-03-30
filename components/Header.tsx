@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Menu, Package, PackageCheck, ShoppingCart, User } from "lucide-react";
 import { SignInButton, UserButton, useAuth } from "@clerk/nextjs";
+import { DesktopMainNav } from "@/components/DesktopMainNav";
 import { Button } from "@/components/ui/button";
 import { useCartActions, useTotalItems } from "@/lib/store/cart-store-provider";
 import { useNavMenuActions } from "@/lib/store/nav-menu-store-provider";
@@ -14,14 +16,14 @@ export function Header() {
   const totalItems = useTotalItems();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
-      <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-        <div className="flex min-w-0 flex-1 items-center gap-1 sm:gap-2">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/100 backdrop-blur-md supports-[backdrop-filter]:bg-background/100">
+      <div className="mx-auto flex h-16 max-w-screen-2xl items-center gap-3 px-4 sm:px-6 lg:gap-4 lg:px-8">
+        <div className="flex min-w-0 shrink-0 items-center gap-1 sm:gap-2 lg:min-w-[140px]">
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            className="size-10 shrink-0"
+            className="size-10 shrink-0 lg:hidden"
             onClick={openNavMenu}
             aria-label="Deschide meniul"
           >
@@ -29,15 +31,24 @@ export function Header() {
           </Button>
           <Link
             href="/"
-            className="min-w-0 truncate rounded-md py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="inline-flex min-w-0 shrink-0 items-center rounded-md py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
-            <span className="text-xl font-bold tracking-tight text-foreground">
-              CValdav
-            </span>
+            <Image
+              src="/cvaldav-logo.png"
+              alt="CValdav"
+              width={160}
+              height={40}
+              className="h-7 w-auto sm:h-8"
+              priority
+            />
           </Link>
         </div>
 
-        <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
+        <div className="hidden min-w-0 flex-1 justify-center lg:flex">
+          <DesktopMainNav />
+        </div>
+
+        <div className="ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1 lg:ml-0 lg:min-w-[140px] lg:justify-end">
           {isSignedIn && (
             <Button asChild variant="ghost" size="icon" className="size-10">
               <Link

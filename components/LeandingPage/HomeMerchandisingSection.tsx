@@ -10,8 +10,8 @@ interface HomeMerchandisingSectionProps {
 }
 
 /**
- * Titlu + rând orizontal de carduri (Oferte, Populare, Noi, Seturi cadou).
- * Toate query-urile homepage folosesc aceeași proiecție ca acest tip.
+ * Titlu + carusel de carduri (Populare, Noutăți, Seturi cadou). Oferte = `HomeOffersSection`.
+ * Query-urile homepage folosesc aceeași proiecție ca tipul de produs din Sanity.
  */
 export function HomeMerchandisingSection({
   id,

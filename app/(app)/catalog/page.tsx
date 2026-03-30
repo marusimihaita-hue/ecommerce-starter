@@ -27,13 +27,12 @@ export default async function CatalogPage({ searchParams }: PageProps) {
     olfactiveFamily,
     concentration,
     gender,
-    homeSubtype,
+    giftFor,
     sort,
     minPrice,
     maxPrice,
     inStock,
     volume,
-    destination,
     diffuserType,
     displayMaxPrice,
   } = parsed;
@@ -44,9 +43,8 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   if (olfactiveFamily) baseQuery.olfactiveFamily = olfactiveFamily;
   if (concentration) baseQuery.concentration = concentration;
   if (gender) baseQuery.gender = gender;
-  if (homeSubtype) baseQuery.homeSubtype = homeSubtype;
-  if (volume > 0) baseQuery.volume = String(volume);
-  if (destination) baseQuery.destination = destination;
+  if (giftFor) baseQuery.giftFor = giftFor;
+  if (volume) baseQuery.volume = volume;
   if (diffuserType) baseQuery.diffuserType = diffuserType;
   if (sort && sort !== "name") baseQuery.sort = sort;
   if (minPrice > 0) baseQuery.minPrice = String(minPrice);
@@ -79,9 +77,8 @@ export default async function CatalogPage({ searchParams }: PageProps) {
           olfactiveFamily={olfactiveFamily}
           concentration={concentration}
           gender={gender}
-          homeSubtype={homeSubtype}
+          giftFor={giftFor}
           volume={volume}
-          destination={destination}
           diffuserType={diffuserType}
           sort={sort}
           minPrice={minPrice}

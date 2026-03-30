@@ -26,9 +26,8 @@ interface ProductSectionProps {
   olfactiveFamily: string;
   concentration: string;
   gender: string;
-  homeSubtype: string;
-  volume: number;
-  destination: string;
+  giftFor: string;
+  volume: string;
   diffuserType: string;
   sort: string;
   minPrice: number;
@@ -47,9 +46,8 @@ export function ProductSection({
   olfactiveFamily,
   concentration,
   gender,
-  homeSubtype,
+  giftFor,
   volume,
-  destination,
   diffuserType,
   sort,
   minPrice,
@@ -123,7 +121,7 @@ export function ProductSection({
           id="catalog-filters"
           className={`shrink-0 transition-all duration-300 ease-in-out ${
             filtersOpen
-              ? "w-full lg:w-72 lg:max-h-[calc(100dvh-5.5rem)] lg:overflow-y-auto lg:overflow-x-hidden lg:pr-1 lg:sticky lg:top-20 lg:self-start lg:opacity-100"
+              ? "w-full lg:w-72 lg:sticky lg:top-20 lg:self-start lg:opacity-100"
               : "hidden lg:hidden"
           }`}
         >
@@ -137,9 +135,8 @@ export function ProductSection({
               olfactiveFamily,
               concentration,
               gender,
-              homeSubtype,
+              giftFor,
               volume,
-              destination,
               diffuserType,
               sort,
               minPrice,

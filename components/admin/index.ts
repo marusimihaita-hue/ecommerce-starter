@@ -4,7 +4,6 @@ export { RecentOrders } from "./RecentOrders";
 export { AIInsightsCard } from "./AIInsightsCard";
 export { StockInput } from "./StockInput";
 export { PriceInput } from "./PriceInput";
-export { FeaturedToggle } from "./FeaturedToggle";
 export { ProductRow, ProductRowSkeleton } from "./ProductRow";
 export { OrderRow, OrderRowSkeleton } from "./OrderRow";
 export { StatusSelect } from "./StatusSelect";

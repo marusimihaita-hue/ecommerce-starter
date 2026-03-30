@@ -76,25 +76,24 @@ export function CartItem({ item, stockInfo }: CartItemProps) {
           </Button>
         </div>
 
-        <p className="mt-1 text-sm font-medium text-foreground">
-          {formatPrice(item.price)}
-        </p>
-
-        {/* Stock Badge & Quantity Controls */}
-        <div className="mt-2 flex flex-row justify-between items-center gap-2">
-          <StockBadge productId={item.productId} stock={currentStock} />
+        <div className="mt-1 flex items-center justify-between gap-3">
+          <p className="text-sm font-medium text-foreground">
+            {formatPrice(item.price)}
+          </p>
           {!isOutOfStock && (
-            <div className="w-32 flex self-end ml-auto">
-              <AddToCartButton
-                variant="cartLine"
-                productId={item.productId}
-                name={item.name}
-                price={item.price}
-                image={item.image}
-                stock={currentStock}
-              />
-            </div>
+            <AddToCartButton
+              variant="cartLine"
+              productId={item.productId}
+              name={item.name}
+              price={item.price}
+              image={item.image}
+              stock={currentStock}
+            />
           )}
+        </div>
+
+        <div className="mt-2">
+          <StockBadge productId={item.productId} stock={currentStock} />
         </div>
       </div>
     </div>

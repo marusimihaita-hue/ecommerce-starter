@@ -1,12 +1,10 @@
-import { Suspense } from "react";
-import Image from "next/image";
 import { redirect } from "next/navigation";
-import { CategoryTiles } from "@/components/LeandingPage/CategoryTitles";
+import { Suspense } from "react";
 import { FeaturedCarousel } from "@/components/LeandingPage/FeaturedCarousel";
 import { FeaturedCarouselSkeleton } from "@/components/LeandingPage/FeaturedCarouselSkeleton";
 import { HomeMerchandisingSection } from "@/components/LeandingPage/HomeMerchandisingSection";
+import { HomeOffersSection } from "@/components/LeandingPage/HomeOffersSection";
 import { sanityFetch } from "@/sanity/lib/live";
-import { ALL_CATEGORIES_QUERY } from "@/sanity/queries/categories";
 import {
   PRODUCTS_GIFT_SETS_HOME_QUERY,
   PRODUCTS_NEW_ARRIVAL_HOME_QUERY,
@@ -18,7 +16,12 @@ type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-const CATEGORY_KIND_SLUGS = new Set(["perfume", "home", "gift"]);
+const CATEGORY_KIND_SLUGS = new Set([
+  "perfumes",
+  "giftsets",
+  "homeSpray",
+  "carPerfume",
+]);
 
 export default async function Home({ searchParams }: PageProps) {
   const params = await searchParams;
@@ -32,13 +35,11 @@ export default async function Home({ searchParams }: PageProps) {
   }
 
   const [
-    { data: categories },
     { data: onSaleProducts },
     { data: popularProducts },
     { data: newProducts },
     { data: giftSetProducts },
   ] = await Promise.all([
-    sanityFetch({ query: ALL_CATEGORIES_QUERY }),
     sanityFetch({ query: PRODUCTS_ON_SALE_HOME_QUERY }),
     sanityFetch({ query: PRODUCTS_POPULAR_HOME_QUERY }),
     sanityFetch({ query: PRODUCTS_NEW_ARRIVAL_HOME_QUERY }),
@@ -51,38 +52,8 @@ export default async function Home({ searchParams }: PageProps) {
         <FeaturedCarousel />
       </Suspense>
 
-      <div className="border-b border-border bg-background">
-        <div>
-          {/* <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
-            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-              Categorii
-            </h1>
-          </div> */}
+      <HomeOffersSection products={onSaleProducts} />
 
-          <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 mt-6 ">
-            <CategoryTiles categories={categories} />
-          </div>
-        </div>
-      </div>
-
-      <HomeMerchandisingSection
-        id="oferte"
-        title="Oferte"
-        products={onSaleProducts}
-      />
-
-      <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 my-10">
-        <div className="relative aspect-21/9 w-full overflow-hidden rounded-xl shadow-md ring-1 ring-border sm:aspect-3/1">
-          <Image
-            src="/Ultra-Wide-Angle-Panoramas-1.jpg"
-            alt="Atmosferă și stil — imagine panoramică CValdav"
-            fill
-            className="object-cover"
-            sizes="(max-width: 1536px) 100vw, 1536px"
-            priority={false}
-          />
-        </div>
-      </div>
       <HomeMerchandisingSection
         id="populare"
         title="Populare"

@@ -49,15 +49,15 @@ function OrderListContent({
 
   if (!orders || orders.length === 0) {
     const description = searchFilter
-      ? "Try adjusting your search terms."
+      ? "Încearcă alți termeni de căutare."
       : statusFilter === "all"
-        ? "Orders will appear here when customers make purchases."
-        : `No ${statusFilter} orders at the moment.`;
+        ? "Comenzile vor apărea aici când clienții plasează comenzi."
+        : "Nu există comenzi cu această stare momentan.";
 
     return (
       <EmptyState
         icon={ShoppingCart}
-        title="No orders found"
+        title="Nu s-au găsit comenzi"
         description={description}
       />
     );
@@ -83,7 +83,7 @@ function OrderListContent({
             onClick={() => loadMore()}
             disabled={isPending}
           >
-            {isPending ? "Loading..." : "Load More"}
+            {isPending ? "Se încarcă…" : "Încarcă mai multe"}
           </Button>
         </div>
       )}
@@ -117,17 +117,17 @@ export default function OrdersPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-3xl">
-          Orders
+          Comenzi
         </h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400 sm:text-base">
-          Manage and track customer orders
+          Gestionează și urmărește comenzile clienților
         </p>
       </div>
 
       {/* Search and Tabs */}
       <div className="flex flex-col gap-4">
         <AdminSearch
-          placeholder="Search by order # or email..."
+          placeholder="Caută după nr. comandă sau email…"
           value={searchQuery}
           onChange={setSearchQuery}
           className="w-full sm:max-w-xs"

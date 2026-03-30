@@ -27,12 +27,11 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { CONCENTRATIONS, SCENT_FAMILIES } from "@/lib/constants/filters";
+import { CONCENTRATIONS, OLFACTORY_FAMILIES } from "@/lib/constants/filters";
 import {
-  CLEANING_DESTINATIONS,
   DIFFUSER_TYPES,
   GENDERS,
-  HOME_SUBTYPES,
+  GIFT_FOR_OPTIONS,
   PRODUCT_TYPES,
 } from "@/lib/constants/productOptions";
 
@@ -45,7 +44,7 @@ function NameEditor(handle: DocumentHandle) {
     <Input
       value={(name as string) ?? ""}
       onChange={(e) => editName(e.target.value)}
-      placeholder="Product name"
+      placeholder="Nume produs"
     />
   );
 }
@@ -59,7 +58,7 @@ function SlugEditor(handle: DocumentHandle) {
     <Input
       value={slugValue}
       onChange={(e) => editSlug({ _type: "slug", current: e.target.value })}
-      placeholder="product-slug"
+      placeholder="slug-produs"
     />
   );
 }
@@ -72,7 +71,7 @@ function BrandEditor(handle: DocumentHandle) {
     <Input
       value={(brand as string) ?? ""}
       onChange={(e) => editBrand(e.target.value)}
-      placeholder="Brand name"
+      placeholder="Marcă / brand"
     />
   );
 }
@@ -89,11 +88,11 @@ function ProductTypeEditor(handle: DocumentHandle) {
 
   return (
     <Select
-      value={(productType as string) ?? "perfume"}
+      value={(productType as string) ?? "perfumes"}
       onValueChange={(value) => editProductType(value)}
     >
       <SelectTrigger>
-        <SelectValue placeholder="Product type" />
+        <SelectValue placeholder="Tip produs" />
       </SelectTrigger>
       <SelectContent>
         {PRODUCT_TYPES.map((item) => (
@@ -116,68 +115,10 @@ function GenderEditor(handle: DocumentHandle) {
       onValueChange={(value) => editGender(value)}
     >
       <SelectTrigger>
-        <SelectValue placeholder="Gender" />
+        <SelectValue placeholder="Gen" />
       </SelectTrigger>
       <SelectContent>
         {GENDERS.map((item) => (
-          <SelectItem key={item.value} value={item.value}>
-            {item.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
-
-function HomeSubtypeEditor(handle: DocumentHandle) {
-  const { data: homeSubtype } = useDocument({
-    ...handle,
-    path: "homeSubtype",
-  });
-  const editHomeSubtype = useEditDocument({
-    ...handle,
-    path: "homeSubtype",
-  });
-
-  return (
-    <Select
-      value={(homeSubtype as string) ?? ""}
-      onValueChange={(value) => editHomeSubtype(value)}
-    >
-      <SelectTrigger>
-        <SelectValue placeholder="Home subtype" />
-      </SelectTrigger>
-      <SelectContent>
-        {HOME_SUBTYPES.map((item) => (
-          <SelectItem key={item.value} value={item.value}>
-            {item.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
-
-function DestinationEditor(handle: DocumentHandle) {
-  const { data: destination } = useDocument({
-    ...handle,
-    path: "destination",
-  });
-  const editDestination = useEditDocument({
-    ...handle,
-    path: "destination",
-  });
-
-  return (
-    <Select
-      value={(destination as string) ?? ""}
-      onValueChange={(value) => editDestination(value)}
-    >
-      <SelectTrigger>
-        <SelectValue placeholder="Destination" />
-      </SelectTrigger>
-      <SelectContent>
-        {CLEANING_DESTINATIONS.map((item) => (
           <SelectItem key={item.value} value={item.value}>
             {item.label}
           </SelectItem>
@@ -203,7 +144,7 @@ function DiffuserTypeEditor(handle: DocumentHandle) {
       onValueChange={(value) => editDiffuserType(value)}
     >
       <SelectTrigger>
-        <SelectValue placeholder="Diffuser type" />
+        <SelectValue placeholder="Tip difuzor" />
       </SelectTrigger>
       <SelectContent>
         {DIFFUSER_TYPES.map((item) => (
@@ -216,7 +157,7 @@ function DiffuserTypeEditor(handle: DocumentHandle) {
   );
 }
 
-function HomeScentEditor(handle: DocumentHandle) {
+function ScentEditor(handle: DocumentHandle) {
   const { data: scent } = useDocument({ ...handle, path: "scent" });
   const editScent = useEditDocument({ ...handle, path: "scent" });
 
@@ -224,7 +165,7 @@ function HomeScentEditor(handle: DocumentHandle) {
     <Input
       value={(scent as string) ?? ""}
       onChange={(e) => editScent(e.target.value)}
-      placeholder="Scent description"
+      placeholder="Descriere miros"
     />
   );
 }
@@ -243,7 +184,7 @@ function PackagingInfoEditor(handle: DocumentHandle) {
     <Textarea
       value={(packagingInfo as string) ?? ""}
       onChange={(e) => editPackagingInfo(e.target.value)}
-      placeholder="Packaging details..."
+      placeholder="Detalii ambalaj…"
       rows={3}
     />
   );
@@ -263,7 +204,7 @@ function RecommendedOccasionEditor(handle: DocumentHandle) {
     <Input
       value={(recommendedOccasion as string) ?? ""}
       onChange={(e) => editRecommendedOccasion(e.target.value)}
-      placeholder="e.g. Valentine's, Christmas"
+      placeholder="ex. Valentine’s, Crăciun"
     />
   );
 }
@@ -276,9 +217,46 @@ function DescriptionEditor(handle: DocumentHandle) {
     <Textarea
       value={(description as string) ?? ""}
       onChange={(e) => editDescription(e.target.value)}
-      placeholder="Product description..."
+      placeholder="Descriere produs…"
       rows={4}
     />
+  );
+}
+
+/** Opțional; același câmp ca în Sanity (`tiktokReviewUrl`). */
+function TiktokReviewUrlEditor(handle: DocumentHandle) {
+  const { data } = useDocument({ ...handle, path: "tiktokReviewUrl" });
+  const edit = useEditDocument({ ...handle, path: "tiktokReviewUrl" });
+  const value =
+    data === undefined || data === null ? "" : String(data as string);
+  const href = value.trim();
+
+  return (
+    <div className="space-y-2">
+      <Input
+        id="tiktok-review-url"
+        type="url"
+        inputMode="url"
+        autoComplete="url"
+        placeholder="https://www.tiktok.com/@.../video/..."
+        value={value}
+        onChange={(e) => {
+          const v = e.target.value;
+          edit(v === "" ? undefined : v);
+        }}
+      />
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+        >
+          Deschide în TikTok
+          <ExternalLink className="h-3.5 w-3.5" />
+        </a>
+      ) : null}
+    </div>
   );
 }
 
@@ -321,11 +299,11 @@ function VolumeEditor(handle: DocumentHandle) {
 
   return (
     <Input
-      type="number"
-      min="0"
-      value={(volume as number) ?? ""}
-      onChange={(e) => editVolume(parseInt(e.target.value, 10) || 0)}
-      placeholder="e.g., 50"
+      value={
+        volume === undefined || volume === null ? "" : String(volume as string)
+      }
+      onChange={(e) => editVolume(e.target.value.trim() || undefined)}
+      placeholder='ex. 50ml, 100ml'
     />
   );
 }
@@ -346,7 +324,7 @@ function ConcentrationEditor(handle: DocumentHandle) {
       onValueChange={(value) => editConcentration(value)}
     >
       <SelectTrigger>
-        <SelectValue placeholder="Select concentration" />
+        <SelectValue placeholder="Selectează concentrația" />
       </SelectTrigger>
       <SelectContent>
         {CONCENTRATIONS.map((item) => (
@@ -360,7 +338,7 @@ function ConcentrationEditor(handle: DocumentHandle) {
 }
 
 function OlfactiveFamilyEditor(handle: DocumentHandle) {
-  const { data: olfactiveFamily } = useDocument({
+  const { data: raw } = useDocument({
     ...handle,
     path: "olfactiveFamily",
   });
@@ -369,16 +347,53 @@ function OlfactiveFamilyEditor(handle: DocumentHandle) {
     path: "olfactiveFamily",
   });
 
+  const selected: string[] = Array.isArray(raw)
+    ? (raw as string[])
+    : raw != null && raw !== ""
+      ? [String(raw)]
+      : [];
+
+  const toggle = (value: string) => {
+    const next = selected.includes(value)
+      ? selected.filter((x) => x !== value)
+      : [...selected, value];
+    editOlfactiveFamily(next.length ? next : undefined);
+  };
+
+  return (
+    <div className="flex max-h-48 flex-col gap-2 overflow-y-auto rounded-md border border-zinc-200 p-3 dark:border-zinc-700">
+      {OLFACTORY_FAMILIES.map((item) => (
+        <label
+          key={item.value}
+          className="flex cursor-pointer items-center gap-2 text-sm"
+        >
+          <input
+            type="checkbox"
+            className="h-4 w-4 rounded border-zinc-300"
+            checked={selected.includes(item.value)}
+            onChange={() => toggle(item.value)}
+          />
+          {item.label}
+        </label>
+      ))}
+    </div>
+  );
+}
+
+function GiftForEditor(handle: DocumentHandle) {
+  const { data: giftFor } = useDocument({ ...handle, path: "giftFor" });
+  const editGiftFor = useEditDocument({ ...handle, path: "giftFor" });
+
   return (
     <Select
-      value={(olfactiveFamily as string) ?? ""}
-      onValueChange={(value) => editOlfactiveFamily(value)}
+      value={(giftFor as string) ?? ""}
+      onValueChange={(value) => editGiftFor(value)}
     >
       <SelectTrigger>
-        <SelectValue placeholder="Olfactive family" />
+        <SelectValue placeholder="Pentru (el / ea / unisex)" />
       </SelectTrigger>
       <SelectContent>
-        {SCENT_FAMILIES.map((item) => (
+        {GIFT_FOR_OPTIONS.map((item) => (
           <SelectItem key={item.value} value={item.value}>
             {item.label}
           </SelectItem>
@@ -396,7 +411,7 @@ function TopNotesEditor(handle: DocumentHandle) {
     <Textarea
       value={(topNotes as string) ?? ""}
       onChange={(e) => editTopNotes(e.target.value)}
-      placeholder="e.g., Bergamot, Lemon, Pink Pepper"
+      placeholder="ex. bergamotă, lămâie, piper roz"
       rows={2}
     />
   );
@@ -413,7 +428,7 @@ function MiddleNotesEditor(handle: DocumentHandle) {
     <Textarea
       value={(middleNotes as string) ?? ""}
       onChange={(e) => editMiddleNotes(e.target.value)}
-      placeholder="e.g., Rose, Jasmine, Lavender"
+      placeholder="ex. trandafir, iasomie, lavandă"
       rows={2}
     />
   );
@@ -427,7 +442,7 @@ function BaseNotesEditor(handle: DocumentHandle) {
     <Textarea
       value={(baseNotes as string) ?? ""}
       onChange={(e) => editBaseNotes(e.target.value)}
-      placeholder="e.g., Vanilla, Musk, Sandalwood"
+      placeholder="ex. vanilie, mosc, santal"
       rows={2}
     />
   );
@@ -485,7 +500,7 @@ function ProductStoreLink(handle: DocumentHandle) {
       target="_blank"
       className="flex items-center justify-center gap-1 text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
     >
-      View on store
+      Vezi în magazin
       <ExternalLink className="h-3.5 w-3.5" />
     </Link>
   );
@@ -496,62 +511,57 @@ function TypeSpecificAttributes({ handle }: { handle: DocumentHandle }) {
     ...handle,
     path: "productType",
   });
-  const { data: homeSubtype } = useDocument({
-    ...handle,
-    path: "homeSubtype",
-  });
-  const pt = (productType as string) ?? "perfume";
-  const hs = homeSubtype as string | undefined;
+  const pt = (productType as string) ?? "perfumes";
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <div className="space-y-2 sm:col-span-2">
-        <Label>Product type</Label>
+        <Label>Categorie principală</Label>
         <Suspense fallback={<Skeleton className="h-10" />}>
           <ProductTypeEditor {...handle} />
         </Suspense>
       </div>
 
-      {pt === "perfume" && (
+      {pt === "perfumes" && (
         <>
           <div className="space-y-2">
-            <Label>Gender</Label>
+            <Label>Gen</Label>
             <Suspense fallback={<Skeleton className="h-10" />}>
               <GenderEditor {...handle} />
             </Suspense>
           </div>
           <div className="space-y-2">
-            <Label>Volume (ml)</Label>
+            <Label>Volum</Label>
             <Suspense fallback={<Skeleton className="h-10" />}>
               <VolumeEditor {...handle} />
             </Suspense>
           </div>
           <div className="space-y-2">
-            <Label>Concentration</Label>
+            <Label>Concentrație</Label>
             <Suspense fallback={<Skeleton className="h-10" />}>
               <ConcentrationEditor {...handle} />
             </Suspense>
           </div>
-          <div className="space-y-2">
-            <Label>Olfactive family</Label>
-            <Suspense fallback={<Skeleton className="h-10" />}>
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Familii olfactive (multiple)</Label>
+            <Suspense fallback={<Skeleton className="h-32" />}>
               <OlfactiveFamilyEditor {...handle} />
             </Suspense>
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label>Top notes</Label>
+            <Label>Note de vârf</Label>
             <Suspense fallback={<Skeleton className="h-16" />}>
               <TopNotesEditor {...handle} />
             </Suspense>
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label>Middle notes</Label>
+            <Label>Note de mijloc</Label>
             <Suspense fallback={<Skeleton className="h-16" />}>
               <MiddleNotesEditor {...handle} />
             </Suspense>
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label>Base notes</Label>
+            <Label>Note de bază</Label>
             <Suspense fallback={<Skeleton className="h-16" />}>
               <BaseNotesEditor {...handle} />
             </Suspense>
@@ -559,78 +569,69 @@ function TypeSpecificAttributes({ handle }: { handle: DocumentHandle }) {
         </>
       )}
 
-      {pt === "home" && (
+      {pt === "giftsets" && (
         <>
           <div className="space-y-2 sm:col-span-2">
-            <Label>Home subtype</Label>
+            <Label>Pentru</Label>
             <Suspense fallback={<Skeleton className="h-10" />}>
-              <HomeSubtypeEditor {...handle} />
+              <GiftForEditor {...handle} />
             </Suspense>
           </div>
-          {hs === "cleaningProducts" && (
-            <>
-              <div className="space-y-2 sm:col-span-2">
-                <Label>Destination</Label>
-                <Suspense fallback={<Skeleton className="h-10" />}>
-                  <DestinationEditor {...handle} />
-                </Suspense>
-              </div>
-              <div className="space-y-2">
-                <Label>Volume (ml)</Label>
-                <Suspense fallback={<Skeleton className="h-10" />}>
-                  <VolumeEditor {...handle} />
-                </Suspense>
-              </div>
-              <div className="space-y-2 sm:col-span-2">
-                <Label>Packaging info</Label>
-                <Suspense fallback={<Skeleton className="h-20" />}>
-                  <PackagingInfoEditor {...handle} />
-                </Suspense>
-              </div>
-            </>
-          )}
-          {hs === "homeFragrance" && (
-            <>
-              <div className="space-y-2">
-                <Label>Diffuser type</Label>
-                <Suspense fallback={<Skeleton className="h-10" />}>
-                  <DiffuserTypeEditor {...handle} />
-                </Suspense>
-              </div>
-              <div className="space-y-2">
-                <Label>Volume (ml)</Label>
-                <Suspense fallback={<Skeleton className="h-10" />}>
-                  <VolumeEditor {...handle} />
-                </Suspense>
-              </div>
-              <div className="space-y-2 sm:col-span-2">
-                <Label>Scent</Label>
-                <Suspense fallback={<Skeleton className="h-10" />}>
-                  <HomeScentEditor {...handle} />
-                </Suspense>
-              </div>
-            </>
-          )}
-        </>
-      )}
-
-      {pt === "gift" && (
-        <>
           <div className="space-y-2 sm:col-span-2">
-            <Label>Recommended occasion</Label>
+            <Label>Ocazie recomandată</Label>
             <Suspense fallback={<Skeleton className="h-10" />}>
               <RecommendedOccasionEditor {...handle} />
             </Suspense>
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label>Packaging info</Label>
+            <Label>Informații ambalaj</Label>
             <Suspense fallback={<Skeleton className="h-20" />}>
               <PackagingInfoEditor {...handle} />
             </Suspense>
           </div>
           <p className="text-sm text-zinc-500 sm:col-span-2 dark:text-zinc-400">
-            Edit set contents (setContains) in Sanity Studio.
+            Conținutul setului (setContains) îl poți edita în Sanity Studio.
           </p>
+        </>
+      )}
+
+      {pt === "homeSpray" && (
+        <>
+          <div className="space-y-2">
+            <Label>Tip difuzor</Label>
+            <Suspense fallback={<Skeleton className="h-10" />}>
+              <DiffuserTypeEditor {...handle} />
+            </Suspense>
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Familii olfactive (multiple)</Label>
+            <Suspense fallback={<Skeleton className="h-32" />}>
+              <OlfactiveFamilyEditor {...handle} />
+            </Suspense>
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Miros</Label>
+            <Suspense fallback={<Skeleton className="h-10" />}>
+              <ScentEditor {...handle} />
+            </Suspense>
+          </div>
+        </>
+      )}
+
+      {pt === "carPerfume" && (
+        <>
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Familii olfactive (multiple)</Label>
+            <Suspense fallback={<Skeleton className="h-32" />}>
+              <OlfactiveFamilyEditor {...handle} />
+            </Suspense>
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Miros</Label>
+            <Suspense fallback={<Skeleton className="h-10" />}>
+              <ScentEditor {...handle} />
+            </Suspense>
+          </div>
         </>
       )}
     </div>
@@ -646,10 +647,10 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-2xl">
-            {(name as string) || "New Product"}
+            {(name as string) || "Produs nou"}
           </h1>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            Edit product details
+            Editează detaliile produsului
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -669,32 +670,47 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
           {/* Basic Info */}
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <h2 className="mb-4 font-semibold text-zinc-900 dark:text-zinc-100">
-              Basic Information
+              Informații de bază
             </h2>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">Nume</Label>
                 <Suspense fallback={<Skeleton className="h-10" />}>
                   <NameEditor {...handle} />
                 </Suspense>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="slug">Slug</Label>
+                <Label htmlFor="slug">Slug (URL)</Label>
                 <Suspense fallback={<Skeleton className="h-10" />}>
                   <SlugEditor {...handle} />
                 </Suspense>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="brand">Brand</Label>
+                <Label htmlFor="brand">Marcă</Label>
                 <Suspense fallback={<Skeleton className="h-10" />}>
                   <BrandEditor {...handle} />
                 </Suspense>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Descriere</Label>
                 <Suspense fallback={<Skeleton className="h-24" />}>
                   <DescriptionEditor {...handle} />
                 </Suspense>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="tiktok-review-url">
+                  Link TikTok{" "}
+                  <span className="font-normal text-zinc-500 dark:text-zinc-400">
+                    (opțional)
+                  </span>
+                </Label>
+                <Suspense fallback={<Skeleton className="h-10" />}>
+                  <TiktokReviewUrlEditor {...handle} />
+                </Suspense>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  Clip sau review pe TikTok; apare pe pagina produsului dacă e
+                  completat.
+                </p>
               </div>
             </div>
           </div>
@@ -702,17 +718,17 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
           {/* Pricing & Inventory */}
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <h2 className="mb-4 font-semibold text-zinc-900 dark:text-zinc-100">
-              Pricing & Inventory
+              Preț și stoc
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="price">Price (£)</Label>
+                <Label htmlFor="price">Preț (RON)</Label>
                 <Suspense fallback={<Skeleton className="h-10" />}>
                   <PriceEditor {...handle} />
                 </Suspense>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="stock">Stock</Label>
+                <Label htmlFor="stock">Stoc</Label>
                 <Suspense fallback={<Skeleton className="h-10" />}>
                   <StockEditor {...handle} />
                 </Suspense>
@@ -723,7 +739,7 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
           {/* Type-specific attributes */}
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <h2 className="mb-4 font-semibold text-zinc-900 dark:text-zinc-100">
-              Product type &amp; attributes
+              Tip produs și atribute
             </h2>
             <Suspense fallback={<Skeleton className="h-64 rounded-lg" />}>
               <TypeSpecificAttributes handle={handle} />
@@ -733,23 +749,15 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
           {/* Merchandising flags */}
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <h2 className="mb-4 font-semibold text-zinc-900 dark:text-zinc-100">
-              Merchandising
+              Merchandising / promovare
             </h2>
             <div className="space-y-6">
               <Suspense fallback={<Skeleton className="h-14" />}>
                 <MerchBooleanRow
                   handle={handle}
-                  path="featuredOnHome"
-                  title="Featured on home"
-                  description="Show in homepage carousel"
-                />
-              </Suspense>
-              <Suspense fallback={<Skeleton className="h-14" />}>
-                <MerchBooleanRow
-                  handle={handle}
                   path="onSale"
-                  title="On sale"
-                  description="Mark as discounted / on sale"
+                  title="La reducere"
+                  description="Marchează ca produs cu discount / ofertă"
                 />
               </Suspense>
               <Suspense fallback={<Skeleton className="h-14" />}>
@@ -757,23 +765,23 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
                   handle={handle}
                   path="popular"
                   title="Popular"
-                  description="Highlight as popular"
+                  description="Evidențiază ca produs popular"
                 />
               </Suspense>
               <Suspense fallback={<Skeleton className="h-14" />}>
                 <MerchBooleanRow
                   handle={handle}
                   path="newArrival"
-                  title="New arrival"
-                  description="Highlight as new"
+                  title="Noutate"
+                  description="Evidențiază ca produs nou"
                 />
               </Suspense>
               <Suspense fallback={<Skeleton className="h-14" />}>
                 <MerchBooleanRow
                   handle={handle}
                   path="gift"
-                  title="Gift highlight"
-                  description="Promote as a gift idea"
+                  title="Recomandat cadou"
+                  description="Promovează ca idee de cadou"
                 />
               </Suspense>
             </div>
@@ -785,7 +793,7 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
           {/* Image Upload */}
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <h2 className="mb-4 font-semibold text-zinc-900 dark:text-zinc-100">
-              Product Images
+              Imagini produs
             </h2>
             <ImageUploader {...handle} />
             <div className="mt-4">
@@ -798,17 +806,17 @@ function ProductDetailContent({ handle }: { handle: DocumentHandle }) {
           {/* Studio Link */}
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
             <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
-              Advanced Editing
+              Editare avansată
             </h2>
             <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-              Set category and other options in Sanity Studio.
+              Categoria și alte opțiuni le setezi în Sanity Studio.
             </p>
             <Link
               href={`/studio/structure/product;${handle.documentId}`}
               target="_blank"
               className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-zinc-900 hover:text-zinc-600 dark:text-zinc-100 dark:hover:text-zinc-300"
             >
-              Open in Studio
+              Deschide în Studio
               <ExternalLink className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -863,7 +871,7 @@ export default function ProductDetailPage({ params }: PageProps) {
         className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to Inventory
+        Înapoi la inventar
       </Link>
 
       {/* Product Detail */}

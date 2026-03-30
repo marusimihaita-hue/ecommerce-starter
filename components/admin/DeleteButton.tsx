@@ -57,7 +57,7 @@ function DeleteButtonContent({
 
   const handleDelete = async () => {
     const confirmed = window.confirm(
-      "Delete this product permanently? This cannot be undone.",
+      "Ștergi definitiv acest produs? Acțiunea nu poate fi anulată.",
     );
     if (!confirmed) return;
 
@@ -98,14 +98,14 @@ function DeleteButtonContent({
                 target="_blank"
               >
                 <Trash2 className="h-4 w-4" />
-                Delete in Studio
+                Șterge în Studio
               </Link>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
             <p>
-              This product is referenced by {orderCount} order
-              {orderCount !== 1 ? "s" : ""}
+              Acest produs apare în {orderCount}{" "}
+              {orderCount === 1 ? "comandă" : "comenzi"}.
             </p>
           </TooltipContent>
         </Tooltip>
@@ -122,7 +122,7 @@ function DeleteButtonContent({
       onClick={handleDelete}
     >
       <Trash2 className="h-4 w-4" />
-      Delete
+      Șterge
     </Button>
   );
 }

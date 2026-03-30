@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Minus, Plus, ShoppingCart } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, Minus, Plus, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useCartActions, useCartItem } from "../lib/store/cart-store-provider";
@@ -36,6 +36,10 @@ export function AddToCartButton({
   const { addItem, updateQuantity } = useCartActions();
   const cartItem = useCartItem(productId);
   const [pickQty, setPickQty] = useState(1);
+  const [showAddedCheck, setShowAddedCheck] = useState(false);
+  const addedCheckTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const quantityInCart = cartItem?.quantity ?? 0;
   const isOutOfStock = stock <= 0;
@@ -45,12 +49,32 @@ export function AddToCartButton({
     setPickQty((q) => Math.min(Math.max(1, q), Math.max(1, stock)));
   }, [stock]);
 
+  useEffect(() => {
+    return () => {
+      if (addedCheckTimeoutRef.current) {
+        clearTimeout(addedCheckTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const flashAddedCheck = () => {
+    if (addedCheckTimeoutRef.current) {
+      clearTimeout(addedCheckTimeoutRef.current);
+    }
+    setShowAddedCheck(true);
+    addedCheckTimeoutRef.current = setTimeout(() => {
+      setShowAddedCheck(false);
+      addedCheckTimeoutRef.current = null;
+    }, 3000);
+  };
+
   const handleAdd = (amount = 1, silent?: boolean) => {
     const space = stock - quantityInCart;
     if (space <= 0) return;
     const n = Math.min(amount, space);
     addItem({ productId, name, price, image }, n);
     if (!silent) {
+      flashAddedCheck();
       toast.success(
         n === 1
           ? `„${name}” a fost adăugat în coș`
@@ -82,7 +106,7 @@ export function AddToCartButton({
     return (
       <div
         className={cn(
-          "flex h-11 w-full items-center rounded-md border border-border bg-card",
+          "inline-flex h-8 w-fit shrink-0 items-stretch overflow-hidden rounded-md border border-border bg-card",
           className,
         )}
         role="group"
@@ -92,25 +116,25 @@ export function AddToCartButton({
           type="button"
           variant="ghost"
           size="icon"
-          className="h-full flex-1 rounded-r-none"
+          className="h-8 w-8 shrink-0 rounded-none px-0"
           onClick={handleDecrement}
           aria-label="Scade cantitatea"
         >
-          <Minus className="h-4 w-4" />
+          <Minus className="h-3.5 w-3.5" />
         </Button>
-        <span className="flex-1 text-center text-sm font-semibold tabular-nums">
+        <span className="flex min-w-7 items-center justify-center px-0.5 text-xs font-semibold tabular-nums">
           {quantityInCart}
         </span>
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="h-full flex-1 rounded-l-none disabled:opacity-20"
+          className="h-8 w-8 shrink-0 rounded-none px-0 disabled:opacity-20"
           onClick={() => handleAdd(1, true)}
           disabled={isAtMax}
           aria-label="Crește cantitatea"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-3.5 w-3.5" />
         </Button>
       </div>
     );
@@ -172,8 +196,17 @@ export function AddToCartButton({
         )}
         disabled={isAtMax}
       >
-        <ShoppingCart className="mr-2 h-4 w-4" />
-        Adaugă în coș
+        {showAddedCheck ? (
+          <>
+            <Check className="h-5 w-5" strokeWidth={2.5} aria-hidden />
+            <span className="sr-only">Adăugat în coș</span>
+          </>
+        ) : (
+          <>
+            <ShoppingCart className="mr-2 h-4 w-4" />
+            Adaugă în coș
+          </>
+        )}
       </Button>
     </div>
   );

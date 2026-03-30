@@ -17,17 +17,17 @@ import { Button } from "@/components/ui/button";
 
 const navItems = [
   {
-    label: "Dashboard",
+    label: "Panou",
     href: "/admin",
     icon: LayoutDashboard,
   },
   {
-    label: "Inventory",
+    label: "Inventar",
     href: "/admin/inventory",
     icon: Package,
   },
   {
-    label: "Orders",
+    label: "Comenzi",
     href: "/admin/orders",
     icon: ShoppingCart,
   },
@@ -49,13 +49,14 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
               </span>
             </div>
             <span className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-              Admin
+              Administrare
             </span>
           </Link>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setSidebarOpen(!sidebarOpen)}
+            aria-label={sidebarOpen ? "Închide meniul" : "Deschide meniul"}
           >
             {sidebarOpen ? (
               <X className="h-5 w-5" />
@@ -69,7 +70,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
         {sidebarOpen && (
           <button
             type="button"
-            aria-label="Close sidebar"
+            aria-label="Închide meniul lateral"
             className="fixed inset-0 z-40 bg-black/50 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
@@ -99,7 +100,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
                   </span>
                 </div>
                 <span className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-                  Admin
+                  Administrare
                 </span>
               </Link>
             </div>
@@ -139,7 +140,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
                 onClick={() => setSidebarOpen(false)}
                 className="flex items-center justify-between gap-2 rounded-lg bg-zinc-100 px-3 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
               >
-                Open Studio
+                Deschide Studio
                 <ExternalLink className="h-4 w-4" />
               </Link>
               <Link
@@ -147,7 +148,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
                 onClick={() => setSidebarOpen(false)}
                 className="block px-3 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
               >
-                ← Back to Store
+                ← Înapoi la magazin
               </Link>
             </div>
           </div>

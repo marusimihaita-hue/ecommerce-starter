@@ -51,13 +51,12 @@ export default async function CatalogCategoryPage({ params, searchParams }: Page
     olfactiveFamily,
     concentration,
     gender,
-    homeSubtype,
+    giftFor,
     sort,
     minPrice,
     maxPrice,
     inStock,
     volume,
-    destination,
     diffuserType,
     displayMaxPrice,
   } = parsed;
@@ -67,8 +66,7 @@ export default async function CatalogCategoryPage({ params, searchParams }: Page
   if (q) baseQuery.q = q;
   if (olfactiveFamily) baseQuery.olfactiveFamily = olfactiveFamily;
   if (concentration) baseQuery.concentration = concentration;
-  if (volume > 0) baseQuery.volume = String(volume);
-  if (destination) baseQuery.destination = destination;
+  if (volume) baseQuery.volume = volume;
   if (diffuserType) baseQuery.diffuserType = diffuserType;
   if (sort && sort !== "name") baseQuery.sort = sort;
   if (minPrice > 0) baseQuery.minPrice = String(minPrice);
@@ -81,8 +79,8 @@ export default async function CatalogCategoryPage({ params, searchParams }: Page
   if (resolved.preset.gender === undefined && gender) {
     baseQuery.gender = gender;
   }
-  if (resolved.preset.homeSubtype === undefined && homeSubtype) {
-    baseQuery.homeSubtype = homeSubtype;
+  if (resolved.preset.giftFor === undefined && giftFor) {
+    baseQuery.giftFor = giftFor;
   }
 
   const buildHref = (page: number): string | undefined => {
@@ -112,9 +110,8 @@ export default async function CatalogCategoryPage({ params, searchParams }: Page
           olfactiveFamily={olfactiveFamily}
           concentration={concentration}
           gender={gender}
-          homeSubtype={homeSubtype}
+          giftFor={giftFor}
           volume={volume}
-          destination={destination}
           diffuserType={diffuserType}
           sort={sort}
           minPrice={minPrice}

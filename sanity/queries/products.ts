@@ -27,21 +27,32 @@ import { LOW_STOCK_THRESHOLD } from "../../lib/constants/stock";
 // Shared Query Fragments (DRY)
 // ============================================
 
+/** Linia de produs: filtrăm după `productType` (întotdeauna pe document); `category->kind` e fallback pentru conținut vechi fără aliniere. */
+const CATEGORY_LINE_MATCH = `($categorySlug == "" || productType == $categorySlug || category->kind == $categorySlug)`;
+
+/**
+ * Parfumuri: unisex = doar unisex; femei = femei + unisex; bărbați = bărbați + unisex.
+ */
+const PERFUME_GENDER_MATCH = `(
+  ($gender == "unisex" && gender == "unisex") ||
+  ($gender == "women" && (gender == "women" || gender == "unisex")) ||
+  ($gender == "men" && (gender == "men" || gender == "unisex"))
+)`;
+
 /** Common filter conditions for product filtering */
 const PRODUCT_FILTER_CONDITIONS = `
   _type == "product"
-  && ($categorySlug == "" || category->kind == $categorySlug)
-  && ($olfactiveFamily == "" || (productType == "perfume" && olfactiveFamily == $olfactiveFamily))
-  && ($concentration == "" || (productType == "perfume" && concentration == $concentration))
+  && ${CATEGORY_LINE_MATCH}
+  && ($olfactiveFamily == "" || ((productType == "perfumes" || productType == "homeSpray" || productType == "carPerfume") && (olfactiveFamily == $olfactiveFamily || $olfactiveFamily in olfactiveFamily)))
+  && ($concentration == "" || (productType == "perfumes" && concentration == $concentration))
   && ($minPrice == 0 || price >= $minPrice)
   && ($maxPrice == 0 || price <= $maxPrice)
   && ($searchQuery == "" || name match $searchQuery + "*" || description match $searchQuery + "*")
   && ($inStock == false || stock > 0)
-  && ($gender == "" || (productType == "perfume" && gender == $gender))
-  && ($homeSubtype == "" || (productType == "home" && homeSubtype == $homeSubtype))
-  && ($volume == 0 || volume == $volume)
-  && ($destination == "" || (productType == "home" && homeSubtype == "cleaningProducts" && destination == $destination))
-  && ($diffuserType == "" || (productType == "home" && homeSubtype == "homeFragrance" && diffuserType == $diffuserType))
+  && ($gender == "" || (productType == "perfumes" && ${PERFUME_GENDER_MATCH}))
+  && ($giftFor == "" || (productType == "giftsets" && giftFor == $giftFor))
+  && ($volume == "" || (productType == "perfumes" && volume == $volume))
+  && ($diffuserType == "" || (productType == "homeSpray" && diffuserType == $diffuserType))
   && ($merchandisingFilter == "" || ($merchandisingFilter == "onSale" && onSale == true) || ($merchandisingFilter == "popular" && popular == true) || ($merchandisingFilter == "newArrival" && newArrival == true))
 `;
 
@@ -63,9 +74,10 @@ const PRODUCT_CARD_LIST_FIELDS = `
     kind,
     "slug": kind,
     "title": select(
-      kind == "perfume" => "Parfum",
-      kind == "home" => "Casă",
-      kind == "gift" => "Cadou",
+      kind == "perfumes" => "Parfumuri",
+      kind == "giftsets" => "Seturi cadou",
+      kind == "homeSpray" => "Parfumuri de cameră",
+      kind == "carPerfume" => "Parfumuri de mașină",
       "Categorie"
     )
   },
@@ -87,13 +99,13 @@ const RELEVANCE_SCORE = `score(
 )`;
 
 /**
- * Products flagged on sale (homepage „Oferte”)
+ * Products flagged on sale (homepage „Oferte”) — primele 5; restul pe /catalog/oferte
  */
 export const PRODUCTS_ON_SALE_HOME_QUERY = defineQuery(`*[
   _type == "product"
   && onSale == true
   && stock > 0
-] | order(name asc) {${PRODUCT_CARD_LIST_FIELDS}
+] | order(name asc)[0...5] {${PRODUCT_CARD_LIST_FIELDS}
 }`);
 
 /**
@@ -121,7 +133,7 @@ export const PRODUCTS_NEW_ARRIVAL_HOME_QUERY = defineQuery(`*[
  */
 export const PRODUCTS_GIFT_SETS_HOME_QUERY = defineQuery(`*[
   _type == "product"
-  && (productType == "gift" || gift == true)
+  && (productType == "giftsets" || gift == true)
   && stock > 0
 ] | order(name asc) {${PRODUCT_CARD_LIST_FIELDS}
 }`);
@@ -156,9 +168,10 @@ export const ALL_PRODUCTS_QUERY = defineQuery(`*[
     kind,
     "slug": kind,
     "title": select(
-      kind == "perfume" => "Parfum",
-      kind == "home" => "Casă",
-      kind == "gift" => "Cadou",
+      kind == "perfumes" => "Parfumuri",
+      kind == "giftsets" => "Seturi cadou",
+      kind == "homeSpray" => "Parfumuri de cameră",
+      kind == "carPerfume" => "Parfumuri de mașină",
       "Categorie"
     )
   },
@@ -170,15 +183,13 @@ export const ALL_PRODUCTS_QUERY = defineQuery(`*[
   topNotes,
   middleNotes,
   baseNotes,
-  homeSubtype,
-  destination,
+  giftFor,
   packagingInfo,
   diffuserType,
   scent,
   setContains,
   recommendedOccasion,
   stock,
-  featuredOnHome,
   onSale,
   popular,
   newArrival,
@@ -186,50 +197,11 @@ export const ALL_PRODUCTS_QUERY = defineQuery(`*[
 }`);
 
 /**
- * Get featured products for homepage carousel
- */
-export const FEATURED_PRODUCTS_QUERY = defineQuery(`*[
-  _type == "product"
-  && featuredOnHome == true
-  && stock > 0
-] | order(name asc) [0...6] {
-  _id,
-  name,
-  "slug": slug.current,
-  description,
-  price,
-  "images": images[]{
-    _key,
-    asset->{
-      _id,
-      url
-    },
-    hotspot
-  },
-  category->{
-    _id,
-    kind,
-    "slug": kind,
-    "title": select(
-      kind == "perfume" => "Parfum",
-      kind == "home" => "Casă",
-      kind == "gift" => "Cadou",
-      "Categorie"
-    )
-  },
-  productType,
-  volume,
-  concentration,
-  olfactiveFamily,
-  stock
-}`);
-
-/**
  * Get products by category slug
  */
 export const PRODUCTS_BY_CATEGORY_QUERY = defineQuery(`*[
   _type == "product"
-  && category->kind == $categorySlug
+  && (productType == $categorySlug || category->kind == $categorySlug)
 ] | order(name asc) {
   _id,
   name,
@@ -247,9 +219,10 @@ export const PRODUCTS_BY_CATEGORY_QUERY = defineQuery(`*[
     kind,
     "slug": kind,
     "title": select(
-      kind == "perfume" => "Parfum",
-      kind == "home" => "Casă",
-      kind == "gift" => "Cadou",
+      kind == "perfumes" => "Parfumuri",
+      kind == "giftsets" => "Seturi cadou",
+      kind == "homeSpray" => "Parfumuri de cameră",
+      kind == "carPerfume" => "Parfumuri de mașină",
       "Categorie"
     )
   },
@@ -287,9 +260,10 @@ export const PRODUCT_BY_SLUG_QUERY = defineQuery(`*[
     kind,
     "slug": kind,
     "title": select(
-      kind == "perfume" => "Parfum",
-      kind == "home" => "Casă",
-      kind == "gift" => "Cadou",
+      kind == "perfumes" => "Parfumuri",
+      kind == "giftsets" => "Seturi cadou",
+      kind == "homeSpray" => "Parfumuri de cameră",
+      kind == "carPerfume" => "Parfumuri de mașină",
       "Categorie"
     )
   },
@@ -301,19 +275,18 @@ export const PRODUCT_BY_SLUG_QUERY = defineQuery(`*[
   topNotes,
   middleNotes,
   baseNotes,
-  homeSubtype,
-  destination,
+  giftFor,
   packagingInfo,
   diffuserType,
   scent,
   setContains,
   recommendedOccasion,
   stock,
-  featuredOnHome,
   onSale,
   popular,
   newArrival,
-  gift
+  gift,
+  tiktokReviewUrl
 }`);
 
 // ============================================
@@ -353,9 +326,10 @@ export const SEARCH_PRODUCTS_QUERY = defineQuery(`*[
     kind,
     "slug": kind,
     "title": select(
-      kind == "perfume" => "Parfum",
-      kind == "home" => "Casă",
-      kind == "gift" => "Cadou",
+      kind == "perfumes" => "Parfumuri",
+      kind == "giftsets" => "Seturi cadou",
+      kind == "homeSpray" => "Parfumuri de cameră",
+      kind == "carPerfume" => "Parfumuri de mașină",
       "Categorie"
     )
   },
@@ -486,9 +460,10 @@ export const getAllProductsQuery = (page: number, limit: number) => `
       kind,
       "slug": kind,
       "title": select(
-        kind == "perfume" => "Parfum",
-        kind == "home" => "Casă",
-        kind == "gift" => "Cadou",
+        kind == "perfumes" => "Parfumuri",
+        kind == "giftsets" => "Seturi cadou",
+        kind == "homeSpray" => "Parfumuri de cameră",
+        kind == "carPerfume" => "Parfumuri de mașină",
         "Categorie"
       )
     },
@@ -501,15 +476,13 @@ export const getAllProductsQuery = (page: number, limit: number) => `
     topNotes,
     middleNotes,
     baseNotes,
-    homeSubtype,
-    destination,
+    giftFor,
     packagingInfo,
     diffuserType,
     scent,
     setContains,
     recommendedOccasion,
     stock,
-    featuredOnHome,
     onSale,
     popular,
     newArrival,

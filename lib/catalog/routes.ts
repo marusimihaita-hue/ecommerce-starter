@@ -6,44 +6,66 @@ import type {
 } from "./types";
 
 const PROFILE_BY_KIND: Record<string, CatalogFilterProfile> = {
-  perfume: "perfume",
-  home: "home",
-  gift: "gift",
+  perfumes: "perfumes",
+  giftsets: "giftsets",
+  homeSpray: "homeSpray",
+  carPerfume: "carPerfume",
 };
 
 const NAV_ROUTES: Record<
   string,
   { title: string; profile: CatalogFilterProfile; preset: CatalogLockedPreset }
 > = {
+  /** Slug-uri = productType / kind (folosite în Header, linkuri tehnice) — nu depind de documentele category din Sanity. */
+  perfumes: {
+    title: "Parfumuri",
+    profile: "perfumes",
+    preset: { categorySlug: "perfumes" },
+  },
+  giftsets: {
+    title: "Seturi cadou",
+    profile: "giftsets",
+    preset: { categorySlug: "giftsets" },
+  },
+  homeSpray: {
+    title: "Parfumuri de cameră",
+    profile: "homeSpray",
+    preset: { categorySlug: "homeSpray" },
+  },
+  carPerfume: {
+    title: "Parfumuri de mașină",
+    profile: "carPerfume",
+    preset: { categorySlug: "carPerfume" },
+  },
   "parfumuri-barbati": {
     title: "Parfumuri bărbați",
-    profile: "perfume",
-    preset: { categorySlug: "perfume", gender: "men" },
+    profile: "perfumes",
+    preset: { categorySlug: "perfumes", gender: "men" },
   },
   "parfumuri-femei": {
     title: "Parfumuri femei",
-    profile: "perfume",
-    preset: { categorySlug: "perfume", gender: "women" },
+    profile: "perfumes",
+    preset: { categorySlug: "perfumes", gender: "women" },
   },
   unisex: {
     title: "Unisex",
-    profile: "perfume",
-    preset: { categorySlug: "perfume", gender: "unisex" },
+    profile: "perfumes",
+    preset: { categorySlug: "perfumes", gender: "unisex" },
   },
   "seturi-cadou": {
     title: "Seturi cadou",
-    profile: "gift",
-    preset: { categorySlug: "gift" },
-  },
-  "casa-ingrijire": {
-    title: "Casă & Îngrijire",
-    profile: "home",
-    preset: { categorySlug: "home" },
+    profile: "giftsets",
+    preset: { categorySlug: "giftsets" },
   },
   "parfumuri-camera": {
-    title: "Parfumuri cameră",
-    profile: "home",
-    preset: { categorySlug: "home", homeSubtype: "homeFragrance" },
+    title: "Parfumuri de cameră",
+    profile: "homeSpray",
+    preset: { categorySlug: "homeSpray" },
+  },
+  "parfumuri-masina": {
+    title: "Parfumuri de mașină",
+    profile: "carPerfume",
+    preset: { categorySlug: "carPerfume" },
   },
   oferte: {
     title: "Oferte",
@@ -62,11 +84,15 @@ const NAV_ROUTES: Record<
   },
 };
 
+/** Rute statice pentru /catalog/[slug]; fără duplicate când slug-urile tehnice sunt și în NAV_ROUTES. */
 export const STATIC_CATALOG_SLUGS = [
-  "perfume",
-  "home",
-  "gift",
-  ...Object.keys(NAV_ROUTES),
+  ...new Set([
+    "perfumes",
+    "giftsets",
+    "homeSpray",
+    "carPerfume",
+    ...Object.keys(NAV_ROUTES),
+  ]),
 ];
 
 export function resolveCatalogSlug(

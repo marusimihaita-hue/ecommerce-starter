@@ -1,4 +1,9 @@
-export type CatalogFilterProfile = "all" | "perfume" | "home" | "gift";
+export type CatalogFilterProfile =
+  | "all"
+  | "perfumes"
+  | "giftsets"
+  | "homeSpray"
+  | "carPerfume";
 
 /** Homepage-style listings (Oferte / Populare / Noutăți), locked by route. */
 export type CatalogMerchandisingFilter = "onSale" | "popular" | "newArrival";
@@ -7,7 +12,7 @@ export type CatalogMerchandisingFilter = "onSale" | "popular" | "newArrival";
 export type CatalogLockedPreset = {
   categorySlug?: string;
   gender?: string;
-  homeSubtype?: string;
+  giftFor?: string;
   merchandisingFilter?: CatalogMerchandisingFilter;
 };
 

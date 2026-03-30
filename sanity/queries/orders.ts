@@ -53,8 +53,10 @@ export const ORDER_BY_ID_QUERY = defineQuery(`*[
     line1,
     line2,
     city,
+    state,
     postcode,
-    country
+    country,
+    phone
   },
   stripePaymentId,
   createdAt

@@ -8,7 +8,7 @@ import {
   useDocumentProjection,
   type DocumentHandle,
 } from "@sanity/sdk-react";
-import { CircleAlert, ExternalLink, Star } from "lucide-react";
+import { CircleAlert, ExternalLink } from "lucide-react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,7 +16,6 @@ import { formatPrice } from "@/lib/utils";
 import { isLowStock, isOutOfStock } from "@/lib/constants/stock";
 import { StockInput } from "./StockInput";
 import { PriceInput } from "./PriceInput";
-import { FeaturedToggle } from "./FeaturedToggle";
 import { PublishButton, RevertButton } from "./PublishButton";
 
 interface ProductProjection {
@@ -24,7 +23,6 @@ interface ProductProjection {
   slug: string;
   stock: number;
   price: number;
-  featuredOnHome: boolean;
   category: {
     title: string;
   } | null;
@@ -43,13 +41,13 @@ function ProductRowContent(handle: DocumentHandle) {
       "slug": slug.current,
       stock,
       price,
-      featuredOnHome,
       category->{
         kind,
         "title": select(
-          kind == "perfume" => "Parfum",
-          kind == "home" => "Casă",
-          kind == "gift" => "Cadou",
+          kind == "perfumes" => "Parfumuri",
+          kind == "giftsets" => "Seturi cadou",
+          kind == "homeSpray" => "Parfumuri de cameră",
+          kind == "carPerfume" => "Parfumuri de mașină",
           "Categorie"
         )
       },
@@ -116,11 +114,8 @@ function ProductRowContent(handle: DocumentHandle) {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
               <span className="truncate font-medium text-zinc-900 group-hover:text-zinc-600 dark:text-zinc-100 dark:group-hover:text-zinc-300 sm:hover:text-zinc-600 sm:dark:hover:text-zinc-300">
-                {data.name || "Untitled Product"}
+                {data.name || "Produs fără nume"}
               </span>
-              {data.featuredOnHome && (
-                <Star className="h-3.5 w-3.5 shrink-0 fill-amber-400 text-amber-400 sm:hidden" />
-              )}
               {data.slug && (
                 <button
                   type="button"
@@ -130,7 +125,7 @@ function ProductRowContent(handle: DocumentHandle) {
                     window.open(`/products/${data.slug}`, "_blank");
                   }}
                   className="hidden shrink-0 opacity-0 transition-opacity group-hover:opacity-100 sm:block"
-                  aria-label="View product on store"
+                  aria-label="Deschide produsul în magazin"
                 >
                   <ExternalLink className="h-3.5 w-3.5 text-zinc-400 hover:text-zinc-600" />
                 </button>
@@ -143,7 +138,7 @@ function ProductRowContent(handle: DocumentHandle) {
                   className="h-5 gap-1 border-orange-300 bg-orange-50 px-1.5 text-[10px] font-medium text-orange-600 dark:border-orange-500/50 dark:bg-orange-950/50 dark:text-orange-400"
                 >
                   <CircleAlert className="h-3 w-3" />
-                  Draft
+                  Ciornă
                 </Badge>
               </div>
             )}
@@ -159,11 +154,11 @@ function ProductRowContent(handle: DocumentHandle) {
               </span>
               <span className="text-zinc-300 dark:text-zinc-600">•</span>
               <span className="text-zinc-500 dark:text-zinc-400">
-                {data.stock} in stock
+                {data.stock} în stoc
               </span>
               {outOfStock && (
                 <Badge variant="destructive" className="h-5 px-1.5 text-[10px]">
-                  Out
+                  Epuizat
                 </Badge>
               )}
               {lowStock && (
@@ -194,7 +189,7 @@ function ProductRowContent(handle: DocumentHandle) {
           </Suspense>
           {outOfStock && (
             <Badge variant="destructive" className="text-xs">
-              Out
+              Epuizat
             </Badge>
           )}
           {lowStock && (
@@ -202,17 +197,10 @@ function ProductRowContent(handle: DocumentHandle) {
               variant="secondary"
               className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
             >
-              Low
+              Stoc mic
             </Badge>
           )}
         </div>
-      </TableCell>
-
-      {/* Featured - Desktop only */}
-      <TableCell className="hidden py-4 lg:table-cell">
-        <Suspense fallback={<Skeleton className="h-8 w-8" />}>
-          <FeaturedToggle {...handle} />
-        </Suspense>
       </TableCell>
 
       {/* Actions - Desktop only */}
@@ -254,9 +242,6 @@ function ProductRowSkeleton() {
       </TableCell>
       <TableCell className="hidden py-4 md:table-cell">
         <Skeleton className="h-8 w-20" />
-      </TableCell>
-      <TableCell className="hidden py-4 lg:table-cell">
-        <Skeleton className="h-8 w-8" />
       </TableCell>
       <TableCell className="hidden py-4 sm:table-cell">
         <Skeleton className="h-8 w-[100px]" />

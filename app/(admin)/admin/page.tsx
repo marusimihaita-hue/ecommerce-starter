@@ -13,7 +13,6 @@ import {
   StatCard,
   LowStockAlert,
   RecentOrders,
-  AIInsightsCard,
 } from "@/components/admin";
 
 export default function AdminDashboard() {
@@ -38,10 +37,10 @@ export default function AdminDashboard() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-3xl">
-            Dashboard
+            Panou de control
           </h1>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400 sm:text-base">
-            Overview of your store
+            Rezumat magazin
           </p>
         </div>
         <Button
@@ -54,26 +53,26 @@ export default function AdminDashboard() {
           ) : (
             <Plus className="mr-2 h-4 w-4" />
           )}
-          New Product
+          Produs nou
         </Button>
       </div>
 
       {/* Stats Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
-          title="Total Products"
+          title="Produse în total"
           icon={Package}
           documentType="product"
           href="/admin/inventory"
         />
         <StatCard
-          title="Total Orders"
+          title="Comenzi în total"
           icon={ShoppingCart}
           documentType="order"
           href="/admin/orders"
         />
         <StatCard
-          title="Low Stock Items"
+          title="Stoc redus (≤5)"
           icon={TrendingUp}
           documentType="product"
           filter="stock <= 5"

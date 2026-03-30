@@ -261,6 +261,13 @@
               },
               "optional": true
             },
+            "state": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            },
             "postcode": {
               "type": "objectAttribute",
               "value": {
@@ -269,6 +276,13 @@
               "optional": true
             },
             "country": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "phone": {
               "type": "objectAttribute",
               "value": {
                 "type": "string"
@@ -366,6 +380,13 @@
         },
         "optional": true
       },
+      "tiktokReviewUrl": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "category": {
         "type": "objectAttribute",
         "value": {
@@ -403,15 +424,19 @@
           "of": [
             {
               "type": "string",
-              "value": "perfume"
+              "value": "perfumes"
             },
             {
               "type": "string",
-              "value": "home"
+              "value": "giftsets"
             },
             {
               "type": "string",
-              "value": "gift"
+              "value": "homeSpray"
+            },
+            {
+              "type": "string",
+              "value": "carPerfume"
             }
           ]
         },
@@ -441,7 +466,7 @@
       "volume": {
         "type": "objectAttribute",
         "value": {
-          "type": "number"
+          "type": "string"
         },
         "optional": true
       },
@@ -452,23 +477,43 @@
           "of": [
             {
               "type": "string",
-              "value": "eau-de-cologne"
-            },
-            {
-              "type": "string",
-              "value": "eau-de-toilette"
-            },
-            {
-              "type": "string",
-              "value": "eau-de-parfum"
-            },
-            {
-              "type": "string",
               "value": "parfum"
             },
             {
               "type": "string",
+              "value": "apa-de-parfum"
+            },
+            {
+              "type": "string",
+              "value": "apa-de-toaleta"
+            },
+            {
+              "type": "string",
+              "value": "apa-de-colonie"
+            },
+            {
+              "type": "string",
+              "value": "extrait-de-parfum"
+            },
+            {
+              "type": "string",
               "value": "elixir"
+            },
+            {
+              "type": "string",
+              "value": "apa-proaspata"
+            },
+            {
+              "type": "string",
+              "value": "parfum-solid"
+            },
+            {
+              "type": "string",
+              "value": "ulei-parfumat"
+            },
+            {
+              "type": "string",
+              "value": "parfum-intens"
             }
           ]
         },
@@ -477,37 +522,88 @@
       "olfactiveFamily": {
         "type": "objectAttribute",
         "value": {
-          "type": "union",
-          "of": [
-            {
-              "type": "string",
-              "value": "floral"
-            },
-            {
-              "type": "string",
-              "value": "woody"
-            },
-            {
-              "type": "string",
-              "value": "oriental"
-            },
-            {
-              "type": "string",
-              "value": "fresh"
-            },
-            {
-              "type": "string",
-              "value": "citrus"
-            },
-            {
-              "type": "string",
-              "value": "amber"
-            },
-            {
-              "type": "string",
-              "value": "aromatic"
-            }
-          ]
+          "type": "array",
+          "of": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "citric"
+              },
+              {
+                "type": "string",
+                "value": "condimentat"
+              },
+              {
+                "type": "string",
+                "value": "dulce"
+              },
+              {
+                "type": "string",
+                "value": "floral"
+              },
+              {
+                "type": "string",
+                "value": "fresh"
+              },
+              {
+                "type": "string",
+                "value": "lemnos"
+              },
+              {
+                "type": "string",
+                "value": "oriental"
+              },
+              {
+                "type": "string",
+                "value": "acvatic"
+              },
+              {
+                "type": "string",
+                "value": "aromatic"
+              },
+              {
+                "type": "string",
+                "value": "balsamic"
+              },
+              {
+                "type": "string",
+                "value": "chypre"
+              },
+              {
+                "type": "string",
+                "value": "fougere"
+              },
+              {
+                "type": "string",
+                "value": "fructat"
+              },
+              {
+                "type": "string",
+                "value": "gurmand"
+              },
+              {
+                "type": "string",
+                "value": "moscat"
+              },
+              {
+                "type": "string",
+                "value": "pielarie"
+              },
+              {
+                "type": "string",
+                "value": "pudrat"
+              },
+              {
+                "type": "string",
+                "value": "rasinos"
+              },
+              {
+                "type": "string",
+                "value": "vanilat"
+              }
+            ]
+          }
         },
         "optional": true
       },
@@ -532,61 +628,41 @@
         },
         "optional": true
       },
-      "homeSubtype": {
+      "giftFor": {
         "type": "objectAttribute",
         "value": {
           "type": "union",
           "of": [
             {
               "type": "string",
-              "value": "cleaningProducts"
+              "value": "him"
             },
             {
               "type": "string",
-              "value": "homeFragrance"
+              "value": "her"
+            },
+            {
+              "type": "string",
+              "value": "unisex"
             }
           ]
         },
         "optional": true
       },
-      "destination": {
+      "setContains": {
         "type": "objectAttribute",
         "value": {
-          "type": "union",
-          "of": [
-            {
-              "type": "string",
-              "value": "bathroom"
-            },
-            {
-              "type": "string",
-              "value": "kitchen"
-            },
-            {
-              "type": "string",
-              "value": "livingRoom"
-            },
-            {
-              "type": "string",
-              "value": "windows"
-            },
-            {
-              "type": "string",
-              "value": "universal"
-            },
-            {
-              "type": "string",
-              "value": "laundry"
-            },
-            {
-              "type": "string",
-              "value": "floors"
-            },
-            {
-              "type": "string",
-              "value": "furniture"
-            }
-          ]
+          "type": "array",
+          "of": {
+            "type": "string"
+          }
+        },
+        "optional": true
+      },
+      "recommendedOccasion": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
         },
         "optional": true
       },
@@ -619,23 +695,6 @@
         "optional": true
       },
       "scent": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "setContains": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "array",
-          "of": {
-            "type": "string"
-          }
-        },
-        "optional": true
-      },
-      "recommendedOccasion": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -729,13 +788,6 @@
         "type": "objectAttribute",
         "value": {
           "type": "number"
-        },
-        "optional": true
-      },
-      "featuredOnHome": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "boolean"
         },
         "optional": true
       },
@@ -1001,15 +1053,19 @@
           "of": [
             {
               "type": "string",
-              "value": "perfume"
+              "value": "perfumes"
             },
             {
               "type": "string",
-              "value": "home"
+              "value": "giftsets"
             },
             {
               "type": "string",
-              "value": "gift"
+              "value": "homeSpray"
+            },
+            {
+              "type": "string",
+              "value": "carPerfume"
             }
           ]
         },

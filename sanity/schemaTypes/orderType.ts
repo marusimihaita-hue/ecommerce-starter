@@ -57,7 +57,7 @@ export const orderType = defineType({
             prepare({ title, quantity, price, media }) {
               return {
                 title: title ?? "Product",
-                subtitle: `Qty: ${quantity} • £${price}`,
+                subtitle: `Cant.: ${quantity} • ${price} RON`,
                 media,
               };
             },
@@ -70,7 +70,7 @@ export const orderType = defineType({
       type: "number",
       group: "details",
       readOnly: true,
-      description: "Total order amount in GBP",
+      description: "Total comandă în RON",
     }),
     defineField({
       name: "status",
@@ -111,8 +111,15 @@ export const orderType = defineType({
         defineField({ name: "line1", type: "string", title: "Address Line 1" }),
         defineField({ name: "line2", type: "string", title: "Address Line 2" }),
         defineField({ name: "city", type: "string" }),
+        defineField({
+          name: "state",
+          type: "string",
+          title: "County / sector",
+          description: "Județ, sector etc. (din Stripe, dacă e cazul)",
+        }),
         defineField({ name: "postcode", type: "string", title: "Postcode" }),
         defineField({ name: "country", type: "string" }),
+        defineField({ name: "phone", type: "string", title: "Phone" }),
       ],
     }),
     defineField({
@@ -139,14 +146,14 @@ export const orderType = defineType({
     },
     prepare({ orderNumber, email, total, status }) {
       return {
-        title: `Order ${orderNumber ?? "N/A"}`,
-        subtitle: `${email ?? "No email"} • £${total ?? 0} • ${status ?? "paid"}`,
+        title: `Comandă ${orderNumber ?? "—"}`,
+        subtitle: `${email ?? "Fără email"} • ${total ?? 0} RON • ${status ?? "paid"}`,
       };
     },
   },
   orderings: [
     {
-      title: "Newest First",
+      title: "Cele mai noi",
       name: "createdAtDesc",
       by: [{ field: "createdAt", direction: "desc" }],
     },

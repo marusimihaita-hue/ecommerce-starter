@@ -60,10 +60,10 @@ export async function fetchCatalogListing({
     preset.gender !== undefined
       ? preset.gender
       : firstParam(searchParams.gender);
-  const homeSubtype =
-    preset.homeSubtype !== undefined
-      ? preset.homeSubtype
-      : firstParam(searchParams.homeSubtype);
+  const giftFor =
+    preset.giftFor !== undefined
+      ? preset.giftFor
+      : firstParam(searchParams.giftFor);
   const sortRaw = firstParam(searchParams.sort) || "name";
   const sort = sortRaw === "relevance" && !q.trim() ? "name" : sortRaw;
   const minPrice = Number(firstParam(searchParams.minPrice)) || 0;
@@ -71,9 +71,7 @@ export async function fetchCatalogListing({
   const maxPrice = Number.isFinite(maxPriceRaw) ? maxPriceRaw : 0;
   const inStock = firstParam(searchParams.inStock) === "true";
   const pageNum = Math.max(1, Number(firstParam(searchParams.page)) || 1);
-  const volumeRaw = Number(firstParam(searchParams.volume));
-  const volume = Number.isFinite(volumeRaw) ? volumeRaw : 0;
-  const destination = firstParam(searchParams.destination);
+  const volume = firstParam(searchParams.volume);
   const diffuserType = firstParam(searchParams.diffuserType);
   const merchandisingFilter =
     preset.merchandisingFilter !== undefined ? preset.merchandisingFilter : "";
@@ -87,9 +85,8 @@ export async function fetchCatalogListing({
     searchQuery: q,
     inStock,
     gender,
-    homeSubtype,
+    giftFor,
     volume,
-    destination,
     diffuserType,
     merchandisingFilter,
   };
@@ -131,13 +128,12 @@ export async function fetchCatalogListing({
       olfactiveFamily,
       concentration,
       gender,
-      homeSubtype,
+      giftFor,
       sort,
       minPrice,
       maxPrice,
       inStock,
       volume,
-      destination,
       diffuserType,
       displayMaxPrice,
     },

@@ -23,8 +23,8 @@ export function ProductGrid({ products }: ProductGridProps) {
 
   return (
     <div className="@container">
-      {/* Coloane cu lățime plafonată: puține produse nu întind carduri pe tot ecranul */}
-      <div className="grid grid-cols-1 justify-start gap-6 sm:grid-cols-[repeat(auto-fill,minmax(min(100%,17rem),20.5rem))] sm:gap-8">
+      {/* 1 col mobil, 2 col tablet, 3 col laptop+ (lângă sidebar-ul de filtre) */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
         {products.map((product) => (
           <div key={product._id} className="min-w-0 w-full">
             <ProductCard product={product} />

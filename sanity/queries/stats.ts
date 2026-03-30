@@ -82,9 +82,10 @@ export const PRODUCTS_INVENTORY_QUERY = defineQuery(`*[_type == "product"] {
   price,
   stock,
   "category": select(
-    category->kind == "perfume" => "Parfum",
-    category->kind == "home" => "Casă",
-    category->kind == "gift" => "Cadou",
+    category->kind == "perfumes" => "Parfumuri",
+    category->kind == "giftsets" => "Seturi cadou",
+    category->kind == "homeSpray" => "Parfumuri de cameră",
+    category->kind == "carPerfume" => "Parfumuri de mașină",
     category->kind
   )
 }`);

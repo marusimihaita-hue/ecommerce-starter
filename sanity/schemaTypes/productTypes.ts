@@ -2,33 +2,33 @@ import { PackageIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
 import {
   CONCENTRATIONS_SANITY_LIST,
-  SCENT_FAMILIES_SANITY_LIST,
+  OLFACTORY_FAMILIES_SANITY_LIST,
 } from "@/lib/constants/filters";
 import {
-  CLEANING_DESTINATION_SANITY_LIST,
   DIFFUSER_TYPE_SANITY_LIST,
   GENDER_SANITY_LIST,
-  HOME_SUBTYPE_SANITY_LIST,
+  GIFT_FOR_SANITY_LIST,
   PRODUCT_TYPE_SANITY_LIST,
 } from "@/lib/constants/productOptions";
 
 type ProductLike = {
   productType?: string;
-  homeSubtype?: string;
 };
 
-const isPerfume = (doc: ProductLike | undefined) =>
-  doc?.productType === "perfume";
+const isPerfumes = (doc: ProductLike | undefined) =>
+  doc?.productType === "perfumes";
 
-const isHome = (doc: ProductLike | undefined) => doc?.productType === "home";
+const isGiftsets = (doc: ProductLike | undefined) =>
+  doc?.productType === "giftsets";
 
-const isCleaning = (doc: ProductLike | undefined) =>
-  doc?.productType === "home" && doc?.homeSubtype === "cleaningProducts";
+const isHomeSpray = (doc: ProductLike | undefined) =>
+  doc?.productType === "homeSpray";
 
-const isHomeFragrance = (doc: ProductLike | undefined) =>
-  doc?.productType === "home" && doc?.homeSubtype === "homeFragrance";
+const isCarPerfume = (doc: ProductLike | undefined) =>
+  doc?.productType === "carPerfume";
 
-const isGift = (doc: ProductLike | undefined) => doc?.productType === "gift";
+const usesOlfactoryMultiselect = (doc: ProductLike | undefined) =>
+  isPerfumes(doc) || isHomeSpray(doc) || isCarPerfume(doc);
 
 export const productType = defineType({
   name: "product",
@@ -81,8 +81,15 @@ export const productType = defineType({
       type: "text",
       group: "details",
       rows: 4,
-      description: "Product description",
-      validation: (rule) => [rule.required().error("Description is required")],
+      description: "Descriere produs",
+    }),
+    defineField({
+      name: "tiktokReviewUrl",
+      title: "Link review TikTok",
+      type: "url",
+      group: "details",
+      description:
+        "Opțional. URL-ul clipului/review-ului de pe TikTok; apare pe pagina produsului ca „Vezi review pe TikTok”.",
     }),
     defineField({
       name: "category",
@@ -92,32 +99,33 @@ export const productType = defineType({
     }),
     defineField({
       name: "productType",
-      title: "Product type",
+      title: "Categorie principală",
       type: "string",
       group: "type",
       options: {
         list: [...PRODUCT_TYPE_SANITY_LIST],
         layout: "radio",
       },
-      initialValue: "perfume",
-      validation: (rule) => [rule.required().error("Select a product type")],
+      initialValue: "perfumes",
+      validation: (rule) => [rule.required().error("Selectează categoria")],
     }),
 
-    // --- Perfume ---
+    // --- Parfumuri ---
     defineField({
       name: "gender",
+      title: "Gen",
       type: "string",
       group: "type",
       options: {
         list: [...GENDER_SANITY_LIST],
         layout: "radio",
       },
-      hidden: ({ document }) => !isPerfume(document as ProductLike),
+      hidden: ({ document }) => !isPerfumes(document as ProductLike),
       validation: (rule) => [
         rule.custom((value, context) => {
           const doc = context.document as ProductLike | undefined;
-          if (isPerfume(doc) && !value) {
-            return "Gender is required for perfume products";
+          if (isPerfumes(doc) && !value) {
+            return "Genul este obligatoriu pentru parfumuri";
           }
           return true;
         }),
@@ -125,26 +133,16 @@ export const productType = defineType({
     }),
     defineField({
       name: "volume",
-      title: "Volume (ml)",
-      type: "number",
+      title: "Volum",
+      type: "string",
       group: "type",
-      description: "Size in milliliters (perfume, cleaning, or home fragrance)",
-      hidden: ({ document }) => {
-        const doc = document as ProductLike | undefined;
-        return !(isPerfume(doc) || isCleaning(doc) || isHomeFragrance(doc));
-      },
+      description: 'Ex.: "50ml", "100ml"',
+      hidden: ({ document }) => !isPerfumes(document as ProductLike),
       validation: (rule) => [
         rule.custom((value, context) => {
           const doc = context.document as ProductLike | undefined;
-          const needsVolume =
-            isPerfume(doc) || isCleaning(doc) || isHomeFragrance(doc);
-          if (needsVolume && (value === undefined || value === null)) {
-            return "Volume is required";
-          }
-          if (value !== undefined && value !== null) {
-            const n = Number(value);
-            if (Number.isNaN(n) || n <= 0) return "Volume must be positive";
-            if (!Number.isInteger(n)) return "Volume must be a whole number";
+          if (isPerfumes(doc) && !String(value ?? "").trim()) {
+            return "Volumul este obligatoriu";
           }
           return true;
         }),
@@ -152,18 +150,19 @@ export const productType = defineType({
     }),
     defineField({
       name: "concentration",
+      title: "Concentrație",
       type: "string",
       group: "type",
       options: {
         list: CONCENTRATIONS_SANITY_LIST,
         layout: "radio",
       },
-      hidden: ({ document }) => !isPerfume(document as ProductLike),
+      hidden: ({ document }) => !isPerfumes(document as ProductLike),
       validation: (rule) => [
         rule.custom((value, context) => {
           const doc = context.document as ProductLike | undefined;
-          if (isPerfume(doc) && !value) {
-            return "Concentration is required for perfume products";
+          if (isPerfumes(doc) && !value) {
+            return "Concentrația este obligatorie";
           }
           return true;
         }),
@@ -171,107 +170,97 @@ export const productType = defineType({
     }),
     defineField({
       name: "olfactiveFamily",
-      title: "Olfactive family",
-      type: "string",
+      title: "Familie olfactivă",
+      type: "array",
       group: "type",
+      of: [
+        defineArrayMember({
+          type: "string",
+          options: {
+            list: [...OLFACTORY_FAMILIES_SANITY_LIST],
+            layout: "dropdown",
+          },
+        }),
+      ],
       options: {
-        list: SCENT_FAMILIES_SANITY_LIST,
-        layout: "radio",
+        layout: "tags",
       },
-      hidden: ({ document }) => !isPerfume(document as ProductLike),
+      hidden: ({ document }) => !usesOlfactoryMultiselect(document as ProductLike),
     }),
     defineField({
       name: "topNotes",
-      title: "Top notes",
+      title: "Note de vârf",
       type: "string",
       group: "type",
-      description: "Example: Citrus, Oud, Bergamot",
-      hidden: ({ document }) => !isPerfume(document as ProductLike),
+      hidden: ({ document }) => !isPerfumes(document as ProductLike),
     }),
     defineField({
       name: "middleNotes",
-      title: "Middle notes",
+      title: "Note de mijloc",
       type: "string",
       group: "type",
-      description: "Example: Rose, Jasmine, Saffron",
-      hidden: ({ document }) => !isPerfume(document as ProductLike),
+      hidden: ({ document }) => !isPerfumes(document as ProductLike),
     }),
     defineField({
       name: "baseNotes",
-      title: "Base notes",
+      title: "Note de bază",
       type: "string",
       group: "type",
-      description: "Example: Vanilla, Musk, Sandalwood",
-      hidden: ({ document }) => !isPerfume(document as ProductLike),
+      hidden: ({ document }) => !isPerfumes(document as ProductLike),
     }),
 
-    // --- Home ---
+    // --- Giftsets ---
     defineField({
-      name: "homeSubtype",
-      title: "Home subtype",
+      name: "giftFor",
+      title: "Pentru",
       type: "string",
       group: "type",
       options: {
-        list: [...HOME_SUBTYPE_SANITY_LIST],
+        list: [...GIFT_FOR_SANITY_LIST],
         layout: "radio",
       },
-      hidden: ({ document }) => !isHome(document as ProductLike),
-      validation: (rule) => [
-        rule.custom((value, context) => {
-          const doc = context.document as ProductLike | undefined;
-          if (isHome(doc) && !value) {
-            return "Select cleaning products or home fragrance";
-          }
-          return true;
-        }),
-      ],
+      hidden: ({ document }) => !isGiftsets(document as ProductLike),
     }),
     defineField({
-      name: "destination",
-      title: "Destination (cleaning)",
+      name: "setContains",
+      title: "Conținut set",
+      type: "array",
+      group: "type",
+      of: [defineArrayMember({ type: "string" })],
+      hidden: ({ document }) => !isGiftsets(document as ProductLike),
+    }),
+    defineField({
+      name: "recommendedOccasion",
+      title: "Ocazie recomandată",
       type: "string",
       group: "type",
-      options: {
-        list: [...CLEANING_DESTINATION_SANITY_LIST],
-        layout: "radio",
-      },
-      hidden: ({ document }) => !isCleaning(document as ProductLike),
-      validation: (rule) => [
-        rule.custom((value, context) => {
-          const doc = context.document as ProductLike | undefined;
-          if (isCleaning(doc) && !value) {
-            return "Destination is required for cleaning products";
-          }
-          return true;
-        }),
-      ],
+      hidden: ({ document }) => !isGiftsets(document as ProductLike),
     }),
     defineField({
       name: "packagingInfo",
-      title: "Packaging info",
+      title: "Informații ambalaj",
       type: "text",
       group: "type",
       rows: 3,
-      hidden: ({ document }) => {
-        const doc = document as ProductLike | undefined;
-        return !(isCleaning(doc) || isGift(doc));
-      },
+      hidden: ({ document }) => !isGiftsets(document as ProductLike),
     }),
+
+    // --- Home Spray ---
     defineField({
       name: "diffuserType",
-      title: "Diffuser type",
+      title: "Tip difuzor",
       type: "string",
       group: "type",
       options: {
         list: [...DIFFUSER_TYPE_SANITY_LIST],
         layout: "radio",
       },
-      hidden: ({ document }) => !isHomeFragrance(document as ProductLike),
+      hidden: ({ document }) => !isHomeSpray(document as ProductLike),
       validation: (rule) => [
         rule.custom((value, context) => {
           const doc = context.document as ProductLike | undefined;
-          if (isHomeFragrance(doc) && !value) {
-            return "Diffuser type is required";
+          if (isHomeSpray(doc) && !value) {
+            return "Selectează tipul de difuzor";
           }
           return true;
         }),
@@ -279,37 +268,24 @@ export const productType = defineType({
     }),
     defineField({
       name: "scent",
-      title: "Scent",
+      title: "Miros",
       type: "string",
       group: "type",
-      description: "Home fragrance scent description",
-      hidden: ({ document }) => !isHomeFragrance(document as ProductLike),
+      description: "Descriere miros (home spray / car parfum)",
+      hidden: ({ document }) =>
+        !(isHomeSpray(document as ProductLike) ||
+          isCarPerfume(document as ProductLike)),
       validation: (rule) => [
         rule.custom((value, context) => {
           const doc = context.document as ProductLike | undefined;
-          if (isHomeFragrance(doc) && !String(value ?? "").trim()) {
-            return "Scent is required for home fragrance";
-          }
+          const needs =
+            isHomeSpray(doc) || isCarPerfume(doc)
+              ? !String(value ?? "").trim()
+              : false;
+          if (needs) return "Mirosul este obligatoriu";
           return true;
         }),
       ],
-    }),
-
-    // --- Gift ---
-    defineField({
-      name: "setContains",
-      title: "Set contains",
-      type: "array",
-      group: "type",
-      of: [defineArrayMember({ type: "string" })],
-      hidden: ({ document }) => !isGift(document as ProductLike),
-    }),
-    defineField({
-      name: "recommendedOccasion",
-      title: "Recommended occasion",
-      type: "string",
-      group: "type",
-      hidden: ({ document }) => !isGift(document as ProductLike),
     }),
 
     defineField({
@@ -341,38 +317,33 @@ export const productType = defineType({
     }),
 
     defineField({
-      name: "featuredOnHome",
-      title: "Featured on home",
-      type: "boolean",
-      group: "merchandising",
-      initialValue: false,
-      description: "Show on homepage carousel",
-    }),
-    defineField({
       name: "onSale",
+      title: "On sale",
       type: "boolean",
       group: "merchandising",
       initialValue: false,
     }),
     defineField({
       name: "popular",
+      title: "Popular",
       type: "boolean",
       group: "merchandising",
       initialValue: false,
     }),
     defineField({
       name: "newArrival",
+      title: "New arrival",
       type: "boolean",
       group: "merchandising",
       initialValue: false,
     }),
     defineField({
       name: "gift",
-      title: "Gift highlight",
+      title: "Gift",
       type: "boolean",
       group: "merchandising",
       initialValue: false,
-      description: "Highlight as gift idea (any product type)",
+      description: "Evidențiere cadou (orice categorie)",
     }),
   ],
   preview: {
@@ -395,20 +366,12 @@ export const productType = defineType({
       volume,
     }) {
       const categoryLabel =
-        categoryKind === "perfume"
-          ? "Parfum"
-          : categoryKind === "home"
-            ? "Casă"
-            : categoryKind === "gift"
-              ? "Cadou"
-              : categoryKind
-                ? String(categoryKind)
-                : "";
-      const typeLabel = productType ?? "";
-      const sizeLabel =
-        concentration && volume
-          ? `${concentration} • ${volume} ml`
-          : concentration || (volume ? `${volume} ml` : "");
+        PRODUCT_TYPE_SANITY_LIST.find((k) => k.value === categoryKind)?.title ??
+        (categoryKind ? String(categoryKind) : "");
+      const typeLabel =
+        PRODUCT_TYPE_SANITY_LIST.find((k) => k.value === productType)?.title ??
+        (productType ? String(productType) : "");
+      const sizeLabel = [concentration, volume].filter(Boolean).join(" • ");
 
       return {
         title,

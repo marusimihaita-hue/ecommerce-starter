@@ -127,8 +127,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
           line1: shippingAddress.line1 ?? "",
           line2: shippingAddress.line2 ?? "",
           city: shippingAddress.city ?? "",
+          state: shippingAddress.state ?? "",
           postcode: shippingAddress.postal_code ?? "",
           country: shippingAddress.country ?? "",
+          phone: session.customer_details?.phone ?? "",
         }
       : undefined;
 

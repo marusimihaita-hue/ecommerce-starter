@@ -20,17 +20,14 @@ import type {
 } from "@/lib/catalog/types";
 import {
   CONCENTRATIONS,
-  SCENT_FAMILIES,
+  OLFACTORY_FAMILIES,
   SORT_OPTIONS,
-  VOLUME_ML_OPTIONS,
+  VOLUME_STRING_OPTIONS,
 } from "@/lib/constants/filters";
-import {
-  CLEANING_DESTINATIONS,
-  DIFFUSER_TYPES,
-  GENDERS,
-  HOME_SUBTYPES,
-} from "@/lib/constants/productOptions";
+import { DIFFUSER_TYPES, GENDERS, GIFT_FOR_OPTIONS } from "@/lib/constants/productOptions";
 import type { ALL_CATEGORIES_QUERYResult } from "@/sanity.types";
+
+const OLFACTIVE_CATEGORIES = ["perfumes", "homeSpray", "carPerfume"] as const;
 
 interface ProductFiltersProps {
   categories: ALL_CATEGORIES_QUERYResult;
@@ -42,9 +39,8 @@ interface ProductFiltersProps {
     olfactiveFamily: string;
     concentration: string;
     gender: string;
-    homeSubtype: string;
-    volume: number;
-    destination: string;
+    giftFor: string;
+    volume: string;
     diffuserType: string;
     sort: string;
     minPrice: number;
@@ -69,9 +65,8 @@ export function ProductFilters({
     olfactiveFamily: initialFilters.olfactiveFamily,
     concentration: initialFilters.concentration,
     gender: initialFilters.gender,
-    homeSubtype: initialFilters.homeSubtype,
+    giftFor: initialFilters.giftFor,
     volume: initialFilters.volume,
-    destination: initialFilters.destination,
     diffuserType: initialFilters.diffuserType,
     sort: initialFilters.sort,
     minPrice: initialFilters.minPrice,
@@ -90,10 +85,8 @@ export function ProductFilters({
         "",
       concentration: searchParams.get("concentration") ?? "",
       gender: lockedFilters?.gender ?? searchParams.get("gender") ?? "",
-      homeSubtype:
-        lockedFilters?.homeSubtype ?? searchParams.get("homeSubtype") ?? "",
-      volume: Number(searchParams.get("volume")) || 0,
-      destination: searchParams.get("destination") ?? "",
+      giftFor: lockedFilters?.giftFor ?? searchParams.get("giftFor") ?? "",
+      volume: searchParams.get("volume") ?? "",
       diffuserType: searchParams.get("diffuserType") ?? "",
       sort: searchParams.get("sort") ?? "name",
       minPrice: Number(searchParams.get("minPrice")) || 0,
@@ -116,43 +109,55 @@ export function ProductFilters({
 
   const showPerfumeFilters = useMemo(
     () =>
-      filterProfile === "perfume" ||
+      filterProfile === "perfumes" ||
       (filterProfile === "all" &&
-        (filters.category === "" || filters.category === "perfume")),
+        (filters.category === "" || filters.category === "perfumes")),
     [filterProfile, filters.category],
   );
 
-  const showHomeFilters = useMemo(
+  const showOlfactiveFilter = useMemo(() => {
+    if (OLFACTIVE_CATEGORIES.includes(filterProfile as (typeof OLFACTIVE_CATEGORIES)[number])) {
+      return true;
+    }
+    if (filterProfile === "all") {
+      return (
+        filters.category === "" ||
+        OLFACTIVE_CATEGORIES.includes(
+          filters.category as (typeof OLFACTIVE_CATEGORIES)[number],
+        )
+      );
+    }
+    return false;
+  }, [filterProfile, filters.category]);
+
+  const showGiftsetFilters = useMemo(
     () =>
-      filterProfile === "home" ||
-      (filterProfile === "all" && filters.category === "home"),
+      filterProfile === "giftsets" ||
+      (filterProfile === "all" && filters.category === "giftsets"),
+    [filterProfile, filters.category],
+  );
+
+  const showHomeSprayDiffuser = useMemo(
+    () =>
+      filterProfile === "homeSpray" ||
+      (filterProfile === "all" && filters.category === "homeSpray"),
     [filterProfile, filters.category],
   );
 
   const showGenderFilter =
     showPerfumeFilters && lockedFilters?.gender === undefined;
 
-  const showHomeSubtypeFilter =
-    showHomeFilters && lockedFilters?.homeSubtype === undefined;
+  const showGiftForFilter =
+    showGiftsetFilters && lockedFilters?.giftFor === undefined;
 
-  const showDestinationFilter =
-    showHomeFilters && filters.homeSubtype === "cleaningProducts";
-
-  const showDiffuserFilter =
-    showHomeFilters && filters.homeSubtype === "homeFragrance";
-
-  const showVolumeFilter =
-    filterProfile === "perfume" ||
-    (filterProfile === "all" &&
-      (filters.category === "" || filters.category === "perfume")) ||
-    showDiffuserFilter;
+  const showVolumeFilter = showPerfumeFilters;
 
   const currentSearch = filters.q;
   const currentCategory = filters.category;
   const currentOlfactiveFamily = filters.olfactiveFamily;
   const currentConcentration = filters.concentration;
   const currentGender = filters.gender;
-  const currentHomeSubtype = filters.homeSubtype;
+  const currentGiftFor = filters.giftFor;
   const currentSort = filters.sort;
   const currentInStock = filters.inStock;
 
@@ -162,22 +167,20 @@ export function ProductFilters({
   const isOlfactiveFamilyActive = !!currentOlfactiveFamily;
   const isConcentrationActive = !!currentConcentration;
   const isGenderActive = !!currentGender;
-  const isHomeSubtypeActive = !!currentHomeSubtype;
-  const isDestinationActive = !!filters.destination;
+  const isGiftForActive = !!currentGiftFor;
   const isDiffuserActive = !!filters.diffuserType;
-  const isVolumeActive = filters.volume > 0;
+  const isVolumeActive = !!filters.volume;
   const isPriceActive = filters.minPrice > 0 || filters.maxPrice < 5000;
   const isInStockActive = currentInStock;
 
   const hasActiveFilters =
     isSearchActive ||
     isCategoryActive ||
-    (showPerfumeFilters && isOlfactiveFamilyActive) ||
+    (showOlfactiveFilter && isOlfactiveFamilyActive) ||
     (showPerfumeFilters && isConcentrationActive) ||
     (showGenderFilter && isGenderActive) ||
-    (showHomeSubtypeFilter && isHomeSubtypeActive) ||
-    (showDestinationFilter && isDestinationActive) ||
-    (showDiffuserFilter && isDiffuserActive) ||
+    (showGiftForFilter && isGiftForActive) ||
+    (showHomeSprayDiffuser && isDiffuserActive) ||
     (showVolumeFilter && isVolumeActive) ||
     isPriceActive ||
     isInStockActive;
@@ -185,12 +188,11 @@ export function ProductFilters({
   const activeFilterCount = [
     isSearchActive,
     isCategoryActive,
-    showPerfumeFilters && isOlfactiveFamilyActive,
+    showOlfactiveFilter && isOlfactiveFamilyActive,
     showPerfumeFilters && isConcentrationActive,
     showGenderFilter && isGenderActive,
-    showHomeSubtypeFilter && isHomeSubtypeActive,
-    showDestinationFilter && isDestinationActive,
-    showDiffuserFilter && isDiffuserActive,
+    showGiftForFilter && isGiftForActive,
+    showHomeSprayDiffuser && isDiffuserActive,
     showVolumeFilter && isVolumeActive,
     isPriceActive,
     isInStockActive,
@@ -249,9 +251,7 @@ export function ProductFilters({
     <div className="mb-2 flex items-center justify-between">
       <span
         className={`block text-sm font-medium ${
-          isActive
-            ? "text-foreground"
-            : "text-muted-foreground"
+          isActive ? "text-foreground" : "text-muted-foreground"
         }`}
       >
         {children}
@@ -275,7 +275,7 @@ export function ProductFilters({
   );
 
   return (
-    <div className="space-y-6 rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm sm:p-6">
+    <div className="space-y-6 bg-card p-5 text-card-foreground  sm:p-6">
       {hasActiveFilters && (
         <div className="rounded-lg border-2 border-primary/35 bg-accent p-3">
           <div className="mb-2 flex items-center justify-between">
@@ -306,9 +306,7 @@ export function ProductFilters({
             defaultValue={currentSearch}
             key={currentSearch}
             className={`flex-1 ${
-              isSearchActive
-                ? "border-primary ring-1 ring-primary"
-                : ""
+              isSearchActive ? "border-primary ring-1 ring-primary" : ""
             }`}
           />
           <Button type="submit" size="sm">
@@ -330,9 +328,7 @@ export function ProductFilters({
           >
             <SelectTrigger
               className={
-                isCategoryActive
-                  ? "border-primary ring-1 ring-primary"
-                  : ""
+                isCategoryActive ? "border-primary ring-1 ring-primary" : ""
               }
             >
               <SelectValue placeholder="Toate categoriile" />
@@ -362,9 +358,7 @@ export function ProductFilters({
           >
             <SelectTrigger
               className={
-                isGenderActive
-                  ? "border-primary ring-1 ring-primary"
-                  : ""
+                isGenderActive ? "border-primary ring-1 ring-primary" : ""
               }
             >
               <SelectValue placeholder="Toate" />
@@ -381,43 +375,75 @@ export function ProductFilters({
         </div>
       )}
 
-      {showPerfumeFilters && (
-        <>
-          <div>
-            <FilterLabel
-              isActive={isOlfactiveFamilyActive}
-              filterKey="olfactiveFamily"
-            >
-              Familie olfactivă
-            </FilterLabel>
-            <Select
-              value={currentOlfactiveFamily || "all"}
-              onValueChange={(value) =>
-                updateParams({
-                  olfactiveFamily: value === "all" ? null : value,
-                })
+      {showGiftForFilter && (
+        <div>
+          <FilterLabel isActive={isGiftForActive} filterKey="giftFor">
+            Pentru (giftset)
+          </FilterLabel>
+          <Select
+            value={currentGiftFor || "all"}
+            onValueChange={(value) =>
+              updateParams({ giftFor: value === "all" ? null : value })
+            }
+          >
+            <SelectTrigger
+              className={
+                isGiftForActive ? "border-primary ring-1 ring-primary" : ""
               }
             >
-              <SelectTrigger
-                className={
-                  isOlfactiveFamilyActive
-                    ? "border-primary ring-1 ring-primary"
-                    : ""
-                }
-              >
-                <SelectValue placeholder="Toate familiile" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toate familiile olfactive</SelectItem>
-                {SCENT_FAMILIES.map((family) => (
-                  <SelectItem key={family.value} value={family.value}>
-                    {family.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+              <SelectValue placeholder="Toate" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toate</SelectItem>
+              {GIFT_FOR_OPTIONS.map((g) => (
+                <SelectItem key={g.value} value={g.value}>
+                  {g.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
+      {showOlfactiveFilter && (
+        <div>
+          <FilterLabel
+            isActive={isOlfactiveFamilyActive}
+            filterKey="olfactiveFamily"
+          >
+            Familie olfactivă
+          </FilterLabel>
+          <Select
+            value={currentOlfactiveFamily || "all"}
+            onValueChange={(value) =>
+              updateParams({
+                olfactiveFamily: value === "all" ? null : value,
+              })
+            }
+          >
+            <SelectTrigger
+              className={
+                isOlfactiveFamilyActive
+                  ? "border-primary ring-1 ring-primary"
+                  : ""
+              }
+            >
+              <SelectValue placeholder="Toate familiile" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toate familiile olfactive</SelectItem>
+              {OLFACTORY_FAMILIES.map((family) => (
+                <SelectItem key={family.value} value={family.value}>
+                  {family.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+      {showPerfumeFilters && (
+        <>
           <div>
             <FilterLabel
               isActive={isConcentrationActive}
@@ -458,75 +484,7 @@ export function ProductFilters({
         </>
       )}
 
-      {showHomeSubtypeFilter && (
-        <div>
-          <FilterLabel isActive={isHomeSubtypeActive} filterKey="homeSubtype">
-            Tip produs casă
-          </FilterLabel>
-          <Select
-            value={currentHomeSubtype || "all"}
-            onValueChange={(value) =>
-              updateParams({
-                homeSubtype: value === "all" ? null : value,
-                destination: null,
-                diffuserType: null,
-              })
-            }
-          >
-            <SelectTrigger
-              className={
-                isHomeSubtypeActive
-                  ? "border-primary ring-1 ring-primary"
-                  : ""
-              }
-            >
-              <SelectValue placeholder="Toate tipurile" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Toate tipurile</SelectItem>
-              {HOME_SUBTYPES.map((t) => (
-                <SelectItem key={t.value} value={t.value}>
-                  {t.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
-
-      {showDestinationFilter && (
-        <div>
-          <FilterLabel isActive={isDestinationActive} filterKey="destination">
-            Zonă curățenie
-          </FilterLabel>
-          <Select
-            value={filters.destination || "all"}
-            onValueChange={(value) =>
-              updateParams({ destination: value === "all" ? null : value })
-            }
-          >
-            <SelectTrigger
-              className={
-                isDestinationActive
-                  ? "border-primary ring-1 ring-primary"
-                  : ""
-              }
-            >
-              <SelectValue placeholder="Toate zonele" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Toate zonele</SelectItem>
-              {CLEANING_DESTINATIONS.map((d) => (
-                <SelectItem key={d.value} value={d.value}>
-                  {d.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
-
-      {showDiffuserFilter && (
+      {showHomeSprayDiffuser && (
         <div>
           <FilterLabel isActive={isDiffuserActive} filterKey="diffuserType">
             Tip difuzor
@@ -539,9 +497,7 @@ export function ProductFilters({
           >
             <SelectTrigger
               className={
-                isDiffuserActive
-                  ? "border-primary ring-1 ring-primary"
-                  : ""
+                isDiffuserActive ? "border-primary ring-1 ring-primary" : ""
               }
             >
               <SelectValue placeholder="Toate tipurile" />
@@ -561,29 +517,27 @@ export function ProductFilters({
       {showVolumeFilter && (
         <div>
           <FilterLabel isActive={isVolumeActive} filterKey="volume">
-            Volum (ml)
+            Volum
           </FilterLabel>
           <Select
-            value={filters.volume > 0 ? String(filters.volume) : "all"}
+            value={filters.volume || "all"}
             onValueChange={(value) =>
               updateParams({
-                volume: value === "all" ? null : Number(value),
+                volume: value === "all" ? null : value,
               })
             }
           >
             <SelectTrigger
               className={
-                isVolumeActive
-                  ? "border-primary ring-1 ring-primary"
-                  : ""
+                isVolumeActive ? "border-primary ring-1 ring-primary" : ""
               }
             >
               <SelectValue placeholder="Toate volumele" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Toate volumele</SelectItem>
-              {VOLUME_ML_OPTIONS.map((v) => (
-                <SelectItem key={v.value} value={String(v.value)}>
+              {VOLUME_STRING_OPTIONS.map((v) => (
+                <SelectItem key={v.value} value={v.value}>
                   {v.label}
                 </SelectItem>
               ))}

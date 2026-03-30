@@ -3,9 +3,10 @@
  */
 
 export const PRODUCT_TYPE_SANITY_LIST = [
-  { title: "Parfum", value: "perfume" },
-  { title: "Casă", value: "home" },
-  { title: "Cadou", value: "gift" },
+  { title: "Parfumuri", value: "perfumes" },
+  { title: "Seturi cadou", value: "giftsets" },
+  { title: "Parfumuri de cameră", value: "homeSpray" },
+  { title: "Parfumuri de mașină", value: "carPerfume" },
 ] as const;
 
 /** URL / filter segment → display label (categories & product types share these keys). */
@@ -13,9 +14,10 @@ export const CATEGORY_KIND_LABELS: Record<
   (typeof PRODUCT_TYPE_SANITY_LIST)[number]["value"],
   string
 > = {
-  perfume: "Parfum",
-  home: "Casă",
-  gift: "Cadou",
+  perfumes: "Parfumuri",
+  giftsets: "Seturi cadou",
+  homeSpray: "Parfumuri de cameră",
+  carPerfume: "Parfumuri de mașină",
 };
 
 export const GENDER_SANITY_LIST = [
@@ -24,20 +26,11 @@ export const GENDER_SANITY_LIST = [
   { title: "Unisex", value: "unisex" },
 ] as const;
 
-export const HOME_SUBTYPE_SANITY_LIST = [
-  { title: "Produse de curățenie", value: "cleaningProducts" },
-  { title: "Parfum de casă", value: "homeFragrance" },
-] as const;
-
-export const CLEANING_DESTINATION_SANITY_LIST = [
-  { title: "Baie", value: "bathroom" },
-  { title: "Bucătărie", value: "kitchen" },
-  { title: "Living", value: "livingRoom" },
-  { title: "Geamuri", value: "windows" },
-  { title: "Universal", value: "universal" },
-  { title: "Rufe", value: "laundry" },
-  { title: "Podele", value: "floors" },
-  { title: "Mobilier", value: "furniture" },
+/** Pentru giftsets: destinatari (el / ea / unisex). */
+export const GIFT_FOR_SANITY_LIST = [
+  { title: "El", value: "him" },
+  { title: "Ea", value: "her" },
+  { title: "Unisex", value: "unisex" },
 ] as const;
 
 export const DIFFUSER_TYPE_SANITY_LIST = [
@@ -56,14 +49,10 @@ export const GENDERS = GENDER_SANITY_LIST.map((x) => ({
   label: x.title,
 }));
 
-export const HOME_SUBTYPES = HOME_SUBTYPE_SANITY_LIST.map((x) => ({
+export const GIFT_FOR_OPTIONS = GIFT_FOR_SANITY_LIST.map((x) => ({
   value: x.value,
   label: x.title,
 }));
-
-export const CLEANING_DESTINATIONS = CLEANING_DESTINATION_SANITY_LIST.map(
-  (x) => ({ value: x.value, label: x.title }),
-);
 
 export const DIFFUSER_TYPES = DIFFUSER_TYPE_SANITY_LIST.map((x) => ({
   value: x.value,

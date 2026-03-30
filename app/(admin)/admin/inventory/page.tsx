@@ -49,16 +49,16 @@ function ProductListContent({
     return (
       <EmptyState
         icon={Package}
-        title={filter ? "No products found" : "No products yet"}
+        title={filter ? "Nu s-au găsit produse" : "Încă nu există produse"}
         description={
           filter
-            ? "Try adjusting your search terms."
-            : "Get started by adding your first product."
+            ? "Încearcă alți termeni de căutare."
+            : "Adaugă primul produs pentru a începe."
         }
         action={
           !filter
             ? {
-                label: "Add Product",
+                label: "Adaugă produs",
                 onClick: onCreateProduct,
                 disabled: isCreating,
                 icon: isCreating ? Loader2 : Plus,
@@ -89,7 +89,7 @@ function ProductListContent({
             onClick={() => loadMore()}
             disabled={isPending}
           >
-            {isPending ? "Loading..." : "Load More"}
+            {isPending ? "Se încarcă…" : "Încarcă mai multe"}
           </Button>
         </div>
       )}
@@ -136,10 +136,10 @@ function InventoryContent() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-3xl">
-            Inventory
+            Inventar
           </h1>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400 sm:text-base">
-            Manage your product stock and pricing
+            Gestionează stocul și prețurile produselor
           </p>
         </div>
         <Button
@@ -152,13 +152,13 @@ function InventoryContent() {
           ) : (
             <Plus className="mr-2 h-4 w-4" />
           )}
-          New Product
+          Produs nou
         </Button>
       </div>
 
       {/* Search */}
       <AdminSearch
-        placeholder="Search products..."
+        placeholder="Caută produse…"
         value={searchQuery}
         onChange={setSearchQuery}
         className="w-full sm:max-w-sm"

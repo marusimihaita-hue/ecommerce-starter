@@ -56,7 +56,8 @@ function OrderRowContent(handle: DocumentHandle) {
               {data.email}
             </p>
             <p className="mt-0.5 text-xs text-zinc-400 dark:text-zinc-500">
-              {data.itemCount} {data.itemCount === 1 ? "item" : "items"}
+              {data.itemCount}{" "}
+              {data.itemCount === 1 ? "articol" : "articole"}
               {data.createdAt && (
                 <>
                   {" · "}

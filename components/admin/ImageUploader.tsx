@@ -54,14 +54,14 @@ function ImageUploaderContent(handle: DocumentHandle) {
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
-    setUploadProgress(`Uploading ${files.length} image(s)...`);
+    setUploadProgress(`Se încarcă ${files.length} imagini…`);
 
     try {
       const newImages: SanityImageAsset[] = [];
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        setUploadProgress(`Uploading ${i + 1} of ${files.length}...`);
+        setUploadProgress(`${i + 1} din ${files.length}…`);
 
         // Upload the asset to Sanity
         const asset = await client.assets.upload("image", file, {
@@ -86,7 +86,7 @@ function ImageUploaderContent(handle: DocumentHandle) {
       setUploadProgress(null);
     } catch (error) {
       console.error("Upload failed:", error);
-      setUploadProgress("Upload failed. Please try again.");
+      setUploadProgress("Încărcarea a eșuat. Încearcă din nou.");
       setTimeout(() => setUploadProgress(null), 3000);
     } finally {
       setIsUploading(false);
@@ -141,7 +141,7 @@ function ImageUploaderContent(handle: DocumentHandle) {
           ) : (
             <>
               <Upload className="mr-2 h-4 w-4" />
-              Upload Images
+              Încarcă imagini
             </>
           )}
         </Button>
@@ -168,17 +168,17 @@ function ImageUploaderContent(handle: DocumentHandle) {
         <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-zinc-200 py-8 dark:border-zinc-700">
           <ImageIcon className="mb-2 h-10 w-10 text-zinc-400" />
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            No images uploaded
+            Nu există imagini încărcate
           </p>
           <p className="text-xs text-zinc-400 dark:text-zinc-500">
-            Click upload to add product images
+            Apasă „Încarcă imagini” pentru a adăuga poze
           </p>
         </div>
       )}
 
       {currentImages.length > 0 && (
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          First image is the main product image. Drag to reorder.
+          Prima imagine este imaginea principală. Folosește săgețile pentru ordine.
         </p>
       )}
     </div>
@@ -229,7 +229,7 @@ function ImageThumbnail({
       {imageUrl ? (
         <Image
           src={imageUrl}
-          alt="Product image"
+          alt="Imagine produs"
           fill
           className="object-cover"
           sizes="150px"
@@ -243,7 +243,7 @@ function ImageThumbnail({
       {/* First image badge */}
       {isFirst && (
         <div className="absolute left-2 top-2 rounded bg-blue-500 px-1.5 py-0.5 text-xs font-medium text-white">
-          Main
+          Principală
         </div>
       )}
 

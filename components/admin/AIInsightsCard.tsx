@@ -120,12 +120,14 @@ export function AIInsightsCard() {
       const result = await response.json();
 
       if (!result.success) {
-        throw new Error(result.error || "Failed to fetch insights");
+        throw new Error(result.error || "Nu s-au putut încărca recomandările");
       }
 
       setData(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load insights");
+      setError(
+        err instanceof Error ? err.message : "Nu s-au putut încărca datele",
+      );
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -165,7 +167,7 @@ export function AIInsightsCard() {
             className="border-red-300 text-red-700 hover:bg-red-100 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-900/50"
           >
             <RefreshCw className="mr-2 h-4 w-4" />
-            Retry
+            Reîncearcă
           </Button>
         </div>
       </div>
@@ -177,6 +179,13 @@ export function AIInsightsCard() {
   }
 
   const { insights, rawMetrics, generatedAt } = data;
+  const avgOrderNum = Number.parseFloat(String(rawMetrics.avgOrderValue));
+  const avgOrderDisplay = Number.isFinite(avgOrderNum)
+    ? avgOrderNum.toLocaleString("ro-RO", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+    : "0,00";
 
   return (
     <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
@@ -188,11 +197,11 @@ export function AIInsightsCard() {
           </div>
           <div>
             <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
-              AI Insights
+              Recomandări AI
             </h2>
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Updated{" "}
-              {new Date(generatedAt).toLocaleTimeString([], {
+              Actualizat la{" "}
+              {new Date(generatedAt).toLocaleTimeString("ro-RO", {
                 hour: "2-digit",
                 minute: "2-digit",
               })}
@@ -211,7 +220,7 @@ export function AIInsightsCard() {
           ) : (
             <RefreshCw className="h-4 w-4" />
           )}
-          Refresh
+          Reîmprospătează
         </Button>
       </div>
 
@@ -219,14 +228,14 @@ export function AIInsightsCard() {
       <div className="grid grid-cols-2 gap-px border-b border-zinc-200 bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800 sm:grid-cols-4">
         <div className="bg-white p-4 dark:bg-zinc-900">
           <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-            Revenue (7d)
+            Încasări (7 zile)
           </p>
           <p className="mt-1 text-lg font-bold text-zinc-900 dark:text-zinc-100">
-            £
-            {Number(rawMetrics.currentRevenue).toLocaleString("en-GB", {
+            {Number(rawMetrics.currentRevenue).toLocaleString("ro-RO", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-            })}
+            })}{" "}
+            RON
           </p>
           <p
             className={cn(
@@ -239,30 +248,30 @@ export function AIInsightsCard() {
             )}
           >
             {Number(rawMetrics.revenueChange) > 0 ? "+" : ""}
-            {rawMetrics.revenueChange}% vs last week
+            {rawMetrics.revenueChange}% față de săpt. trecută
           </p>
         </div>
         <div className="bg-white p-4 dark:bg-zinc-900">
           <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-            Orders (7d)
+            Comenzi (7 zile)
           </p>
           <p className="mt-1 text-lg font-bold text-zinc-900 dark:text-zinc-100">
             {rawMetrics.orderCount}
           </p>
-          <p className="text-xs text-zinc-500">This week</p>
+          <p className="text-xs text-zinc-500">Săptămâna curentă</p>
         </div>
         <div className="bg-white p-4 dark:bg-zinc-900">
           <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-            Avg Order
+            Valoare medie comandă
           </p>
           <p className="mt-1 text-lg font-bold text-zinc-900 dark:text-zinc-100">
-            £{rawMetrics.avgOrderValue}
+            {avgOrderDisplay} RON
           </p>
-          <p className="text-xs text-zinc-500">Per order</p>
+          <p className="text-xs text-zinc-500">Pe comandă</p>
         </div>
         <div className="bg-white p-4 dark:bg-zinc-900">
           <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-            Pending
+            De expediat
           </p>
           <p
             className={cn(
@@ -274,7 +283,7 @@ export function AIInsightsCard() {
           >
             {rawMetrics.unfulfilledCount}
           </p>
-          <p className="text-xs text-zinc-500">To ship</p>
+          <p className="text-xs text-zinc-500">Comenzi în așteptare</p>
         </div>
       </div>
 
@@ -285,7 +294,7 @@ export function AIInsightsCard() {
           <div className="flex items-center gap-2">
             <TrendIcon trend={insights.salesTrends.trend} />
             <h3 className="font-medium text-zinc-900 dark:text-zinc-100">
-              Sales Trends
+              Tendințe vânzări
             </h3>
           </div>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
@@ -309,7 +318,7 @@ export function AIInsightsCard() {
           <div className="flex items-center gap-2">
             <Package className="h-4 w-4 text-blue-500" />
             <h3 className="font-medium text-zinc-900 dark:text-zinc-100">
-              Inventory
+              Inventar
             </h3>
           </div>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
@@ -346,7 +355,7 @@ export function AIInsightsCard() {
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-violet-500" />
             <h3 className="font-medium text-zinc-900 dark:text-zinc-100">
-              Action Items
+              Acțiuni recomandate
             </h3>
           </div>
 
@@ -370,7 +379,7 @@ export function AIInsightsCard() {
           {insights.actionItems.recommended.length > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-                Recommended
+                Recomandate
               </p>
               <ul className="space-y-1">
                 {insights.actionItems.recommended.map((item, i) => (
@@ -389,7 +398,7 @@ export function AIInsightsCard() {
           {insights.actionItems.opportunities.length > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-medium uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
-                Opportunities
+                Oportunități
               </p>
               <ul className="space-y-1">
                 {insights.actionItems.opportunities.map((item, i) => (

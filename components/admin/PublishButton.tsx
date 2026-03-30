@@ -66,7 +66,7 @@ function PublishButtonContent({
     return (
       <Button variant={variant} size={size} disabled className="min-w-[140px]">
         <Check className="mr-2 h-4 w-4 text-green-500" />
-        Published!
+        Publicat!
       </Button>
     );
   }
@@ -82,12 +82,12 @@ function PublishButtonContent({
       {isPublishing ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Publishing...
+          Se publică…
         </>
       ) : (
         <>
           <Save className="mr-2 h-4 w-4" />
-          Publish
+          Publică
         </>
       )}
     </Button>
@@ -172,7 +172,7 @@ function RevertButtonContent({ size = "icon", ...handle }: RevertButtonProps) {
         </Button>
       </TooltipTrigger>
       <TooltipContent>
-        <p>Discard changes</p>
+        <p>Renunță la modificări</p>
       </TooltipContent>
     </Tooltip>
   );

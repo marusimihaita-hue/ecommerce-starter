@@ -29,7 +29,7 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatusValue, OrderStatusConfig> =
   {
     paid: {
       value: "paid",
-      label: "Paid",
+      label: "Plătită",
       color: "bg-green-100 text-green-800",
       icon: CreditCard,
       emoji: "✅",
@@ -47,7 +47,7 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatusValue, OrderStatusConfig> =
     },
     delivered: {
       value: "delivered",
-      label: "Delivered",
+      label: "Livrată",
       color: "bg-zinc-100 text-zinc-800",
       icon: Package,
       emoji: "🎉",
@@ -56,7 +56,7 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatusValue, OrderStatusConfig> =
     },
     cancelled: {
       value: "cancelled",
-      label: "Cancelled",
+      label: "Anulată",
       color: "bg-red-100 text-red-800",
       icon: XCircle,
       emoji: "❌",
@@ -72,7 +72,7 @@ export const ORDER_STATUS_VALUES = Object.keys(
 
 /** Tabs for admin order filtering (includes "all" option) */
 export const ORDER_STATUS_TABS = [
-  { value: "all", label: "All" },
+  { value: "all", label: "Toate" },
   ...ORDER_STATUS_VALUES.map((value) => ({
     value,
     label: ORDER_STATUS_CONFIG[value].label,

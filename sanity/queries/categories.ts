@@ -4,15 +4,16 @@ import { defineQuery } from "next-sanity";
 const CATEGORY_LABELS = `
   "slug": kind,
   "title": select(
-    kind == "perfume" => "Parfum",
-    kind == "home" => "Casă",
-    kind == "gift" => "Cadou",
+    kind == "perfumes" => "Parfumuri",
+    kind == "giftsets" => "Seturi cadou",
+    kind == "homeSpray" => "Parfumuri de cameră",
+    kind == "carPerfume" => "Parfumuri de mașină",
     "Categorie"
   )
 `;
 
 /**
- * Get all categories (exactly: perfume, home, gift — one document per kind).
+ * Get all categories (one document per kind).
  * Used on navigation and filters
  */
 export const ALL_CATEGORIES_QUERY = defineQuery(`*[
@@ -31,7 +32,7 @@ export const ALL_CATEGORIES_QUERY = defineQuery(`*[
 }`);
 
 /**
- * Get category by URL segment ($slug is kind: perfume | home | gift)
+ * Get category by URL segment ($slug is kind: perfumes | giftsets | homeSpray | carPerfume)
  */
 export const CATEGORY_BY_SLUG_QUERY = defineQuery(`*[
   _type == "category"

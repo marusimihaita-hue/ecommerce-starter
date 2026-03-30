@@ -3,7 +3,7 @@ import { defineField, defineType } from "sanity";
 import { PRODUCT_TYPE_SANITY_LIST } from "@/lib/constants/productOptions";
 
 /**
- * Shop categories are fixed: one document per product line (perfume / home / gift).
+ * Shop categories: one document per linie (Parfumuri, Seturi cadou, Parfumuri de cameră, Parfumuri de mașină).
  * `kind` matches `product.productType` and is used as the public URL segment (/catalog/[slug]).
  */
 export const categoryType = defineType({
@@ -17,7 +17,7 @@ export const categoryType = defineType({
       title: "Category (product line)",
       type: "string",
       description:
-        "Exactly three categories: Parfum, Casă, Cadou — same values as product type.",
+        "Aceleași valori ca „Categorie principală” la produs: Parfumuri, Seturi cadou, Parfumuri de cameră, Parfumuri de mașină.",
       options: {
         list: [...PRODUCT_TYPE_SANITY_LIST],
         layout: "radio",

@@ -53,24 +53,24 @@ function AddressEditorContent(handle: AddressEditorProps) {
         <AddressField
           handle={handle}
           field="name"
-          label="Full Name"
-          placeholder="John Doe"
+          label="Nume complet"
+          placeholder="Ion Popescu"
         />
       </Suspense>
       <Suspense fallback={<Skeleton className="h-16" />}>
         <AddressField
           handle={handle}
           field="line1"
-          label="Address Line 1"
-          placeholder="123 Main St"
+          label="Adresă (linia 1)"
+          placeholder="Strada, nr."
         />
       </Suspense>
       <Suspense fallback={<Skeleton className="h-16" />}>
         <AddressField
           handle={handle}
           field="line2"
-          label="Address Line 2"
-          placeholder="Apt 4B (optional)"
+          label="Adresă (linia 2)"
+          placeholder="Bloc, scară, ap. (opțional)"
         />
       </Suspense>
       <div className="grid grid-cols-2 gap-3">
@@ -78,25 +78,43 @@ function AddressEditorContent(handle: AddressEditorProps) {
           <AddressField
             handle={handle}
             field="city"
-            label="City"
-            placeholder="London"
+            label="City / town"
+            placeholder="București"
           />
         </Suspense>
         <Suspense fallback={<Skeleton className="h-16" />}>
           <AddressField
             handle={handle}
+            field="state"
+            label="County / sector"
+            placeholder="Ilfov, Sector 1…"
+          />
+        </Suspense>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <Suspense fallback={<Skeleton className="h-16" />}>
+          <AddressField
+            handle={handle}
             field="postcode"
-            label="Postcode"
-            placeholder="SW1A 1AA"
+            label="Cod poștal"
+            placeholder="020001"
+          />
+        </Suspense>
+        <Suspense fallback={<Skeleton className="h-16" />}>
+          <AddressField
+            handle={handle}
+            field="country"
+            label="Country"
+            placeholder="RO"
           />
         </Suspense>
       </div>
       <Suspense fallback={<Skeleton className="h-16" />}>
         <AddressField
           handle={handle}
-          field="country"
-          label="Country"
-          placeholder="United Kingdom"
+          field="phone"
+          label="Telefon"
+          placeholder="+40 …"
         />
       </Suspense>
     </div>

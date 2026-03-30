@@ -12,6 +12,7 @@ interface SuccessClientProps {
     id: string;
     customerEmail?: string | null;
     customerName?: string | null;
+    customerPhone?: string | null;
     amountTotal?: number | null;
     paymentStatus: string;
     shippingAddress?: {
@@ -108,6 +109,9 @@ export function SuccessClient({ session }: SuccessClientProps) {
                   .join(", ")}
               </p>
               {address.country && <p>{address.country}</p>}
+              {session.customerPhone && (
+                <p className="mt-1">Tel.: {session.customerPhone}</p>
+              )}
             </div>
           </div>
         )}

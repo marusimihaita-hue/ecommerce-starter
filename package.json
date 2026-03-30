@@ -8,8 +8,7 @@
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
-    "typegen": "sanity schema extract && sanity typegen generate --enforce-required-fields",
-    "sanity:seed": "sanity dataset import sample-data.ndjson production --replace"
+    "typegen": "sanity schema extract && sanity typegen generate --enforce-required-fields"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.0.2",

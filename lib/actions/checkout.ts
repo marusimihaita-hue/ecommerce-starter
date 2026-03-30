@@ -147,9 +147,13 @@ export async function createCheckoutSession(
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      locale: "ro",
       payment_method_types: ["card"],
       line_items: lineItems,
       customer: stripeCustomerId,
+      phone_number_collection: {
+        enabled: true,
+      },
       shipping_address_collection: {
         allowed_countries: [
           "GB", // United Kingdom
@@ -246,6 +250,7 @@ export async function getCheckoutSession(sessionId: string) {
         id: session.id,
         customerEmail: session.customer_details?.email,
         customerName: session.customer_details?.name,
+        customerPhone: session.customer_details?.phone,
         amountTotal: session.amount_total,
         paymentStatus: session.payment_status,
         shippingAddress: session.customer_details?.address,
