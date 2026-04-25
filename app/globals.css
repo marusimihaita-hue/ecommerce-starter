@@ -56,7 +56,7 @@
  * Ajustează --app-ui-zoom dacă vrei alt procent (ex. 0.85 = 85%).
  */
 :root {
-  --app-ui-zoom: 0.75;
+  --app-ui-zoom: 0.8;
   --background: #ffffff;
   --foreground: #14171b;
   --card: #ffffff;
